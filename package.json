@@ -1,0 +1,63 @@
+{
+  "name": "cardea-health-enterprise-agent-ui",
+  "version": "0.1.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "axios": "^0.20.0",
+    "jwt-decode": "^3.1.2",
+    "nan": "^2.14.1",
+    "onchange": "^7.0.2",
+    "qrcode.react": "^1.0.0",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
+    "react-tooltip": "^4.2.14",
+    "reactjs-popup": "^2.0.4",
+    "styled-components": "^5.1.0",
+    "universal-cookie": "^4.0.4"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^8.3.5",
+    "husky": "^4.2.5",
+    "prettier": "2.0.5"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "style-watch": "onchange 'src/*.js' 'src/**/*.js' -- prettier --write {{changed}}",
+    "style-check": "prettier --check 'src/**/*.js'",
+    "style-format": "prettier --write .",
+    "build": "react-scripts build",
+    "postbuild": "cp LICENSE* build && cp README.md build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
