@@ -1,5 +1,5 @@
 import Axios from 'axios'
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useLayoutEffect, useState } from 'react'
 import jwt_decode from 'jwt-decode'
 
 import { useNotification } from './NotificationProvider'
@@ -21,10 +21,11 @@ function AccountSetup(props) {
 
   const [id, setId] = useState({})
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    let isMounted = true
     // Kick the user off this page if trying to access without a token
     if (!token) {
-      console.log('No token')
+      props.history.push('/login')
       return
     }
 
@@ -35,8 +36,9 @@ function AccountSetup(props) {
       setNotification("The user doesn't exist or the link has expired", 'error')
       props.history.push('/login')
     } else {
-      console.log('The token is valid')
-      setId(decoded.id)
+      if (isMounted) {
+        setId(decoded.id)
+      }
     }
 
     // Check the token on the back end
@@ -52,11 +54,15 @@ function AccountSetup(props) {
         props.history.push('/login')
       }
     })
+    return () => {
+      isMounted = false
+    } // Cleanup
   }, [])
 
   const [logo, setLogo] = useState(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    let isMounted = true
     // Fetch the logo
     Axios({
       method: 'GET',
@@ -65,9 +71,14 @@ function AccountSetup(props) {
       if (res.data.error) {
         setNotification(res.data.error, 'error')
       } else {
-        setLogo(handleImageSrc(res.data[0].image.data))
+        if (isMounted) {
+          setLogo(handleImageSrc(res.data[0].image.data))
+        }
       }
     })
+    return () => {
+      isMounted = false
+    } // Cleanup
   }, [])
 
   // Access the notification context

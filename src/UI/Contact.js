@@ -3,8 +3,10 @@ import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 import FormContacts from './FormContacts'
-import FormTestID from './FormTestID'
-import FormTestResult from './FormTestResult'
+import FormExemption from './FormExemption'
+import FormLabOrder from './FormLabOrder'
+import FormLabResult from './FormLabResult'
+import FormVaccine from './FormVaccine'
 import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
@@ -71,12 +73,16 @@ function Contact(props) {
 
   // Modal state
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
-  const [testIDModalIsOpen, setTestIDModalIsOpen] = useState(false)
-  const [testResultModalIsOpen, setTestResultModalIsOpen] = useState(false)
+  const [exemptionModalIsOpen, setExemptionModalIsOpen] = useState(false)
+  const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
+  const [labResultModalIsOpen, setLabResultModalIsOpen] = useState(false)
+  const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
 
   const closeContactModal = () => setContactModalIsOpen(false)
-  const closeTestIDModal = () => setTestIDModalIsOpen(false)
-  const closeTestResultModal = () => setTestResultModalIsOpen(false)
+  const closeExemptionModal = () => setExemptionModalIsOpen(false)
+  const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
+  const closeLabResultModal = () => setLabResultModalIsOpen(false)
+  const closeVaccineModal = () => setVaccineModalIsOpen(false)
 
   const [contactSelected, setContactSelected] = useState(contactToSelect)
 
@@ -154,7 +160,7 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_birth || ''
+                  ? contactSelected.Passport.date_of_birth.split('T')[0] || ''
                   : ''}
               </td>
             </AttributeRow>
@@ -181,7 +187,7 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_issue || ''
+                  ? contactSelected.Passport.date_of_issue.split('T')[0] || ''
                   : ''}
               </td>
             </AttributeRow>
@@ -190,7 +196,8 @@ function Contact(props) {
               <td>
                 {contactSelected.Passport !== null &&
                 contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_expiration || ''
+                  ? contactSelected.Passport.date_of_expiration.split('T')[0] ||
+                    ''
                   : ''}
               </td>
             </AttributeRow>
@@ -232,7 +239,7 @@ function Contact(props) {
     )
   }
 
-  function updateContact(updatedDemographic, e) {
+  function updateDemographics(updatedDemographic, e) {
     e.preventDefault()
     const Demographic = {
       Demographic: { ...updatedDemographic },
@@ -243,6 +250,19 @@ function Contact(props) {
     setNotification('Contact was updated!', 'notice')
 
     setContactSelected({ ...contactSelected, ...Demographic })
+  }
+
+  function updatePasport(updatedPassport, e) {
+    e.preventDefault()
+    const Passport = {
+      Passport: { ...updatedPassport },
+    }
+
+    props.sendRequest('PASSPORTS', 'UPDATE_OR_CREATE', updatedPassport)
+
+    setNotification('Passport info was updated!', 'notice')
+
+    setContactSelected({ ...contactSelected, ...Passport })
   }
 
   // Submits the credential form and shows notification
@@ -256,8 +276,9 @@ function Contact(props) {
 
   const credentialRows = props.credentials.map((credential_record) => {
     if (
+      contactSelected.Connections &&
       contactSelected.Connections[0].connection_id ===
-      credential_record.connection_id
+        credential_record.connection_id
     ) {
       const credential_id = credential_record.credential_exchange_id
       const credentialState = credential_record.state.replaceAll('_', ' ') || ''
@@ -418,9 +439,9 @@ function Contact(props) {
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() => setTestResultModalIsOpen((o) => !o)}
+                onClick={() => setLabResultModalIsOpen((o) => !o)}
               >
-                Issue Test Result Credential
+                Issue Lab Result Credential
               </IssueCredential>
             )}
           />
@@ -428,8 +449,30 @@ function Contact(props) {
             user={localUser}
             perform="credentials:issue"
             yes={() => (
-              <IssueCredential onClick={() => setTestIDModalIsOpen((o) => !o)}>
-                Issue Test ID Credential
+              <IssueCredential
+                onClick={() => setLabOrderModalIsOpen((o) => !o)}
+              >
+                Issue Lab Order Credential
+              </IssueCredential>
+            )}
+          />
+          <CanUser
+            user={localUser}
+            perform="credentials:issue"
+            yes={() => (
+              <IssueCredential onClick={() => setVaccineModalIsOpen((o) => !o)}>
+                Issue Vaccine Credential
+              </IssueCredential>
+            )}
+          />
+          <CanUser
+            user={localUser}
+            perform="credentials:issue"
+            yes={() => (
+              <IssueCredential
+                onClick={() => setExemptionModalIsOpen((o) => !o)}
+              >
+                Issue Vaccine Exemption Credential
               </IssueCredential>
             )}
           />
@@ -448,19 +491,36 @@ function Contact(props) {
           contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
-          submitContact={updateContact}
+          submitDemographics={updateDemographics}
+          submitPassport={updatePasport}
         />
-        <FormTestID
+        <FormLabOrder
           contactSelected={contactSelected}
-          credentialModalIsOpen={testIDModalIsOpen}
-          closeCredentialModal={closeTestIDModal}
+          credentialModalIsOpen={labOrderModalIsOpen}
+          closeCredentialModal={closeLabOrderModal}
           submitCredential={submitNewCredential}
+          schemas={props.schemas}
         />
-        <FormTestResult
+        <FormLabResult
           contactSelected={contactSelected}
-          credentialModalIsOpen={testResultModalIsOpen}
-          closeCredentialModal={closeTestResultModal}
+          credentialModalIsOpen={labResultModalIsOpen}
+          closeCredentialModal={closeLabResultModal}
           submitCredential={submitNewCredential}
+          schemas={props.schemas}
+        />
+        <FormVaccine
+          contactSelected={contactSelected}
+          credentialModalIsOpen={vaccineModalIsOpen}
+          closeCredentialModal={closeVaccineModal}
+          submitCredential={submitNewCredential}
+          schemas={props.schemas}
+        />
+        <FormExemption
+          contactSelected={contactSelected}
+          credentialModalIsOpen={exemptionModalIsOpen}
+          closeCredentialModal={closeExemptionModal}
+          submitCredential={submitNewCredential}
+          schemas={props.schemas}
         />
       </div>
     </>

@@ -83,6 +83,7 @@ function App() {
   // Check for local state copy of theme, otherwise use default hard coded here in App.js
   const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
   const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
+  const [schemas, setSchemas] = useState({})
 
   // Styles to change array
   const [stylesArray, setStylesArray] = useState([])
@@ -168,6 +169,8 @@ function App() {
 
         sendMessage('SETTINGS', 'GET_THEME', {})
         addLoadingProcess('THEME')
+        sendMessage('SETTINGS', 'GET_SCHEMAS', {})
+        addLoadingProcess('SCHEMAS')
 
         if (
           check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
@@ -334,6 +337,49 @@ function App() {
             case 'CONTACTS_ERROR':
               console.log(data.error)
               console.log('CONTACTS ERROR')
+              setErrorMessage(data.error)
+
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
+        case 'DEMOGRAPHICS':
+          switch (type) {
+            case 'DEMOGRAPHICS_ERROR':
+              console.log(data.error)
+              console.log('DEMOGRAPHICS ERROR')
+              setErrorMessage(data.error)
+
+              break
+
+            case 'CONTACTS_ERROR':
+              console.log(data.error)
+              console.log('CONTACTS ERROR')
+              setErrorMessage(data.error)
+
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
+        case 'DEMOGRAPHICS':
+          switch (type) {
+            case 'DEMOGRAPHICS_ERROR':
+              console.log(data.error)
+              console.log('DEMOGRAPHICS ERROR')
               setErrorMessage(data.error)
 
               break
@@ -561,6 +607,11 @@ function App() {
               removeLoadingProcess('THEME')
               break
 
+            case 'SETTINGS_SCHEMAS':
+              setSchemas(data)
+              removeLoadingProcess('SCHEMAS')
+              break
+
             case 'LOGO':
               setImage(data)
               removeLoadingProcess('LOGO')
@@ -654,7 +705,7 @@ function App() {
     }
 
     if (loadingArray.length === 0) {
-      setAppIsLoaded(true)
+      setAppIsLoaded(true) // (Simon) This will break the app. See controllerSocket.current.onopen
     }
   }
 
@@ -932,6 +983,7 @@ function App() {
                             contactId={match.params.contactId}
                             contacts={contacts}
                             credentials={credentials}
+                            schemas={schemas}
                           />
                         </Main>
                       </Frame>
