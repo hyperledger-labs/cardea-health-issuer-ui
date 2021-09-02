@@ -9,8 +9,9 @@ import {
   StyledPopup,
   SubmitBtnModal,
   Modal,
-  ModalHeader,
   ModalContent,
+  ModalContentWrapper,
+  ModalHeader,
   TextWrapper,
 } from './CommonStylesForms'
 
@@ -148,11 +149,13 @@ export default function SessionAlertProvider(props) {
   sessionAlert = (
     <StyledPopup open={open} closeOnDocumentClick={false} onClose={closeModal}>
       <Modal className="modal">
-        <ModalHeader>You've been incative for a while...</ModalHeader>
+        <ModalHeader>You've been inactive for a while...</ModalHeader>
         <form id="form" onSubmit={handleSubmit}>
-          <ModalContent>
-            <SecondsTimer />
-          </ModalContent>
+          <ModalContentWrapper>
+            <ModalContent>
+              <SecondsTimer />
+            </ModalContent>
+          </ModalContentWrapper>
           <Actions>
             <SubmitBtnModal type="submit">Yes</SubmitBtnModal>
           </Actions>

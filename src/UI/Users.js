@@ -57,8 +57,6 @@ function Users(props) {
 
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  console.log(buttonDisabled)
-
   const loggedInUserState = props.loggedInUserState
 
   const roles = props.roles

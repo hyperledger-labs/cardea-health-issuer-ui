@@ -1,6 +1,6 @@
 import Axios from 'axios'
 import jwt_decode from 'jwt-decode'
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useLayoutEffect, useState } from 'react'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
@@ -21,10 +21,11 @@ function PasswordReset(props) {
 
   const [id, setId] = useState(undefined)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    let isMounted = true
     // Kick the user off this page if trying to access without a token
     if (!token) {
-      console.log('no token')
+      props.history.push('/login')
       return
     }
 
@@ -36,8 +37,9 @@ function PasswordReset(props) {
       props.history.push('/')
       return
     } else {
-      console.log('The token is valid')
-      setId(decoded.id)
+      if (isMounted) {
+        setId(decoded.id)
+      }
     }
 
     // Check the token on the back end
@@ -57,7 +59,8 @@ function PasswordReset(props) {
 
   const [logo, setLogo] = useState(null)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
+    let isMounted = true
     // Fetching the logo
     Axios({
       method: 'GET',
@@ -66,9 +69,14 @@ function PasswordReset(props) {
       if (res.data.error) {
         setNotification(res.data.error, 'error')
       } else {
-        setLogo(handleImageSrc(res.data[0].image.data))
+        if (isMounted) {
+          setLogo(handleImageSrc(res.data[0].image.data))
+        }
       }
     })
+    return () => {
+      isMounted = false
+    } // Cleanup
   }, [])
 
   // Accessing notification context

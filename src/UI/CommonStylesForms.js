@@ -33,6 +33,13 @@ export const ModalHeader = styled.div`
   padding: 5px;
 `
 
+export const ModalSubHeader = styled.div`
+  width: 100%;
+  font-size: 1.6em;
+  padding-left: 44px;
+  margin-bottom: 15px;
+`
+
 export const ModalContentWrapper = styled.div`
   overflow: hidden;
   height: auto;
