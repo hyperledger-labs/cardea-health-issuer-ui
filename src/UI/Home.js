@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 import styled from 'styled-components'
 
@@ -45,6 +45,16 @@ const DashboardPlaceholder = styled.div`
 
 function Home(props) {
   const localUser = props.loggedInUserState
+  const history = props.history
+  const contact = props.contact
+
+  // Redirect to contact when contact is created
+  useEffect(() => {
+    if (contact.contact_id && history !== undefined) {
+      closeScanModal()
+      history.push('/contacts/' + contact.contact_id)
+    }
+  }, [props.contact])
 
   // Accessing notification context
   // const setNotification = useNotification()
