@@ -11,7 +11,7 @@ import ReactTooltip from 'react-tooltip'
 import { IconHelp } from './CommonStylesTables'
 
 const SettingsHeader = styled.h2`
-  display: inline;
+  display: inline-block;
   margin-right: 10px;
 `
 
@@ -97,7 +97,6 @@ const UndoStyle = styled.button`
   margin-left: 20px;
   box-shadow: ${(props) => props.theme.drop_shadow};
   display: none;
-
   &.active {
     display: inline-block;
   }
@@ -121,7 +120,14 @@ const SMTPInput = styled.input`
 const ColorInput = styled.input``
 const FileInput = styled.input``
 const SMTPForm = styled.form``
-const OrganizationNameForm = styled.form``
+const OrganizationDetailsForm = styled.form`
+  margin-bottom: 15px;
+  height: 120px;
+`
+const ManifestForm = styled.form`
+  margin-bottom: 15px;
+  height: 215px;
+`
 const Form = styled.form`
   margin-bottom: 15px;
   height: 72px;
@@ -148,10 +154,16 @@ function Settings(props) {
   }, [error, success, props, setNotification])
 
   // File state
-  const [selectedFile, setSelectedFile] = useState('')
-  const [fileName, setFileName] = useState('Choose file')
+  const [selectedFavicon, setSelectedFile] = useState('')
+  const [selectedLogo, setSelectedLogo] = useState('')
+  const [selectedLogo192, setSelectedLogo192] = useState('')
+  const [selectedLogo512, setSelectedLogo512] = useState('')
+  const [logoFileName, setLogoFileName] = useState('Choose file')
+  const [faviconFileName, setFaviconFileName] = useState('Choose file')
+  const [logo192FileName, setLogo192FileName] = useState('Choose file')
+  const [logo512FileName, setLogo512FileName] = useState('Choose file')
 
-  // Color input references
+  // Color input References
   const primaryColorInput = useRef(null)
   const secondaryColorInput = useRef(null)
   const neutralColorInput = useRef(null)
@@ -174,6 +186,14 @@ function Settings(props) {
   // Organization input references
   const organizationForm = useRef(null)
   const organizationName = useRef(null)
+  const siteTitle = useRef(null)
+
+  // Manifest input references
+  const manifestDetailsForm = useRef(null)
+  const manifestShortName = useRef(null)
+  const manifestName = useRef(null)
+  const manifestThemeColor = useRef(null)
+  const manifestBackgroundColor = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -217,26 +237,86 @@ function Settings(props) {
     smtpForm.current.reset()
   }
 
-  // Save organization name
-  const handleOrganizationName = (e) => {
+  // Save manifest settings
+  const handleManifest = (e) => {
+    e.preventDefault()
+
+    const form = new FormData(manifestDetailsForm.current)
+
+    const manifestConfigs = {
+      short_name: form.get('short_manifest_name'),
+      name: form.get('manifest_name'),
+      theme_color: form.get('theme_color'),
+      background_color: form.get('background_color'),
+    }
+
+    console.log(manifestConfigs)
+    props.sendRequest('SETTINGS', 'SET_MANIFEST', manifestConfigs)
+
+    manifestDetailsForm.current.reset()
+  }
+
+  // Save organization details
+  const handleOrganizationDetails = (e) => {
     e.preventDefault()
     const form = new FormData(organizationForm.current)
     const name = {
       companyName: form.get('organizationName'),
+      title: form.get('siteTitle'),
     }
     props.sendRequest('SETTINGS', 'SET_ORGANIZATION_NAME', name)
     organizationForm.current.reset()
   }
 
-  // File upload
+  // Logo upload
 
   // Setting up file and file name
-  let fileSelectHandler = (event) => {
+  let logoSelectHandler = (event) => {
     const file = event.target.files[0]
 
-    // The image is over 0.67Mb size. It will grow 33% (1mb) as it's converted to base64
-    if (file && file.size > 670000) {
-      setNotification('The image is over 1Mb.', 'error')
+    // The image is over 0.5Mb size. It will grow 33% (1mb) as it's converted to base64
+    if (file && file.size > 500300) {
+      setNotification('The image is over 0.5Mb.', 'error')
+      return
+    }
+
+    if (file) {
+      // Converting the image to base64
+      const reader = new FileReader()
+      reader.onloadend = function () {
+        setSelectedLogo(reader.result)
+      }
+      reader.readAsDataURL(file)
+
+      setLogoFileName(event.target.files[0].name)
+    }
+  }
+
+  const handleLogoSubmit = async (e) => {
+    e.preventDefault()
+    if (selectedLogo) {
+      const image = {
+        name: logoFileName,
+        type: 'logo',
+        image: selectedLogo,
+      }
+
+      props.sendRequest('IMAGES', 'SET_LOGO', image)
+    } else {
+      setNotification('The image is not selected.', 'error')
+    }
+  }
+
+  // Favicon upload
+
+  // Setting up file and file name
+  let faviconSelectHandler = (event) => {
+    const file = event.target.files[0]
+    console.log(file)
+
+    // The image is over 0.2Mb size. It will grow 33% (1mb) as it's converted to base64
+    if (file && file.size > 200200) {
+      setNotification('The image is over 0.2Mb.', 'error')
       return
     }
 
@@ -248,20 +328,97 @@ function Settings(props) {
       }
       reader.readAsDataURL(file)
 
-      setFileName(event.target.files[0].name)
+      setFaviconFileName(event.target.files[0].name)
     }
   }
 
-  const handleFileSubmit = async (e) => {
+  const handleFaviconSubmit = async (e) => {
     e.preventDefault()
-    if (selectedFile) {
+    if (selectedFavicon) {
+      console.log(selectedFavicon)
       const image = {
-        name: fileName,
-        type: 'logo',
-        image: selectedFile,
+        name: faviconFileName,
+        type: 'favicon',
+        image: selectedFavicon,
       }
 
-      props.sendRequest('IMAGES', 'SET_LOGO', image)
+      props.sendRequest('IMAGES', 'SET_FAVICON', image)
+    } else {
+      setNotification('The image is not selected.', 'error')
+    }
+  }
+
+  // Logo192 upload
+
+  let logo192SelectHandler = (event) => {
+    const file = event.target.files[0]
+
+    // The image is over 0.1Mb size. It will grow 33% (1mb) as it's converted to base64
+    if (file && file.size > 100100) {
+      setNotification('The image is over 0.1Mb.', 'error')
+      return
+    }
+
+    if (file) {
+      // Converting the image to base64
+      const reader = new FileReader()
+      reader.onloadend = function () {
+        setSelectedLogo192(reader.result)
+      }
+      reader.readAsDataURL(file)
+
+      setLogo192FileName(event.target.files[0].name)
+    }
+  }
+
+  const handleLogo192Submit = async (e) => {
+    e.preventDefault()
+    if (selectedLogo192) {
+      const image = {
+        name: logo192FileName,
+        type: 'logo',
+        image: selectedLogo192,
+      }
+
+      props.sendRequest('IMAGES', 'SET_LOGO192', image)
+    } else {
+      setNotification('The image is not selected.', 'error')
+    }
+  }
+
+  // Logo512 upload
+
+  let logo512SelectHandler = (event) => {
+    const file = event.target.files[0]
+
+    // The image is over 0.2Mb size. It will grow 33% (1mb) as it's converted to base64
+    if (file && file.size > 200200) {
+      setNotification('The image is over 0.2Mb', 'error')
+      return
+    }
+
+    if (file) {
+      // Converting the image to base64
+      const reader = new FileReader()
+      reader.onloadend = function () {
+        setSelectedLogo512(reader.result)
+      }
+      reader.readAsDataURL(file)
+
+      setLogo512FileName(event.target.files[0].name)
+    }
+  }
+
+  const handleLogo512Submit = async (e) => {
+    e.preventDefault()
+    if (selectedLogo512) {
+      const image = {
+        name: logo512FileName,
+        type: 'logo',
+        image: selectedLogo512,
+      }
+
+      props.sendRequest('IMAGES', 'SET_LOGO512', image)
     } else {
       setNotification('The image is not selected.', 'error')
     }
@@ -271,7 +428,7 @@ function Settings(props) {
     <div id="settings">
       <PageHeader title={'Settings'} />
       <PageSection>
-        <SettingsHeader>Organization name</SettingsHeader>
+        <SettingsHeader>Organization Details</SettingsHeader>
         <IconHelp
           data-tip
           data-for="organizationTip"
@@ -288,21 +445,32 @@ function Settings(props) {
           <span>
             Organization name is used in
             <br />
-            the UI and email messages
+            the UI and email messages.
+            <br />
+            <br />
+            A website title identifies what
+            <br />
+            the web page is about for both
+            <br />
+            web users and search engines.
           </span>
         </ReactTooltip>
-        <OrganizationNameForm onSubmit={handleSubmit} ref={organizationForm}>
+        <OrganizationDetailsForm onSubmit={handleSubmit} ref={organizationForm}>
           <SMTPInput
             name="organizationName"
-            placeholder="organization name"
+            placeholder="Organization Name"
             ref={organizationName}
-            style={{ display: 'inline-block' }}
           />
-          <SaveBtn onClick={handleOrganizationName}>Save</SaveBtn>
-        </OrganizationNameForm>
+          <SMTPInput
+            name="siteTitle"
+            placeholder="Website Title"
+            ref={siteTitle}
+          />
+          <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>
+        </OrganizationDetailsForm>
       </PageSection>
       <PageSection>
-        <SettingsHeader>Change logo</SettingsHeader>
+        <SettingsHeader>Change Logo</SettingsHeader>
         <IconHelp
           data-tip
           data-for="logoTip"
@@ -319,20 +487,174 @@ function Settings(props) {
           <span>
             Organization logo is used in
             <br />
-            the UI and email messages
+            the UI and email messages.
+            <br />
+            The max size is 500KB.
           </span>
         </ReactTooltip>
-        <Form onSubmit={handleFileSubmit}>
+        <Form onSubmit={handleLogoSubmit}>
           <FileInput
             type="file"
             accept=".jpeg, .jpg, .png, .gif, .webp"
-            onChange={fileSelectHandler}
+            onChange={logoSelectHandler}
           ></FileInput>
           <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
         </Form>
       </PageSection>
+
       <PageSection>
-        <SettingsHeader>Change SMTP configurations</SettingsHeader>
+        <SettingsHeader>Change Logo 192x192</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="logo192Tip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="logo192Tip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            logo192.png is the icon used to show on the tab
+            <br />
+            of mobile device. logo192.png is part of PWA.
+            <br />
+            The max size is 100KB.
+          </span>
+        </ReactTooltip>
+        <Form onSubmit={handleLogo192Submit}>
+          <FileInput
+            type="file"
+            accept=".png"
+            onChange={logo192SelectHandler}
+          ></FileInput>
+          <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
+        </Form>
+      </PageSection>
+
+      <PageSection>
+        <SettingsHeader>Change Logo 512x512</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="logo512Tip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="logo512Tip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            logo192.png is the icon used to show on the tab
+            <br />
+            of mobile device. logo512.png is part of PWA.
+            <br />
+            The max size is 200KB.
+          </span>
+        </ReactTooltip>
+        <Form onSubmit={handleLogo512Submit}>
+          <FileInput
+            type="file"
+            accept=".png"
+            onChange={logo512SelectHandler}
+          ></FileInput>
+          <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
+        </Form>
+      </PageSection>
+
+      <PageSection>
+        <SettingsHeader>Update favicon.ico</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="faviconTip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="faviconTip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            Organization favicon is used to
+            <br />
+            represents a website in web browsers.
+            <br />
+            The max size is 200KB.
+          </span>
+        </ReactTooltip>
+        <Form onSubmit={handleFaviconSubmit}>
+          <FileInput
+            type="file"
+            accept=".ico"
+            onChange={faviconSelectHandler}
+          ></FileInput>
+          <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
+        </Form>
+      </PageSection>
+
+      <PageSection>
+        <SettingsHeader>Web App Manifest</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="manifestTip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="manifestTip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            The web app manifest provides information about
+            <br />
+            a web application in a JSON text file to provide
+            <br />
+            users with quicker access and a richer experience.
+          </span>
+        </ReactTooltip>
+        <ManifestForm onSubmit={handleSubmit} ref={manifestDetailsForm}>
+          <SMTPInput
+            type="text"
+            name="short_manifest_name"
+            placeholder="Short name in manifest"
+            ref={manifestShortName}
+          />
+          <SMTPInput
+            type="text"
+            name="manifest_name"
+            placeholder="Full name in manifest"
+            ref={manifestName}
+          />
+          <SMTPInput
+            type="text"
+            name="theme_color"
+            placeholder="Theme color (#555555)"
+            ref={manifestThemeColor}
+          />
+          <SMTPInput
+            type="text"
+            name="background_color"
+            placeholder="Background color (#ffffff)"
+            ref={manifestBackgroundColor}
+          />
+          <SaveBtn onClick={handleManifest}>Save</SaveBtn>
+        </ManifestForm>
+      </PageSection>
+
+      <PageSection>
+        <SettingsHeader>SMTP Configuration</SettingsHeader>
         <IconHelp
           data-tip
           data-for="smtpTip"
@@ -353,12 +675,12 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <SMTPForm onSubmit={handleSubmit} ref={smtpForm}>
-          <SMTPInput name="host" placeholder="host" ref={host} />
-          <SMTPInput name="email" placeholder="user email" ref={userEmail} />
+          <SMTPInput name="host" placeholder="Host" ref={host} />
+          <SMTPInput name="email" placeholder="User email" ref={userEmail} />
           <SMTPInput
             type="password"
             name="password"
-            placeholder="user password"
+            placeholder="User password"
             ref={userPassword}
             style={{ display: 'inline-block' }}
           />
@@ -388,7 +710,7 @@ function Settings(props) {
         </ReactTooltip>
         <Form onSubmit={handleSubmit}>
           <h3>Change primary color</h3>
-          <ColorInput placeholder="hex or string" ref={primaryColorInput} />
+          <ColorInput placeholder="Hex or string" ref={primaryColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -412,7 +734,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change secondary color</h3>
-          <ColorInput placeholder="hex or string" ref={secondaryColorInput} />
+          <ColorInput placeholder="Hex or string" ref={secondaryColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -436,7 +758,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change neutral color</h3>
-          <ColorInput placeholder="hex or string" ref={neutralColorInput} />
+          <ColorInput placeholder="Hex or string" ref={neutralColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -460,7 +782,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change negative color</h3>
-          <ColorInput placeholder="hex or string" ref={negativeColorInput} />
+          <ColorInput placeholder="Hex or string" ref={negativeColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -484,7 +806,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change warning color</h3>
-          <ColorInput placeholder="hex or string" ref={warningColorInput} />
+          <ColorInput placeholder="Hex or string" ref={warningColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -508,7 +830,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change positive color</h3>
-          <ColorInput placeholder="hex or string" ref={positiveColorInput} />
+          <ColorInput placeholder="Hex or string" ref={positiveColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -532,7 +854,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change text color</h3>
-          <ColorInput placeholder="hex or string" ref={textColorInput} />
+          <ColorInput placeholder="Hex or string" ref={textColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -551,7 +873,7 @@ function Settings(props) {
         </Form>
         <Form onSubmit={handleSubmit}>
           <h3>Change text light</h3>
-          <ColorInput placeholder="hex or string" ref={textLightInput} />
+          <ColorInput placeholder="Hex or string" ref={textLightInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -617,7 +939,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <h3>Change primary background</h3>
           <ColorInput
-            placeholder="hex or string"
+            placeholder="Hex or string"
             ref={primaryBackgroundInput}
           />
           <SubmitFormBtn
@@ -644,7 +966,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <h3>Change secondary background</h3>
           <ColorInput
-            placeholder="hex or string"
+            placeholder="Hex or string"
             ref={secondaryBackgroundInput}
           />
           <SubmitFormBtn
