@@ -653,23 +653,6 @@ function App() {
           }
           break
 
-        case 'ORGANIZATION':
-          switch (type) {
-            case 'ORGANIZATION_NAME':
-              setOrganizationName(data[0].value.name)
-
-              removeLoadingProcess('ORGANIZATION')
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
         default:
           setNotification(
             `Error - Unrecognized Websocket Message Type: ${context}`,
