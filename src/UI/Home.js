@@ -59,12 +59,9 @@ function Home(props) {
     setScanModalIsOpen((o) => !o)
   }
 
-  const presentInvite = () => {
+  const presentOutOfBand = () => {
     setDisplayModalIsOpen((o) => !o)
-    // props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {
-    //   workflow: 'test_id',
-    // })
-    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
   }
 
   return (
@@ -81,7 +78,7 @@ function Home(props) {
           user={localUser}
           perform="contacts:create"
           yes={() => (
-            <DashboardButton onClick={presentInvite}>
+            <DashboardButton onClick={presentOutOfBand}>
               Display QR Code
             </DashboardButton>
           )}

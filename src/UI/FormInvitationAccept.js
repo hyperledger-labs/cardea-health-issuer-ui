@@ -22,13 +22,13 @@ function FormInvitationAccept(props) {
     closeContactModal()
   }, [closeContactModal])
 
-  const handleSubmit = (e) => {
+  const handleOOBSubmit = (e) => {
     e.preventDefault()
 
     const form = invitationForm.current
 
     props.sendRequest(
-      'INVITATIONS',
+      'OUT_OF_BAND',
       'ACCEPT_INVITATION',
       `${form['invitation'].value}`
     )
@@ -46,7 +46,7 @@ function FormInvitationAccept(props) {
       <Modal className="modal">
         <ModalHeader>Scan QR Code</ModalHeader>
         <ModalContent>
-          <form id="form" onSubmit={handleSubmit} ref={invitationForm}>
+          <form id="form" onSubmit={handleOOBSubmit} ref={invitationForm}>
             <FormContainer>
               <ModalLabel htmlFor="invitation">Invitation</ModalLabel>
               <InputFieldModal

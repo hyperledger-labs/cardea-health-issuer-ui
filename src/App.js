@@ -133,7 +133,6 @@ function App() {
       method: 'GET',
       url: '/api/session',
     }).then((res) => {
-      console.log(res)
       if (res.status) {
         // Check for a session and then set up the session state based on what we found
         setSession(cookies.get('sessionId'))
@@ -261,40 +260,6 @@ function App() {
           }
           break
 
-        case 'INVITATIONS':
-          switch (type) {
-            case 'INVITATION':
-              setQRCodeURL(data.invitation_record.invitation_url)
-              break
-
-            case 'SINGLE_USE_USED':
-              if (data.workflow === 'test_id') {
-                // (mikekebert) Reset the QR code URL (which also closes the QR code modal)
-                setQRCodeURL('')
-                // (mikekebert) Set the connection_id so we can issue a credential to a particular connection
-                setFocusedConnectionID(data.connection_id)
-              } else {
-                // (mikekebert) Reset the QR code URL (which also closes the QR code modal)
-                setQRCodeURL('')
-              }
-              break
-
-            case 'INVITATIONS_ERROR':
-              console.log(data.error)
-              console.log('Invitations Error')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
@@ -380,6 +345,29 @@ function App() {
             case 'DEMOGRAPHICS_ERROR':
               console.log(data.error)
               console.log('DEMOGRAPHICS ERROR')
+              setErrorMessage(data.error)
+
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
+        case 'OUT_OF_BAND':
+          switch (type) {
+            case 'INVITATION':
+              setQRCodeURL(data.invitation_record)
+
+              break
+
+            case 'INVITATIONS_ERROR':
+              console.log(data.error)
+              console.log('Invitations Error')
               setErrorMessage(data.error)
 
               break
@@ -904,6 +892,7 @@ function App() {
                             loggedInUserState={loggedInUserState}
                             sendRequest={sendMessage}
                             QRCodeURL={QRCodeURL}
+                            // outOfBandQRCodeURL={outOfBandQRCodeURL}
                             focusedConnectionID={focusedConnectionID}
                           />
                         </Main>
