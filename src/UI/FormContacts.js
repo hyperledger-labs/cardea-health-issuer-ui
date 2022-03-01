@@ -21,125 +21,69 @@ function FormContacts(props) {
   const contact_id = props.contactSelected
     ? JSON.parse(JSON.stringify(props.contactSelected.contact_id))
     : ''
-  const email =
+  const surnames =
+    props.contactSelected && props.contactSelected.Demographics
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.surnames))
+      : ''
+  const given_names =
     props.contactSelected && props.contactSelected.Demographic
-      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.email))
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Demographic.given_names)
+        )
+      : ''
+  const date_of_birth =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(
+            props.contactSelected.Demographic.date_of_birth.split('T')[0]
+          )
+        )
+      : ''
+  const gender_legal =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Demographic.gender_legal)
+        )
+      : ''
+  const street_address =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Demographic.street_address)
+        )
+      : ''
+  const city =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.city))
+      : ''
+  const state_province_region =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(
+            props.contactSelected.Demographic.state_province_region
+          )
+        )
+      : ''
+  const postalcode =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.postalcode))
+      : ''
+  const country =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.country))
       : ''
   const phone =
     props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.phone))
       : ''
-  const address_1 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+  const email =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.email))
+      : ''
+  const medical_release_id =
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_1)
+          JSON.stringify(props.contactSelected.Demographic.medical_release_id)
         )
-      : ''
-  const address_2 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_2)
-        )
-      : ''
-  const city =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.city)
-        )
-      : ''
-  const state =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.state)
-        )
-      : ''
-  const zip_code =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.zip_code)
-        )
-      : ''
-  const country =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.country)
-        )
-      : ''
-  const passport_number =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Passport.passport_number)
-        )
-      : ''
-  const surname =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
-      : ''
-  const given_names =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
-      : ''
-  const sex =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.sex))
-      : ''
-  const date_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Passport.date_of_birth.split('T')[0]
-          )
-        )
-      : ''
-  const place_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Passport.place_of_birth)
-        )
-      : ''
-  const nationality =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.nationality))
-      : ''
-  const date_of_issue =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Passport.date_of_issue.split('T')[0]
-          )
-        )
-      : ''
-  const date_of_expiration =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(
-          JSON.stringify(
-            props.contactSelected.Passport.date_of_expiration.split('T')[0]
-          )
-        )
-      : ''
-  const type =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.type))
-      : ''
-  const code =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.code))
-      : ''
-  const authority =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.authority))
       : ''
 
   const contactForm = useRef()
@@ -151,37 +95,20 @@ function FormContacts(props) {
     // Assembling demographics JSON
     const demographics = {}
     demographics.contact_id = props.contactSelected.contact_id
-    demographics.email = form.get('email')
+    demographics.surnames = form.get('surnames')
+    demographics.given_names = form.get('given_names')
+    demographics.date_of_birth = form.get('date_of_birth')
+    demographics.gender_legal = form.get('gender_legal')
+    demographics.street_address = form.get('street_address')
+    demographics.city = form.get('city')
+    demographics.state_province_region = form.get('state_province_region')
+    demographics.postalcode = form.get('postalcode')
+    demographics.country = form.get('country')
     demographics.phone = form.get('phone')
-    demographics.address = {}
-    demographics.address.address_1 = form.get('address_1')
-    demographics.address.address_2 = form.get('address_2')
-    demographics.address.city = form.get('city')
-    demographics.address.state = form.get('state')
-    demographics.address.zip_code = form.get('zip_code')
-    demographics.address.country = form.get('country')
+    demographics.email = form.get('email')
+    demographics.medical_release_id = form.get('medical_release_id')
 
     props.submitDemographics(demographics, e)
-
-    const passport = {}
-    passport.contact_id = props.contactSelected.contact_id
-    passport.passport_number = form.get('passport_number')
-    passport.surname = form.get('surname')
-    passport.given_names = form.get('given_names')
-    passport.sex = form.get('sex')
-    passport.date_of_birth = form.get('date_of_birth')
-    passport.place_of_birth = form.get('place_of_birth')
-    passport.nationality = form.get('nationality')
-    passport.date_of_issue = form.get('date_of_issue')
-    passport.date_of_expiration = form.get('date_of_expiration')
-    passport.type = form.get('type')
-    passport.code = form.get('code')
-    passport.authority = form.get('authority')
-    passport.photo = props.contactSelected.Passport
-      ? props.contactSelected.Passport.photo.data
-      : ''
-
-    props.submitPassport(passport, e)
 
     props.closeContactModal()
     window.location.reload()
@@ -204,77 +131,6 @@ function FormContacts(props) {
             <form id="form" onSubmit={handleSubmit} ref={contactForm}>
               <ModalSubHeader>Demographics</ModalSubHeader>
               <InputBox>
-                <ModalLabel htmlFor="email">Email</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="email"
-                  defaultValue={email}
-                  placeholder="name@email.com"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="phone">Phone</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="phone"
-                  defaultValue={phone}
-                  placeholder="123-456-7890"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="address_1">Address 1</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="address_1"
-                  defaultValue={address_1}
-                  placeholder="123 Main St"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="address_2">Address 2</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="address_2"
-                  defaultValue={address_2}
-                  placeholder="Apt. #382"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="city">City</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="city"
-                  defaultValue={city}
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="state">State</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="state"
-                  defaultValue={state}
-                  maxLength="2"
-                  placeholder="ID"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="zip_code">Zip Code</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="zip_code"
-                  defaultValue={zip_code}
-                  placeholder="83440"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
-                <ModalLabel htmlFor="country">Country</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="country"
-                  defaultValue={country}
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
                 <ModalLabel htmlFor="contact_id"></ModalLabel>
                 <InputFieldModal
                   type="hidden"
@@ -282,24 +138,23 @@ function FormContacts(props) {
                   defaultValue={contact_id}
                 ></InputFieldModal>
               </InputBox>
-              <ModalSubHeader>Passport</ModalSubHeader>
               <InputBox>
-                <ModalLabel htmlFor="passport_number">
-                  Passport Number
+                <ModalLabel htmlFor="medical_release_id">
+                  Medical Release ID
                 </ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="passport_number"
-                  defaultValue={passport_number}
-                  placeholder="444561807"
+                  name="medical_release_id"
+                  defaultValue={medical_release_id}
+                  placeholder="4c2b2152-4120-417c-a72f-04a6bad1a554"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="surname">Surname</ModalLabel>
+                <ModalLabel htmlFor="surnames">Surnames</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="surname"
-                  defaultValue={surname}
+                  name="surnames"
+                  defaultValue={surnames}
                   placeholder="Doe"
                 ></InputFieldModal>
               </InputBox>
@@ -313,15 +168,6 @@ function FormContacts(props) {
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="sex">Official Gender</ModalLabel>
-                <InputFieldModal
-                  type="text"
-                  name="sex"
-                  defaultValue={sex}
-                  placeholder="Female"
-                ></InputFieldModal>
-              </InputBox>
-              <InputBox>
                 <ModalLabel htmlFor="date_of_birth">Date of Birth</ModalLabel>
                 <InputFieldModal
                   type="date"
@@ -330,77 +176,78 @@ function FormContacts(props) {
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="place_of_birth">Place of Birth</ModalLabel>
+                <ModalLabel htmlFor="gender_legal">Gender Legal</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="place_of_birth"
-                  defaultValue={place_of_birth}
-                  placeholder="San Diego"
+                  name="gender_legal"
+                  defaultValue={gender_legal}
+                  placeholder="Female"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="nationality">Nationality</ModalLabel>
+                <ModalLabel htmlFor="street_address">Street Address</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="nationality"
-                  defaultValue={nationality}
-                  placeholder="United States of America"
+                  name="street_address"
+                  defaultValue={street_address}
+                  placeholder="123 Main St"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="date_of_issue">Date of Issue</ModalLabel>
+                <ModalLabel htmlFor="city">City</ModalLabel>
                 <InputFieldModal
-                  type="date"
-                  name="date_of_issue"
-                  defaultValue={date_of_issue}
+                  type="text"
+                  name="city"
+                  defaultValue={city}
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="date_of_expiration">
-                  Date of Expiration
+                <ModalLabel htmlFor="state_province_region">
+                  State/Province/Region
                 </ModalLabel>
                 <InputFieldModal
-                  type="date"
-                  name="date_of_expiration"
-                  defaultValue={date_of_expiration}
+                  type="text"
+                  name="state_province_region"
+                  defaultValue={state_province_region}
+                  maxLength="2"
+                  placeholder="ID"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="type">Type</ModalLabel>
+                <ModalLabel htmlFor="postalcode">Postal Code</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="type"
-                  defaultValue={type}
-                  placeholder="P"
+                  name="postalcode"
+                  defaultValue={postalcode}
+                  placeholder="83440"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="code">Code</ModalLabel>
+                <ModalLabel htmlFor="country">Country</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="code"
-                  defaultValue={code}
-                  placeholder="USA"
+                  name="country"
+                  defaultValue={country}
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="authority">Authority</ModalLabel>
+                <ModalLabel htmlFor="phone">Phone</ModalLabel>
                 <InputFieldModal
                   type="text"
-                  name="authority"
-                  defaultValue={authority}
-                  placeholder="United States Department of State"
+                  name="phone"
+                  defaultValue={phone}
+                  placeholder="123-456-7890"
                 ></InputFieldModal>
               </InputBox>
               <InputBox>
-                <ModalLabel htmlFor="contact_id"></ModalLabel>
+                <ModalLabel htmlFor="email">Email</ModalLabel>
                 <InputFieldModal
-                  type="hidden"
-                  name="contact_id"
-                  defaultValue={contact_id}
+                  type="text"
+                  name="email"
+                  defaultValue={email}
+                  placeholder="name@email.com"
                 ></InputFieldModal>
               </InputBox>
-
               <Actions>
                 <CancelBtn type="button" onClick={closeModal}>
                   Cancel

@@ -2,6 +2,8 @@ import React, { useRef } from 'react'
 
 import { DateTime } from 'luxon'
 
+import { useNotification } from './NotificationProvider'
+
 import {
   StyledPopup,
   InputBox,
@@ -20,71 +22,55 @@ import {
 
 function FormExemption(props) {
   const credentialForm = useRef(null)
+  const setNotification = useNotification()
 
-  const surname =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.surname))
+  const surnames =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.surnames))
       : ''
   const given_names =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.given_names))
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Demographic.given_names)
+        )
       : ''
   const date_of_birth =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.date_of_birth))
-      : ''
-  const sex =
-    props.contactSelected && props.contactSelected.Passport
-      ? JSON.parse(JSON.stringify(props.contactSelected.Passport.sex))
-      : ''
-  const address_1 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_1)
+          JSON.stringify(props.contactSelected.Demographic.date_of_birth)
         )
       : ''
-  const address_2 =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+  const gender_legal =
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.address_2)
+          JSON.stringify(props.contactSelected.Demographic.gender_legal)
         )
       : ''
-  const address_null = address_2 === null ? '' : address_2
+  const street_address =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(
+          JSON.stringify(props.contactSelected.Demographic.street_address)
+        )
+      : ''
   const city =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.city))
+      : ''
+  const state_province_region =
+    props.contactSelected && props.contactSelected.Demographic
       ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.city)
+          JSON.stringify(
+            props.contactSelected.Demographic.state_province_region
+          )
         )
       : ''
-  const state =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.state)
-        )
-      : ''
-  const zip_code =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.zip_code)
-        )
+  const postalcode =
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.postalcode))
       : ''
   const country =
-    props.contactSelected &&
-    props.contactSelected.Demographic &&
-    props.contactSelected.Demographic.address
-      ? JSON.parse(
-          JSON.stringify(props.contactSelected.Demographic.address.country)
-        )
+    props.contactSelected && props.contactSelected.Demographic
+      ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.country))
       : ''
   const phone =
     props.contactSelected && props.contactSelected.Demographic
@@ -100,13 +86,8 @@ function FormExemption(props) {
     const form = new FormData(credentialForm.current)
 
     let attributes = {}
-    if (
-      props.contactSelected &&
-      props.contactSelected.Demographic &&
-      props.contactSelected.Passport
-    ) {
+    if (props.contactSelected && props.contactSelected.Demographic) {
       const demographics = props.contactSelected.Demographic
-      const passport = props.contactSelected.Passport
 
       attributes = [
         {
@@ -119,45 +100,42 @@ function FormExemption(props) {
         },
         {
           name: 'patient_surnames',
-          value: passport.surname || '',
+          value: demographics.surnames || '',
         },
         {
           name: 'patient_given_names',
-          value: passport.given_names || '',
+          value: demographics.given_names || '',
         },
         {
           name: 'patient_date_of_birth',
           value:
-            (
-              DateTime.fromISO(form.get(passport.date_of_birth)).ts / 1000
+            Math.floor(
+              DateTime.fromISO(form.get(demographics.date_of_birth)).ts / 1000
             ).toString() || '',
         },
         {
           name: 'patient_gender_legal',
-          value: passport.sex || '',
+          value: demographics.gender_legal || '',
         },
         {
           name: 'patient_street_address',
-          value:
-            demographics.address.address_1 +
-              ' ' +
-              demographics.address.address_2 || '',
+          value: demographics.street_address || '',
         },
         {
           name: 'patient_city',
-          value: demographics.address.city || '',
+          value: demographics.city || '',
         },
         {
           name: 'patient_state_province_region',
-          value: demographics.address.state || '',
+          value: demographics.state_province_region || '',
         },
         {
           name: 'patient_postalcode',
-          value: demographics.address.zip_code || '',
+          value: demographics.postalcode || '',
         },
         {
           name: 'patient_country',
-          value: demographics.address.country || '',
+          value: demographics.country || '',
         },
         {
           name: 'patient_phone',
@@ -182,7 +160,7 @@ function FormExemption(props) {
         {
           name: 'exemption_issue_date',
           value:
-            (
+            Math.floor(
               DateTime.fromISO(form.get('exemption_issue_date')).ts / 1000
             ).toString() || '',
         },
@@ -256,7 +234,7 @@ function FormExemption(props) {
         {
           name: 'exemption_expiration_date',
           value:
-            (
+            Math.floor(
               DateTime.fromISO(form.get('exemption_expiration_date')).ts / 1000
             ).toString() || '',
         },
@@ -279,11 +257,16 @@ function FormExemption(props) {
         {
           name: 'credential_issue_date',
           value:
-            (
+            Math.floor(
               DateTime.fromISO(form.get('credential_issue_date')).ts / 1000
             ).toString() || '',
         },
       ]
+    } else {
+      return setNotification(
+        'Please "Edit" the Contact to Provide Demographic Information.',
+        'error'
+      )
     }
     let schema = props.schemas.SCHEMA_VACCINE_EXEMPTION
     let schemaParts = schema.split(':')
@@ -345,7 +328,7 @@ function FormExemption(props) {
                   name="patient_surnames"
                   id="patient_surnames"
                 >
-                  {surname}
+                  {surnames}
                 </TextItem>
               </InputBox>
               <InputBox>
@@ -381,7 +364,7 @@ function FormExemption(props) {
                   name="patient_gender_legal"
                   id="patient_gender_legal"
                 >
-                  {sex}
+                  {gender_legal}
                 </TextItem>
               </InputBox>
               <InputBox>
@@ -393,7 +376,7 @@ function FormExemption(props) {
                   name="patient_street_address"
                   id="patient_street_address"
                 >
-                  {address_1 + ' ' + address_null}
+                  {street_address}
                 </TextItem>
               </InputBox>
               <InputBox>
@@ -411,7 +394,7 @@ function FormExemption(props) {
                   name="patient_state_province_region"
                   id="patient_state_province_region"
                 >
-                  {state}
+                  {state_province_region}
                 </TextItem>
               </InputBox>
               <InputBox>
@@ -423,7 +406,7 @@ function FormExemption(props) {
                   name="patient_postalcode"
                   id="patient_postalcode"
                 >
-                  {zip_code}
+                  {postalcode}
                 </TextItem>
               </InputBox>
               <InputBox>

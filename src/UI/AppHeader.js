@@ -1,4 +1,3 @@
-import Axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { handleImageSrc } from './util'
 
@@ -66,12 +65,6 @@ function AppHeader(props) {
   }, [logo])
 
   const handleLogout = () => {
-    // Log out
-    Axios({
-      method: 'POST',
-      url: '/api/user/log-out',
-    }).then((res) => {})
-
     props.handleLogout(props.history)
   }
 
@@ -91,7 +84,10 @@ function AppHeader(props) {
         </UserName>
         <Logout onClick={handleLogout}>Log Out</Logout>
       </LogoutWrapper>
-      <AppMenu match={props.match} userRole={props.userRole} />
+      <AppMenu
+        match={props.match}
+        loggedInUserState={props.loggedInUserState}
+      />
     </Header>
   )
 }

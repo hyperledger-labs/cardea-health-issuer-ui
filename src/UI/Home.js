@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 import styled from 'styled-components'
 
 import FormQR from './FormQR'
 import FormInvitationAccept from './FormInvitationAccept'
-// import { useNotification } from './NotificationProvider'
+import { useNotification } from './NotificationProvider'
 
 import { CanUser } from './CanUser'
 
@@ -44,13 +44,39 @@ const DashboardPlaceholder = styled.div`
 `
 
 function Home(props) {
+  const error = props.errorMessage
+  const success = props.successMessage
   const localUser = props.loggedInUserState
+  const privileges = props.privileges
 
-  // Accessing notification context
-  // const setNotification = useNotification()
-
+  const [index, setIndex] = useState(false)
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
   const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
+
+  const isMounted = useRef(null)
+
+  // Accessing notification context
+  const setNotification = useNotification()
+
+  useEffect(() => {
+    if (success) {
+      setNotification(success, 'notice')
+      props.clearResponseState()
+    } else if (error) {
+      setNotification(error, 'error')
+      props.clearResponseState()
+      setIndex(index + 1)
+    } else return
+  }, [error, success])
+
+  // Get governance privileges
+  useEffect(() => {
+    isMounted.current = true
+    props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
 
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
@@ -60,11 +86,11 @@ function Home(props) {
   }
 
   const presentInvite = () => {
-    setDisplayModalIsOpen((o) => !o)
-    // props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {
-    //   workflow: 'test_id',
-    // })
-    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    if (privileges && privileges.includes('verify_identity')) {
+      setDisplayModalIsOpen((o) => !o)
+      props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    } else
+      setNotification("Error: you don't have the right privileges", 'error')
   }
 
   return (
