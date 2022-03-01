@@ -55,7 +55,7 @@ function Contact(props) {
   const privileges = props.privileges
 
   let contactToSelect = ''
-  
+
   const [index, setIndex] = useState(false)
 
   const [contactSelected, setContactSelected] = useState(contactToSelect)
@@ -345,7 +345,7 @@ function Contact(props) {
               </IssueCredential>
             )}
           />
-          <CanUser
+          {/* <CanUser
             user={localUser}
             perform="credentials:issue"
             yes={() => (
@@ -407,7 +407,7 @@ function Contact(props) {
                 Issue Medical Release Credential
               </IssueCredential>
             )}
-          />
+          /> */}
           <DataTable>
             <thead>
               <DataRow>
@@ -427,13 +427,13 @@ function Contact(props) {
           submitDemographics={updateDemographics}
         />
 
-        <FormLabOrder
+        {/* <FormLabOrder
           contactSelected={contactSelected}
           credentialModalIsOpen={labOrderModalIsOpen}
           closeCredentialModal={closeLabOrderModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        />
+        /> */}
         <FormLabResult
           contactSelected={contactSelected}
           credentialModalIsOpen={labResultModalIsOpen}
@@ -441,7 +441,7 @@ function Contact(props) {
           submitCredential={submitNewCredential}
           schemas={props.schemas}
         />
-        <FormVaccine
+        {/* <FormVaccine
           contactSelected={contactSelected}
           credentialModalIsOpen={vaccineModalIsOpen}
           closeCredentialModal={closeVaccineModal}
@@ -456,12 +456,12 @@ function Contact(props) {
           schemas={props.schemas}
         />
         <FormMedical
-          contactSelected={contactSelected}
+          contactSelected={contFactSelected}
           credentialModalIsOpen={medicalModalIsOpen}
           closeCredentialModal={closeMedicalModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        />
+        /> */}
       </div>
     </>
   )

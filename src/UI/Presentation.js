@@ -54,7 +54,11 @@ function Presentation(props) {
       }
     }
 
-    if (attributes[Object.keys(attributes)[0]] && attributes[Object.keys(attributes)[0]].raw !== null && attributes[Object.keys(attributes)[0]].raw !== undefined) {
+    if (
+      attributes[Object.keys(attributes)[0]] &&
+      attributes[Object.keys(attributes)[0]].raw !== null &&
+      attributes[Object.keys(attributes)[0]].raw !== undefined
+    ) {
       for (const attribute in attributes) {
         attributes[attribute] = attributes[attribute].raw
       }

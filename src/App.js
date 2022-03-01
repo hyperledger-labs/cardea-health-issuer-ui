@@ -593,7 +593,7 @@ function App() {
                     oldCredential !== null &&
                     newCredential !== null &&
                     oldCredential.credential_exchange_id ===
-                    newCredential.credential_exchange_id
+                      newCredential.credential_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     oldCredentials.splice(index, 1)
@@ -650,7 +650,7 @@ function App() {
                     oldPresentation !== null &&
                     newPresentation !== null &&
                     oldPresentation.presentation_exchange_id ===
-                    newPresentation.presentation_exchange_id
+                      newPresentation.presentation_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', oldPresentation)
