@@ -22,16 +22,24 @@ function FormInvitationAccept(props) {
     closeContactModal()
   }, [closeContactModal])
 
-  const handleOOBSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
 
     const form = invitationForm.current
 
-    props.sendRequest(
-      'OUT_OF_BAND',
-      'ACCEPT_INVITATION',
-      `${form['invitation'].value}`
-    )
+    if (props.oob) {
+      props.sendRequest(
+        'OUT_OF_BAND',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    } else {
+      props.sendRequest(
+        'INVITATIONS',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    }
 
     closeModal()
     window.location.reload()
@@ -46,7 +54,7 @@ function FormInvitationAccept(props) {
       <Modal className="modal">
         <ModalHeader>Scan QR Code</ModalHeader>
         <ModalContent>
-          <form id="form" onSubmit={handleOOBSubmit} ref={invitationForm}>
+          <form id="form" onSubmit={handleSubmit} ref={invitationForm}>
             <FormContainer>
               <ModalLabel htmlFor="invitation">Invitation</ModalLabel>
               <InputFieldModal

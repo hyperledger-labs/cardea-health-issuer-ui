@@ -49,19 +49,28 @@ function Home(props) {
   // Accessing notification context
   // const setNotification = useNotification()
 
+  const [oob, setOOB] = useState(false)
+
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
   const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
 
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  const scanInvite = () => {
+  const scanInvite = (type) => {
+    type === 'oob' ? setOOB(true) : setOOB(false)
+
     setScanModalIsOpen((o) => !o)
   }
 
   const presentOutOfBand = () => {
     setDisplayModalIsOpen((o) => !o)
     props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+  }
+
+  const presentInvitation = () => {
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
   }
 
   return (
@@ -71,7 +80,27 @@ function Home(props) {
           user={localUser}
           perform="contacts:create"
           yes={() => (
-            <DashboardButton onClick={scanInvite}>Scan QR Code</DashboardButton>
+            <DashboardButton onClick={() => scanInvite('connection')}>
+              Scan QR Code
+            </DashboardButton>
+          )}
+        />
+        <CanUser
+          user={localUser}
+          perform="contacts:create"
+          yes={() => (
+            <DashboardButton onClick={presentInvitation}>
+              Display QR Code
+            </DashboardButton>
+          )}
+        />
+        <CanUser
+          user={localUser}
+          perform="contacts:create"
+          yes={() => (
+            <DashboardButton onClick={() => scanInvite('oob')}>
+              Scan OOB
+            </DashboardButton>
           )}
         />
         <CanUser
@@ -79,13 +108,14 @@ function Home(props) {
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>
-              Display QR Code
+              Display OOB
             </DashboardButton>
           )}
         />
         <DashboardPlaceholder></DashboardPlaceholder>
       </DashboardRow>
       <FormInvitationAccept
+        oob={oob}
         contactModalIsOpen={scanModalIsOpen}
         closeContactModal={closeScanModal}
         sendRequest={props.sendRequest}
