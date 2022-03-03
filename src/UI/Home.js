@@ -14,12 +14,12 @@ const DashboardRow = styled.div`
 `
 
 const DashboardButton = styled.div`
-  width: 32%;
+  width: 30%;
   min-width: 240px;
   height: 150px;
-  margin-bottom: 30px;
+  margin: 30px 10px 0px 0px;
   padding: 0 25px;
-  font-size: calc(12px + 1.5vw);
+  font-size: calc(12px + 1.0vw);
   line-height: 150px;
   vertical-align: center;
   text-transform: uppercase;
@@ -35,13 +35,13 @@ const DashboardButton = styled.div`
   }
 `
 
-const DashboardPlaceholder = styled.div`
-  width: 32%;
-  min-width: 240px;
-  height: 150px;
-  margin-bottom: 30px;
-  padding: 0 25px;
-`
+// const DashboardPlaceholder = styled.div`
+//   width: 32%;
+//   min-width: 240px;
+//   height: 150px;
+//   margin-bottom: 30px;
+//   padding: 0 25px;
+// `
 
 function Home(props) {
   const localUser = props.loggedInUserState
@@ -112,7 +112,7 @@ function Home(props) {
             </DashboardButton>
           )}
         />
-        <DashboardPlaceholder></DashboardPlaceholder>
+        {/* <DashboardPlaceholder></DashboardPlaceholder> */}
       </DashboardRow>
       <FormInvitationAccept
         oob={oob}
