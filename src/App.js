@@ -445,6 +445,29 @@ function App() {
           }
           break
 
+        case 'OUT_OF_BAND':
+          switch (type) {
+            case 'INVITATION':
+              setQRCodeURL(data.invitation_record)
+
+              break
+
+            case 'INVITATIONS_ERROR':
+              console.log(data.error)
+              console.log('Invitations Error')
+              setErrorMessage(data.error)
+
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
+          break
+
         case 'ROLES':
           switch (type) {
             case 'ROLES':
@@ -593,7 +616,7 @@ function App() {
                     oldCredential !== null &&
                     newCredential !== null &&
                     oldCredential.credential_exchange_id ===
-                      newCredential.credential_exchange_id
+                    newCredential.credential_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     oldCredentials.splice(index, 1)
@@ -650,7 +673,7 @@ function App() {
                     oldPresentation !== null &&
                     newPresentation !== null &&
                     oldPresentation.presentation_exchange_id ===
-                      newPresentation.presentation_exchange_id
+                    newPresentation.presentation_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', oldPresentation)
