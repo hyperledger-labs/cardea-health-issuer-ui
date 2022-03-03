@@ -10,16 +10,17 @@ import { CanUser } from './CanUser'
 
 const DashboardRow = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: start;
+  flex-wrap: wrap;
 `
 
 const DashboardButton = styled.div`
-  width: 30%;
+  width: 24%;
   min-width: 240px;
   height: 150px;
-  margin: 30px 10px 0px 0px;
+  margin: 30px 1% 0px 0px;
   padding: 0 25px;
-  font-size: calc(12px + 1.0vw);
+  font-size: calc(12px + .8vw);
   line-height: 150px;
   vertical-align: center;
   text-transform: uppercase;
@@ -34,14 +35,6 @@ const DashboardButton = styled.div`
     color: ${(props) => props.theme.text_color};
   }
 `
-
-// const DashboardPlaceholder = styled.div`
-//   width: 32%;
-//   min-width: 240px;
-//   height: 150px;
-//   margin-bottom: 30px;
-//   padding: 0 25px;
-// `
 
 function Home(props) {
   const localUser = props.loggedInUserState
@@ -112,7 +105,6 @@ function Home(props) {
             </DashboardButton>
           )}
         />
-        {/* <DashboardPlaceholder></DashboardPlaceholder> */}
       </DashboardRow>
       <FormInvitationAccept
         oob={oob}
