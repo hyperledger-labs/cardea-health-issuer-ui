@@ -47,7 +47,6 @@ function Home(props) {
 
   const [index, setIndex] = useState(false)
 
-
   const [oob, setOOB] = useState(false)
 
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)

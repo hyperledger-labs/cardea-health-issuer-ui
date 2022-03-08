@@ -18,7 +18,6 @@ const SessionAlertContext = React.createContext()
 
 // Exporting the session alert component
 export default function SessionAlertProvider(props) {
-
   const [open, setOpen] = useState(false)
   const [timer, setTimer] = useState()
   const [keepAlive, setKeepAlive] = useState(true)
