@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import styled from 'styled-components'
 
 import FormQR from './FormQR'
 import FormInvitationAccept from './FormInvitationAccept'
-// import { useNotification } from './NotificationProvider'
+import { useNotification } from './NotificationProvider'
 
 import { CanUser } from './CanUser'
 
@@ -18,7 +18,7 @@ const DashboardButton = styled.div`
   width: 24%;
   min-width: 240px;
   height: 150px;
-  margin: 30px 1% 0px 0px;
+  margin: 0px 1% 30px 0px;
   padding: 0 25px;
   font-size: calc(12px + 1vw);
   line-height: 150px;
@@ -37,10 +37,16 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
+  const error = props.errorMessage
+  const success = props.successMessage
+  const warning = props.warningMessage
   const localUser = props.loggedInUserState
+  const privileges = props.privileges
 
-  // Accessing notification context
-  // const setNotification = useNotification()
+  const [govGranted, setGovGranted] = useState(undefined)
+
+  const [index, setIndex] = useState(false)
+
 
   const [oob, setOOB] = useState(false)
 
@@ -50,6 +56,35 @@ function Home(props) {
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
+  const isMounted = useRef(null)
+
+  // Accessing notification context
+  const setNotification = useNotification()
+
+  useEffect(() => {
+    if (success) {
+      setNotification(success, 'notice')
+      props.clearResponseState()
+    } else if (error) {
+      setNotification(error, 'error')
+      props.clearResponseState()
+      setIndex(index + 1)
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      props.clearResponseState()
+      setIndex(index + 1)
+    } else return
+  }, [error, success, warning])
+
+  // Get governance privileges
+  useEffect(() => {
+    isMounted.current = true
+    props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)
 
@@ -57,13 +92,22 @@ function Home(props) {
   }
 
   const presentOutOfBand = () => {
-    setDisplayModalIsOpen((o) => !o)
-    props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+    // Simple use of governance
+    if (privileges && privileges.includes('verify_identity')) {
+      setDisplayModalIsOpen((o) => !o)
+      props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+    } else {
+      setNotification("Error: you don't have the right privileges", 'error')
+    }
   }
 
   const presentInvitation = () => {
-    setDisplayModalIsOpen((o) => !o)
-    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    if (privileges && privileges.includes('verify_identity')) {
+      setDisplayModalIsOpen((o) => !o)
+      props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    } else {
+      setNotification("Error: you don't have the right privileges", 'error')
+    }
   }
 
   return (
@@ -74,7 +118,7 @@ function Home(props) {
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
-              Scan QR Code
+              Accept Invitation
             </DashboardButton>
           )}
         />
@@ -92,7 +136,7 @@ function Home(props) {
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
-              Scan OOB
+              Accept OOB
             </DashboardButton>
           )}
         />
