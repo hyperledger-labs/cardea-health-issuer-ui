@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
 import { CanUser } from './CanUser'
-import Cookies from 'universal-cookie'
 
 const List = styled.ul`
   margin: 0;
@@ -62,16 +61,7 @@ const StyledSubLink = styled(NavLink)`
   }
 `
 function AppMenu(props) {
-  const cookies = new Cookies()
-
-  const [localUser, setLocalUser] = useState(null)
-
-  useEffect(() => {
-    if (cookies.get('user')) {
-      const userCookie = cookies.get('user')
-      setLocalUser(userCookie)
-    }
-  }, [])
+  const localUser = props.loggedInUserState
 
   let pathMatch = ''
   if (props.match.path !== undefined) {
@@ -124,6 +114,19 @@ function AppMenu(props) {
                 className={pathMatch === '/credentials' ? 'active' : undefined}
               >
                 <StyledLink to="/credentials">Credentials</StyledLink>
+              </Item>
+            )}
+          />
+          <CanUser
+            user={localUser}
+            perform="presentations:read"
+            yes={() => (
+              <Item
+                className={
+                  pathMatch === '/presentations' ? 'active' : undefined
+                }
+              >
+                <StyledLink to="/presentations">Presentations</StyledLink>
               </Item>
             )}
           />

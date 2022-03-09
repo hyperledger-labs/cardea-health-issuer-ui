@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 
 import styled from 'styled-components'
 
@@ -7,6 +7,7 @@ import FormExemption from './FormExemption'
 import FormLabOrder from './FormLabOrder'
 import FormLabResult from './FormLabResult'
 import FormVaccine from './FormVaccine'
+import FormMedical from './FormMedical'
 import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
@@ -41,6 +42,7 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
+  const isMounted = useRef(null)
   const localUser = props.loggedInUserState
 
   // Accessing notification context
@@ -48,25 +50,15 @@ function Contact(props) {
 
   const history = props.history
   const contactId = props.contactId
+  const error = props.errorMessage
+  const success = props.successMessage
+  const privileges = props.privileges
 
   let contactToSelect = ''
 
-  for (let i = 0; i < props.contacts.length; i++) {
-    if (props.contacts[i].contact_id == contactId) {
-      contactToSelect = props.contacts[i]
-      break
-    }
-  }
+  const [index, setIndex] = useState(false)
 
-  useEffect(() => {
-    setContactSelected(contactToSelect)
-  }, [contactToSelect])
-
-  function openCredential(history, id) {
-    if (history !== undefined) {
-      history.push('/credentials/' + id)
-    }
-  }
+  const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
@@ -77,167 +69,45 @@ function Contact(props) {
   const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
   const [labResultModalIsOpen, setLabResultModalIsOpen] = useState(false)
   const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
+  const [medicalModalIsOpen, setMedicalModalIsOpen] = useState(false)
 
   const closeContactModal = () => setContactModalIsOpen(false)
   const closeExemptionModal = () => setExemptionModalIsOpen(false)
   const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
   const closeLabResultModal = () => setLabResultModalIsOpen(false)
   const closeVaccineModal = () => setVaccineModalIsOpen(false)
+  const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
-  const [contactSelected, setContactSelected] = useState(contactToSelect)
-
-  let demographicData = ''
-  let passportData = ''
-
-  if (
-    contactSelected.Passport !== null &&
-    contactSelected.Passport !== undefined
-  ) {
-    let rawImage = contactSelected.Passport.photo
-
-    const handleImageSrc = (rawImage) => {
-      let bytes = new Uint8Array(rawImage)
-      bytes = Buffer.from(rawImage).toString('base64')
-      // Check the MIME type
-      // let result = null
-      // if (atob(bytes).charAt(0) === 'i')
-      // result = `data:image/png;base64,${atob(bytes)}`
-      // else if (atob(bytes).charAt(0) === '/')
-      // result = `data:image/jpeg;base64,${atob(bytes)}`
-      // else if (atob(bytes).charAt(0) === 'R')
-      // result = `data:image/gif;base64,${atob(bytes)}`
-      // else if (atob(bytes).charAt(0) === 'U')
-      // result = `data:image/webp;base64,${atob(bytes)}`
-      // else
-      let result = atob(bytes)
-      return result
+  for (let i = 0; i < props.contacts.length; i++) {
+    if (props.contacts[i].contact_id == contactId) {
+      contactToSelect = props.contacts[i]
+      break
     }
-
-    let test = handleImageSrc(rawImage)
-    passportData = (
-      <div>
-        <h2>Passport Information</h2>
-        <AttributeTable>
-          <tbody>
-            <AttributeRow>
-              <th>Passport Number:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.passport_number || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Surname:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.surname || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Given Name(s):</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.given_names || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Sex:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.sex || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Date of Birth:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_birth.split('T')[0] || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Place of Birth:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.place_of_birth || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Nationality:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.nationality || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Date of Issue:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_issue.split('T')[0] || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Date of Expiration:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.date_of_expiration.split('T')[0] ||
-                    ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Type:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.type || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Code:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.code || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Authority:</th>
-              <td>
-                {contactSelected.Passport !== null &&
-                contactSelected.Passport !== undefined
-                  ? contactSelected.Passport.authority || ''
-                  : ''}
-              </td>
-            </AttributeRow>
-            <AttributeRow>
-              <th>Photo:</th>
-              <td></td>
-            </AttributeRow>
-          </tbody>
-        </AttributeTable>
-        <img src={test} alt="Error" />
-      </div>
-    )
   }
+
+  useEffect(() => {
+    if (success) {
+      setNotification(success, 'notice')
+      props.clearResponseState()
+    } else if (error) {
+      setNotification(error, 'error')
+      props.clearResponseState()
+      setIndex(index + 1)
+    }
+  }, [error, success])
+
+  // Get governance privileges
+  useEffect(() => {
+    isMounted.current = true
+    props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
+    return () => {
+      isMounted.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    setContactSelected(contactToSelect)
+  }, [contactToSelect])
 
   function updateDemographics(updatedDemographic, e) {
     e.preventDefault()
@@ -252,17 +122,10 @@ function Contact(props) {
     setContactSelected({ ...contactSelected, ...Demographic })
   }
 
-  function updatePasport(updatedPassport, e) {
-    e.preventDefault()
-    const Passport = {
-      Passport: { ...updatedPassport },
+  function openCredential(history, id) {
+    if (history !== undefined) {
+      history.push('/credentials/' + id)
     }
-
-    props.sendRequest('PASSPORTS', 'UPDATE_OR_CREATE', updatedPassport)
-
-    setNotification('Passport info was updated!', 'notice')
-
-    setContactSelected({ ...contactSelected, ...Passport })
   }
 
   // Submits the credential form and shows notification
@@ -271,7 +134,7 @@ function Contact(props) {
 
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
 
-    setNotification('Credential was successfully added!', 'notice')
+    setNotification('Credential offer was successfully sent!', 'notice')
   }
 
   const credentialRows = props.credentials.map((credential_record) => {
@@ -348,15 +211,97 @@ function Contact(props) {
           <AttributeTable>
             <tbody>
               <AttributeRow>
-                <th>Name:</th>
+                <th>Contact Label:</th>
                 <td>{contactSelected.label || ''}</td>
               </AttributeRow>
               <AttributeRow>
-                <th>Email:</th>
+                <th>Medical Release ID:</th>
                 <td>
                   {contactSelected.Demographic !== null &&
                   contactSelected.Demographic !== undefined
-                    ? contactSelected.Demographic.email || ''
+                    ? contactSelected.Demographic.medical_release_id || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Surname(s):</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.surnames || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Given Name(s):</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.given_names || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Date of Birth:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.date_of_birth.split('T')[0] ||
+                      ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Gender Legal:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.gender_legal || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Street Address:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.street_address || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>City:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.city || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>State/Province/Region:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.state_province_region || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Postal Code:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.postalcode || ''
+                    : ''}
+                </td>
+              </AttributeRow>
+              <AttributeRow>
+                <th>Country:</th>
+                <td>
+                  {contactSelected.Demographic !== null &&
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.country || ''
                     : ''}
                 </td>
               </AttributeRow>
@@ -370,68 +315,16 @@ function Contact(props) {
                 </td>
               </AttributeRow>
               <AttributeRow>
-                <th>Address 1:</th>
+                <th>Email:</th>
                 <td>
                   {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.address_1 || ''
-                    : ''}
-                </td>
-              </AttributeRow>
-              <AttributeRow>
-                <th>Address 2:</th>
-                <td>
-                  {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.address_2 || ''
-                    : ''}
-                </td>
-              </AttributeRow>
-              <AttributeRow>
-                <th>City:</th>
-                <td>
-                  {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.city || ''
-                    : ''}
-                </td>
-              </AttributeRow>
-              <AttributeRow>
-                <th>State:</th>
-                <td>
-                  {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.state || ''
-                    : ''}
-                </td>
-              </AttributeRow>
-              <AttributeRow>
-                <th>Zip Code:</th>
-                <td>
-                  {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.zip_code || ''
-                    : ''}
-                </td>
-              </AttributeRow>
-              <AttributeRow>
-                <th>Country:</th>
-                <td>
-                  {contactSelected.Demographic !== null &&
-                  contactSelected.Demographic !== undefined &&
-                  contactSelected.Demographic.address
-                    ? contactSelected.Demographic.address.country || ''
+                  contactSelected.Demographic !== undefined
+                    ? contactSelected.Demographic.email || ''
                     : ''}
                 </td>
               </AttributeRow>
             </tbody>
           </AttributeTable>
-          {passportData}
         </PageSection>
         <PageSection>
           <CanUser
@@ -439,18 +332,32 @@ function Contact(props) {
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() => setLabResultModalIsOpen((o) => !o)}
+                onClick={() =>
+                  privileges && privileges.includes('issue_lab_result')
+                    ? setLabResultModalIsOpen((o) => !o)
+                    : setNotification(
+                        "Error: you don't have the right privileges",
+                        'error'
+                      )
+                }
               >
                 Issue Lab Result Credential
               </IssueCredential>
             )}
           />
-          <CanUser
+          {/* <CanUser
             user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() => setLabOrderModalIsOpen((o) => !o)}
+                onClick={() =>
+                  privileges && privileges.includes('issue_lab_order')
+                    ? setLabOrderModalIsOpen((o) => !o)
+                    : setNotification(
+                        "Error: you don't have the right privileges",
+                        'error'
+                      )
+                }
               >
                 Issue Lab Order Credential
               </IssueCredential>
@@ -460,7 +367,16 @@ function Contact(props) {
             user={localUser}
             perform="credentials:issue"
             yes={() => (
-              <IssueCredential onClick={() => setVaccineModalIsOpen((o) => !o)}>
+              <IssueCredential
+                onClick={() =>
+                  privileges && privileges.includes('issue_vaccine')
+                    ? setVaccineModalIsOpen((o) => !o)
+                    : setNotification(
+                        "Error: you don't have the right privileges",
+                        'error'
+                      )
+                }
+              >
                 Issue Vaccine Credential
               </IssueCredential>
             )}
@@ -470,12 +386,28 @@ function Contact(props) {
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() => setExemptionModalIsOpen((o) => !o)}
+                onClick={() =>
+                  privileges && privileges.includes('issue_vaccine_exemption')
+                    ? setExemptionModalIsOpen((o) => !o)
+                    : setNotification(
+                        "Error: you don't have the right privileges",
+                        'error'
+                      )
+                }
               >
                 Issue Vaccine Exemption Credential
               </IssueCredential>
             )}
           />
+          <CanUser
+            user={localUser}
+            perform="credentials:issue"
+            yes={() => (
+              <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
+                Issue Medical Release Credential
+              </IssueCredential>
+            )}
+          /> */}
           <DataTable>
             <thead>
               <DataRow>
@@ -487,20 +419,21 @@ function Contact(props) {
             <tbody>{credentialRows}</tbody>
           </DataTable>
         </PageSection>
+
         <FormContacts
           contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
           submitDemographics={updateDemographics}
-          submitPassport={updatePasport}
         />
-        <FormLabOrder
+
+        {/* <FormLabOrder
           contactSelected={contactSelected}
           credentialModalIsOpen={labOrderModalIsOpen}
           closeCredentialModal={closeLabOrderModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        />
+        /> */}
         <FormLabResult
           contactSelected={contactSelected}
           credentialModalIsOpen={labResultModalIsOpen}
@@ -508,7 +441,7 @@ function Contact(props) {
           submitCredential={submitNewCredential}
           schemas={props.schemas}
         />
-        <FormVaccine
+        {/* <FormVaccine
           contactSelected={contactSelected}
           credentialModalIsOpen={vaccineModalIsOpen}
           closeCredentialModal={closeVaccineModal}
@@ -522,6 +455,13 @@ function Contact(props) {
           submitCredential={submitNewCredential}
           schemas={props.schemas}
         />
+        <FormMedical
+          contactSelected={contFactSelected}
+          credentialModalIsOpen={medicalModalIsOpen}
+          closeCredentialModal={closeMedicalModal}
+          submitCredential={submitNewCredential}
+          schemas={props.schemas}
+        /> */}
       </div>
     </>
   )

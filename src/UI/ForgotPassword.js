@@ -54,11 +54,19 @@ function ForgotPassword(props) {
       url: '/api/user/update',
     }).then((res) => {
       if (res.data.error) {
-        setNotification(res.data.error, 'error')
+        if (res.data.error === 'The user was not found.') {
+          setNotification(
+            `If this user exists, a password reset email has been sent.`,
+            'notice'
+          )
+          props.history.push('/')
+        } else {
+          setNotification(res.data.error, 'error')
+        }
       } else {
         setUser(res.data)
         setNotification(
-          `The instructions on how to reset the password were sent to ${email}`,
+          `If this user exists, a password reset email has been sent`,
           'notice'
         )
         props.history.push('/')
