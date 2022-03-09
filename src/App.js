@@ -732,7 +732,7 @@ function App() {
               break
 
             case 'SETTINGS_ORGANIZATION':
-              setOrganizationName(data.companyName)
+              setOrganizationName(data.organizationName)
               setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
               break
