@@ -468,11 +468,13 @@ function Settings(props) {
           <BlockInput
             name="organizationName"
             placeholder="Organization Name"
+            defaultValue={props.organizationName ? props.organizationName : ''}
             ref={organizationName}
           />
           <BlockInput
             name="siteTitle"
             placeholder="Website Title"
+            defaultValue={props.siteTitle ? props.siteTitle : ''}
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>

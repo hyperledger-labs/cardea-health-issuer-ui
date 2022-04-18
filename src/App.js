@@ -616,7 +616,7 @@ function App() {
                     oldCredential !== null &&
                     newCredential !== null &&
                     oldCredential.credential_exchange_id ===
-                      newCredential.credential_exchange_id
+                    newCredential.credential_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     oldCredentials.splice(index, 1)
@@ -673,7 +673,7 @@ function App() {
                     oldPresentation !== null &&
                     newPresentation !== null &&
                     oldPresentation.presentation_exchange_id ===
-                      newPresentation.presentation_exchange_id
+                    newPresentation.presentation_exchange_id
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', oldPresentation)
@@ -1148,20 +1148,16 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            sendRequest={sendMessage}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
-                            contactId={match.params.contactId}
-                            contacts={contacts}
-                            credentials={credentials}
-                            schemas={schemas}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Contact
                               loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
+                              clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
                               contacts={contacts}
@@ -1217,6 +1213,8 @@ function App() {
                             logo={image}
                             organizationName={organizationName}
                             match={match}
+                            history={history}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Credential
@@ -1381,6 +1379,8 @@ function App() {
                           logo={image}
                           organizationName={organizationName}
                           match={match}
+                          history={history}
+                          handleLogout={handleLogout}
                         />
                         <Main>
                           <User
@@ -1422,6 +1422,8 @@ function App() {
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
                               smtp={smtp}
+                              organizationName={organizationName}
+                              siteTitle={siteTitle}
                             />
                           </Main>
                         </Frame>
