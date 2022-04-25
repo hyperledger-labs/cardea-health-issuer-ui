@@ -78,6 +78,7 @@ function App() {
 
   // Used for websocket auto reconnect
   const [websocket, setWebsocket] = useState(false)
+  const [readyForMessages, setReadyForMessages] = useState(false)
 
   // State governs whether the app should be loaded. Depends on the loadingArray
   const [appIsLoaded, setAppIsLoaded] = useState(false)
@@ -123,16 +124,6 @@ function App() {
 
   // Perform First Time Setup. Connect to Controller Server via Websockets
 
-  // Setting up websocket and controllerSocket
-  useEffect(() => {
-    if (session && loggedIn && websocket) {
-      let url = new URL('/api/ws', window.location.href)
-      url.protocol = url.protocol.replace('http', 'ws')
-      controllerSocket.current = new WebSocket(url.href)
-      setWebsocket(true)
-    }
-  }, [loggedIn, session, websocket])
-
   // TODO: Setting logged-in user and session states on app mount
   useEffect(() => {
     Axios({
@@ -144,7 +135,6 @@ function App() {
           // Update session expiration date
           setSession(cookies.get('sessionId'))
           setLoggedIn(true)
-          setWebsocket(true)
 
           setLoggedInUserState(res.data)
           setLoggedInUserId(res.data.id)
@@ -158,76 +148,24 @@ function App() {
       })
   }, [loggedIn])
 
-  // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
+  // Setting up websocket and controllerSocket
   useEffect(() => {
-    document.title = siteTitle
-  }, [siteTitle])
+    if (session && loggedIn) {
+      let url = new URL('/api/ws', window.location.href)
+      url.protocol = url.protocol.replace('http', 'ws')
+      controllerSocket.current = new WebSocket(url.href)
 
-  // Define Websocket event listeners
-  useEffect(() => {
-    // Perform operation on websocket open
-    // Run web sockets only if authenticated
-    if (session && loggedIn && websocket) {
       controllerSocket.current.onopen = () => {
-        // Resetting state to false to allow spinner while waiting for messages
-        setAppIsLoaded(false) // This doesn't work as expected. See function removeLoadingProcess
-
-        // Wait for the roles for come back to start sending messages
-        // console.log('Ready to send messages')
-
-        sendMessage('SETTINGS', 'GET_THEME', {})
-        addLoadingProcess('THEME')
-        sendMessage('SETTINGS', 'GET_SCHEMAS', {})
-        addLoadingProcess('SCHEMAS')
-
-        if (
-          check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
-        ) {
-          sendMessage('CONTACTS', 'GET_ALL', {
-            additional_tables: ['Demographic'],
-          })
-          addLoadingProcess('CONTACTS')
-        }
-
-        if (check(rules, loggedInUserState, 'credentials:read')) {
-          sendMessage('CREDENTIALS', 'GET_ALL', {})
-          addLoadingProcess('CREDENTIALS')
-        }
-
-        if (check(rules, loggedInUserState, 'roles:read')) {
-          sendMessage('ROLES', 'GET_ALL', {})
-          addLoadingProcess('ROLES')
-        }
-
-        if (check(rules, loggedInUserState, 'presentations:read')) {
-          sendMessage('PRESENTATIONS', 'GET_ALL', {})
-          addLoadingProcess('PRESENTATIONS')
-        }
-
-        sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
-        addLoadingProcess('ORGANIZATION')
-
-        if (check(rules, loggedInUserState, 'settings:update')) {
-          sendMessage('SETTINGS', 'GET_SMTP', {})
-          addLoadingProcess('SMTP')
-        }
-
-        sendMessage('IMAGES', 'GET_ALL', {})
-        addLoadingProcess('LOGO')
-
-        // This is the example of atuthorizing websockets
-        if (check(rules, loggedInUserState, 'users:read')) {
-          sendMessage('USERS', 'GET_ALL', {})
-          addLoadingProcess('USERS')
-        }
+        setWebsocket(true)
       }
 
       controllerSocket.current.onclose = (event) => {
         // Auto Reopen websocket connection
         // (JamesKEbert) TODO: Converse on sessions, session timeout and associated UI
 
+        setReadyForMessages(false)
         setLoggedIn(false)
-        setWebsocket(!websocket)
+        setWebsocket(false)
       }
 
       // Error Handler
@@ -246,12 +184,71 @@ function App() {
         )
       }
     }
-  }, [session, loggedIn, users, user, websocket, image, loggedInUserState]) // (eldersonar) We have to listen to all 7 for the app to function properly
+  }, [loggedIn, session])
+
+  // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
+  useEffect(() => {
+    document.title = siteTitle
+  }, [siteTitle])
+
+  // Define Websocket event listeners
+  useEffect(() => {
+    // Perform operation on websocket open
+    // Run web sockets only if authenticated
+    if (session && loggedIn && websocket && readyForMessages) {
+      sendMessage('SETTINGS', 'GET_THEME', {})
+      addLoadingProcess('THEME')
+      sendMessage('SETTINGS', 'GET_SCHEMAS', {})
+      addLoadingProcess('SCHEMAS')
+      sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+      addLoadingProcess('GOVERNANCE')
+
+      if (
+        check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
+      ) {
+        sendMessage('CONTACTS', 'GET_ALL', {
+          additional_tables: ['Demographic'],
+        })
+        addLoadingProcess('CONTACTS')
+      }
+
+      if (check(rules, loggedInUserState, 'credentials:read')) {
+        sendMessage('CREDENTIALS', 'GET_ALL', {})
+        addLoadingProcess('CREDENTIALS')
+      }
+
+      if (check(rules, loggedInUserState, 'roles:read')) {
+        sendMessage('ROLES', 'GET_ALL', {})
+        addLoadingProcess('ROLES')
+      }
+
+      if (check(rules, loggedInUserState, 'presentations:read')) {
+        sendMessage('PRESENTATIONS', 'GET_ALL', {})
+        addLoadingProcess('PRESENTATIONS')
+      }
+
+      sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
+      addLoadingProcess('ORGANIZATION')
+
+      if (check(rules, loggedInUserState, 'settings:update')) {
+        sendMessage('SETTINGS', 'GET_SMTP', {})
+        addLoadingProcess('SMTP')
+      }
+
+      sendMessage('IMAGES', 'GET_ALL', {})
+      addLoadingProcess('LOGO')
+
+      // This is the example of atuthorizing websockets
+      if (check(rules, loggedInUserState, 'users:read')) {
+        sendMessage('USERS', 'GET_ALL', {})
+        addLoadingProcess('USERS')
+      }
+    }
+  }, [session, loggedIn, websocket, readyForMessages])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
     controllerSocket.current.close(code, reason)
-    // console.log(controllerSocket.current)
   }
 
   // Send a message to the Controller server
@@ -708,7 +705,21 @@ function App() {
               )
               break
           }
+          break
 
+        case 'SERVER':
+          switch (type) {
+            case 'WEBSOCKET_READY':
+              setReadyForMessages(true)
+              break
+
+            default:
+              setNotification(
+                `Error - Unrecognized Websocket Message Type: ${type}`,
+                'error'
+              )
+              break
+          }
           break
 
         case 'SETTINGS':
@@ -813,6 +824,7 @@ function App() {
               console.log('these are the privileges:')
               console.log(data.privileges)
               setPrivileges(data.privileges)
+              removeLoadingProcess('GOVERNANCE')
               break
 
             default:
