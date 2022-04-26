@@ -9,15 +9,16 @@ This software project includes the following third-party or open-source tools, c
 See also: https://mit-license.org/
 
 - [Axios](https://github.com/axios/axios)
+- [base64url](https://github.com/brianloveswords/base64url)
+- [jwt-decode](https://github.com/auth0/jwt-decode)
 - [luxon](https://github.com/moment/luxon/)
 - [Prettier](https://github.com/prettier/prettier)
+- [qrcode react](https://github.com/zpao/qrcode.react)
 - [React Router](https://github.com/ReactTraining/react-router)
+- [react-tooltip](https://github.com/wwayne/react-tooltip)
 - [Reactjs-popup](https://github.com/yjose/reactjs-popup)
 - [Styled Components](https://github.com/styled-components/styled-components)
-- [qrcode react](https://github.com/zpao/qrcode.react)
-- [jwt-decode](https://github.com/auth0/jwt-decode)
 - [universal-cookie](https://github.com/reactivestack/cookies)
-- [react-tooltip](https://github.com/wwayne/react-tooltip)
 
 ### SIL Open Font License
 

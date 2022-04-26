@@ -221,30 +221,3 @@
        personal information I submit with it, including my sign-off) is
        maintained indefinitely and may be redistributed consistent with
        this project or the open source license(s) involved.
-
-   --------------------------------------------------------------------------
-
-   Copyright 2021 by The Cardea Project and project contributors unless otherwise
-   noted in individual files, subdirectories, and components (see also
-   LICENSE-3RD-PARTY.md).
-
-   By contributing to this project, organizations and individual contributors
-   agree to license any and all copyrighted materials that constitute this
-   project in perpetuity, under a well-known open-source license as listed by
-   the SPDX (see also: https://spdx.org/licenses/). Any changes to the
-   license must be first approved by the current core maintainers group
-   before taking effect.
-
-   Specific copyrights may be held by other organizations and Individual
-   Contributors for new project files that they create themselves, granted
-   that they include a copyright notice in said files and said notice was
-   approved by the project's core maintainers group before being accepted
-   into the project. If the contribution was made under a different license
-   than the default for the project, it must be compatible with said default
-   license, be restricted to a single file or component and be explicitly
-   noted in the same.
-
-   Vendored components and other third-party dependencies must be duly noted
-   in LICENSE-3RD-PARTY.md and may only be accepted when licensed under
-   terms that are compatible with the project's default license (currently
-   Apache-2.0).
