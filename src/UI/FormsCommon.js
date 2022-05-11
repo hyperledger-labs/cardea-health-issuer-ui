@@ -102,8 +102,7 @@ export const InputField = styled.input`
 
 export const Select = styled.select`
   color: ${(props) => props.theme.text_color};
-  font-size: 1.5em;
-  width: 50%;
+  width: 225px;
 `
 
 export const TextArea = styled.textarea`
