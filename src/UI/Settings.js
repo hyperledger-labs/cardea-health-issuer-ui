@@ -141,6 +141,32 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
+  console.log(props.governanceOptions)
+  // console.log(props.selectedGovernance)
+
+  const governanceOptions = [] 
+  const [selectedGovernance, setSelectedGovernance] = useState(null)
+
+
+  if (props.governanceOptions) {
+    for (let i=0;i<props.governanceOptions.length; i++){
+      governanceOptions.push({id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path})
+    }
+  }
+
+  useEffect(() => {
+    if (props.selectedGovernance) {
+      console.log("I worked")
+      console.log(props.selectedGovernance)
+      setSelectedGovernance(props.selectedGovernance)
+    } else {
+      console.log("no props")
+    }
+  }, [props.selectedGovernance])
+
+
+
+
   useEffect(() => {
     if (success) {
       // console.log('SUCCESS RAN')
@@ -440,6 +466,10 @@ function Settings(props) {
     }
   }
 
+
+
+
+
   // Save manifest settings
   const handleGovernance = (e) => {
     e.preventDefault()
@@ -451,25 +481,25 @@ function Settings(props) {
     console.log(goverancePath)
     // props.sendRequest('SETTINGS', 'SET_MANIFEST', manifestConfigs)
 
-    manifestDetailsForm.current.reset()
+    props.sendRequest('GOVERNANCE', 'ADD_GOVERNANCE', goverancePath)
+
+    governanceForm.current.reset()
   }
 
-  const [governancePaths, setGovernancePaths] = useState([{ label: "https://stuff.com/g1.json", value: "https://stuff.com/g1.json" }, { label: "https://stuff.com/g2.json", value: "https://stuff.com/g2.json" }, { label: "https://stuff.com/g3.json", value: "https://stuff.com/g3.json" }])
+  const [governancePaths, setGovernancePaths] = useState([{ id: 1, label: "https://stuff.com/g1.json", value: "https://stuff.com/g1.json" }, { id: 2, label: "https://stuff.com/g2.json", value: "https://stuff.com/g2.json" }, { id: 3, label: "https://stuff.com/g3.json", value: "https://stuff.com/g3.json" }])
 
   const [optionSelected, setOptionSelected] = useState("Select governance...")
 
-  function handler(e) {
-    setOptionSelected(e)
-    // let newOptions = []
-    // newOptions.push({ label: e, value: e })
-    // for (let i in governancePaths) {
-    //   if (governancePaths[i].path !== e) {
-    //     newOptions.push(governancePaths[i])
-    //   }
-    // }
-    // setGovernancePaths(newOptions)
-    console.log(e)
+  function selectGovernance(governancePath) {
+    setOptionSelected(governancePath)
+
+    props.sendRequest('GOVERNANCE', 'SAVE_GOVERNANCE_CHOICE', governancePath)
+    console.log(governancePath)
   }
+
+
+
+
 
   return (
     <div id="settings">
@@ -811,13 +841,13 @@ function Settings(props) {
         <SettingsHeader>Governance Configuration</SettingsHeader>
         <IconHelp
           data-tip
-          data-for="smtpTip"
+          data-for="governanceTip"
           data-delay-hide="250"
           data-multiline="true"
           alt="Help"
         />
         <ReactTooltip
-          id="smtpTip"
+          id="governanceTip"
           effect="solid"
           type="info"
           backgroundColor={useTheme().primary_color}
@@ -826,7 +856,6 @@ function Settings(props) {
             You can add a new governance file that
             <br />
             will be available for choosing by the admin
-            <br />
             <br />
             below.
           </span>
@@ -850,11 +879,11 @@ function Settings(props) {
           <H3>Governance file options</H3>
           <Select
             name="governance_paths"
-            defaultValue={optionSelected}
-            options={governancePaths}
-            onChange={(e) => handler(e.value)}
+            placeholder="Select governance..."
+            defaultValue={selectedGovernance}
+            options={governanceOptions}
+            onChange={(e) => selectGovernance(e.value)}
             menuPortalTarget={document.body}
-            isSearchable={false}
           />
         </Form>
       </PageSection>
