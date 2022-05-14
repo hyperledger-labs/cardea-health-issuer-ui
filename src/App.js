@@ -68,9 +68,6 @@ function App() {
 
   const cookies = new Cookies()
 
-  // Keep track of loading processes
-  let loadingArray = []
-
   const setNotification = useNotification()
 
   // Websocket reference hook
@@ -79,6 +76,9 @@ function App() {
   // Used for websocket auto reconnect
   const [websocket, setWebsocket] = useState(false)
   const [readyForMessages, setReadyForMessages] = useState(false)
+
+  // Keep track of loading processes
+  const [loadingArray, setLoadingArray] = useState([])
 
   // State governs whether the app should be loaded. Depends on the loadingArray
   const [appIsLoaded, setAppIsLoaded] = useState(false)
@@ -208,7 +208,7 @@ function App() {
       sendMessage('GOVERNANCE', 'GET_ALL', {})
       addLoadingProcess('ALL_GOVERNANCE')
 
-      sendMessage('GOVERNANCE', 'GET_SELECTED_PATH', {})
+      sendMessage('SETTINGS', 'GET_SELECTED_GOVERNANCE', {})
       addLoadingProcess('SELECTED_GOVERNANCE')
 
       if (
@@ -780,44 +780,27 @@ function App() {
           }
           break
 
-        case 'IMAGES':
-          switch (type) {
-            case 'IMAGE_LIST':
-              setImage(data)
+        // case 'IMAGES':
+        //   switch (type) {
+        //     case 'IMAGE_LIST':
+        //       setImage(data)
 
-              removeLoadingProcess('IMAGES')
-              break
+        //       removeLoadingProcess('IMAGES')
+        //       break
 
-            case 'IMAGES_ERROR':
-              // console.log('Images Error:', data.error)
-              setErrorMessage(data.error)
-              break
+        //     case 'IMAGES_ERROR':
+        //       // console.log('Images Error:', data.error)
+        //       setErrorMessage(data.error)
+        //       break
 
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'ORGANIZATION':
-          switch (type) {
-            case 'ORGANIZATION_NAME':
-              setOrganizationName(data[0].value.name)
-
-              removeLoadingProcess('ORGANIZATION')
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
+        //     default:
+        //       setNotification(
+        //         `Error - Unrecognized Websocket Message Type: ${type}`,
+        //         'error'
+        //       )
+        //       break
+        //   }
+        //   break
 
         case 'GOVERNANCE':
           switch (type) {
@@ -883,7 +866,7 @@ function App() {
 
 
               // setGovernanceOptions(data.governance_paths)
-              // removeLoadingProcess('ALL_GOVERNANCE')
+              removeLoadingProcess('ALL_GOVERNANCE')
               break
 
 
@@ -925,20 +908,24 @@ function App() {
   }
 
   function addLoadingProcess(process) {
-    loadingArray.push(process)
+    setLoadingArray(loadingArray.push(process))
     console.log(loadingArray)
   }
 
   function clearLoadingProcess() {
-    loadingArray = []
+    setLoadingArray([])
     setAppIsLoaded(true)
   }
 
   function removeLoadingProcess(process) {
+    console.log("REMOVING PROCESS " + process)
+    console.log("LOADING ARRAY: " + loadingArray)
+    console.log("LOADING ARRAY LENGTH: " + loadingArray.length)
+    console.log("LOADING ARRAY TYPE: " + typeof loadingArray)
     const index = loadingArray.indexOf(process)
 
     if (index > -1) {
-      loadingArray.splice(index, 1)
+      setLoadingArray(loadingArray.splice(index, 1))
     }
 
     if (loadingArray.length === 0) {

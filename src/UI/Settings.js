@@ -141,28 +141,28 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
-  console.log(props.governanceOptions)
+  // console.log(props.governanceOptions)
   // console.log(props.selectedGovernance)
 
-  const governanceOptions = [] 
-  const [selectedGovernance, setSelectedGovernance] = useState(null)
+  const governanceOptions = []
+  const [selectedGovernance, setSelectedGovernance] = useState(props.selectedGovernance)
 
 
   if (props.governanceOptions) {
-    for (let i=0;i<props.governanceOptions.length; i++){
-      governanceOptions.push({id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path})
+    for (let i = 0; i < props.governanceOptions.length; i++) {
+      governanceOptions.push({ id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path })
     }
   }
 
-  useEffect(() => {
-    if (props.selectedGovernance) {
-      console.log("I worked")
-      console.log(props.selectedGovernance)
-      setSelectedGovernance(props.selectedGovernance)
-    } else {
-      console.log("no props")
-    }
-  }, [props.selectedGovernance])
+  // useEffect(() => {
+  //   if (props.selectedGovernance) {
+  //     console.log("I worked")
+  //     console.log(props.selectedGovernance)
+  //     setSelectedGovernance(props.selectedGovernance)
+  //   } else {
+  //     console.log("no props")
+  //   }
+  // }, [props.selectedGovernance])
 
 
 
@@ -486,7 +486,8 @@ function Settings(props) {
     governanceForm.current.reset()
   }
 
-  const [governancePaths, setGovernancePaths] = useState([{ id: 1, label: "https://stuff.com/g1.json", value: "https://stuff.com/g1.json" }, { id: 2, label: "https://stuff.com/g2.json", value: "https://stuff.com/g2.json" }, { id: 3, label: "https://stuff.com/g3.json", value: "https://stuff.com/g3.json" }])
+
+
 
   const [optionSelected, setOptionSelected] = useState("Select governance...")
 
@@ -498,6 +499,19 @@ function Settings(props) {
   }
 
 
+
+  const OptionSelect = () => {
+    return (
+      <Select
+        name="governance_paths"
+        placeholder="Select governance..."
+        defaultValue={selectedGovernance}
+        options={governanceOptions}
+        onChange={(e) => selectGovernance(e.value)}
+        menuPortalTarget={document.body}
+      />
+    )
+  }
 
 
 
@@ -866,8 +880,6 @@ function Settings(props) {
             name="governance_path"
             ref={governancePath}
             placeholder="https://mrg.com/governance.json"
-            // onChange={multipleSelect}
-            // defaultValue={selectedRoles}
             required
           />
           <SubmitFormBtn
@@ -876,16 +888,9 @@ function Settings(props) {
           >
             Add
           </SubmitFormBtn>
-          <H3>Governance file options</H3>
-          <Select
-            name="governance_paths"
-            placeholder="Select governance..."
-            defaultValue={selectedGovernance}
-            options={governanceOptions}
-            onChange={(e) => selectGovernance(e.value)}
-            menuPortalTarget={document.body}
-          />
         </Form>
+        <H3>Governance file options</H3>
+        <OptionSelect />
       </PageSection>
 
 
