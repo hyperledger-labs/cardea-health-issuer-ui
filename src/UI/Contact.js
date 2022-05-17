@@ -136,6 +136,44 @@ function Contact(props) {
 
     setNotification('Credential offer was successfully sent!', 'notice')
   }
+  // Submits the credential form and shows notification
+  function sendBasicMessage(e) {
+    e.preventDefault()
+    console.log('connection ID', contactSelected.Connections[0].connection_id)
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'SEND_BASIC_MESSAGE', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+
+    // setNotification('Basic message was successfully sent!', 'notice')
+  }
+
+  function askQuestion(e) {
+    e.preventDefault()
+    console.log('connection ID', contactSelected.Connections[0].connection_id)
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'ASK_QUESTION', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+
+    // setNotification('ASK QUESTION was successfully sent!', 'notice')
+  }
+  function requestDemographics(e) {
+    e.preventDefault()
+    console.log('connection ID', contactSelected.Connections[0].connection_id)
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_DEMOGRAPHICS', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+
+    setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
+  }
+  function requestMedicalRelease(e) {
+    e.preventDefault()
+    console.log('connection ID', contactSelected.Connections[0].connection_id)
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_MEDICAL_RELEASE', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+
+    setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
+  }
 
   const credentialRows = props.credentials.map((credential_record) => {
     if (
@@ -345,6 +383,27 @@ function Contact(props) {
               </IssueCredential>
             )}
           />
+
+          <IssueCredential onClick={sendBasicMessage}>
+            Send Basic Message
+          </IssueCredential>
+          <IssueCredential onClick={askQuestion}>Ask Question</IssueCredential>
+          <IssueCredential onClick={requestDemographics}>
+            Request Demographics
+          </IssueCredential>
+          <CanUser
+            user={localUser}
+            perform="credentials:issue"
+            yes={() => (
+              <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
+                Issue Medical Release Credential
+              </IssueCredential>
+            )}
+          />
+          <IssueCredential onClick={requestMedicalRelease}>
+            Request Medical Release
+          </IssueCredential>
+
           {/* <CanUser
             user={localUser}
             perform="credentials:issue"
@@ -454,14 +513,14 @@ function Contact(props) {
           closeCredentialModal={closeExemptionModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        />
+        /> */}
         <FormMedical
-          contactSelected={contFactSelected}
+          contactSelected={contactSelected}
           credentialModalIsOpen={medicalModalIsOpen}
           closeCredentialModal={closeMedicalModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        /> */}
+        />
       </div>
     </>
   )

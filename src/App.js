@@ -118,6 +118,7 @@ function App() {
 
   // Governance state
   const [privileges, setPrivileges] = useState([])
+  const [actionNotification, setActionNotification] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -257,6 +258,9 @@ function App() {
   // Send a message to the Controller server
   function sendMessage(context, type, data = {}) {
     if (websocket) {
+      console.log('context', context)
+      console.log('type', type)
+      console.log('data', data)
       controllerSocket.current.send(JSON.stringify({ context, type, data }))
     }
   }
@@ -814,6 +818,17 @@ function App() {
               console.log(data.privileges)
               setPrivileges(data.privileges)
               break
+            case 'ACTION_ERROR':
+              setErrorMessage(data.error)
+              console.log('This is governance action error')
+              break
+            case 'ACTION_SUCCESS':
+              setSuccessMessage(data.notice)
+              console.log('This is governance action success')
+              break
+            case 'PRIVILEGES_SUCCESS':
+              setPrivileges(data.success)
+              break
 
             default:
               setNotification(
@@ -1148,10 +1163,10 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            sendRequest={sendMessage}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
+                            // sendRequest={sendMessage}
+                            // successMessage={successMessage}
+                            // errorMessage={errorMessage}
+
                             contactId={match.params.contactId}
                             contacts={contacts}
                             credentials={credentials}
@@ -1167,6 +1182,9 @@ function App() {
                               contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
+                              clearResponseState={clearResponseState}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
                             />
                           </Main>
                         </Frame>
