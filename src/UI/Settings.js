@@ -141,31 +141,23 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
-  // console.log(props.governanceOptions)
-  // console.log(props.selectedGovernance)
-
-  const governanceOptions = []
   const [selectedGovernance, setSelectedGovernance] = useState(props.selectedGovernance)
+  const [governanceOptions, setGovernanceOptions] = useState(props.governanceOptions)
 
-
-  if (props.governanceOptions) {
-    for (let i = 0; i < props.governanceOptions.length; i++) {
-      governanceOptions.push({ id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path })
+  useEffect(() => {
+    let options = []
+    // (eldersonar) Handle selected governance state
+    if (props.selectedGovernance) {
+      setSelectedGovernance(props.selectedGovernance)
+    }  
+    // (eldersonar) Handle governance options state
+    if (props.governanceOptions) {
+      for (let i = 0; i < props.governanceOptions.length; i++) {
+        options.push({ id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path })
+      }
+      setGovernanceOptions(options)
     }
-  }
-
-  // useEffect(() => {
-  //   if (props.selectedGovernance) {
-  //     console.log("I worked")
-  //     console.log(props.selectedGovernance)
-  //     setSelectedGovernance(props.selectedGovernance)
-  //   } else {
-  //     console.log("no props")
-  //   }
-  // }, [props.selectedGovernance])
-
-
-
+  }, [props.selectedGovernance, props.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -466,39 +458,21 @@ function Settings(props) {
     }
   }
 
-
-
-
-
   // Save manifest settings
-  const handleGovernance = (e) => {
+  const addGovernance = (e) => {
     e.preventDefault()
-    console.log("add new governance")
     const form = new FormData(governanceForm.current)
-
     const goverancePath = form.get('governance_path')
-
-    console.log(goverancePath)
-    // props.sendRequest('SETTINGS', 'SET_MANIFEST', manifestConfigs)
 
     props.sendRequest('GOVERNANCE', 'ADD_GOVERNANCE', goverancePath)
 
     governanceForm.current.reset()
   }
 
-
-
-
-  const [optionSelected, setOptionSelected] = useState("Select governance...")
-
   function selectGovernance(governancePath) {
-    setOptionSelected(governancePath)
-
-    props.sendRequest('GOVERNANCE', 'SAVE_GOVERNANCE_CHOICE', governancePath)
-    console.log(governancePath)
+    setSelectedGovernance(governancePath)
+    props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
   }
-
-
 
   const OptionSelect = () => {
     return (
@@ -512,8 +486,6 @@ function Settings(props) {
       />
     )
   }
-
-
 
   return (
     <div id="settings">
@@ -884,7 +856,7 @@ function Settings(props) {
           />
           <SubmitFormBtn
             type="submit"
-            onClick={handleGovernance}
+            onClick={addGovernance}
           >
             Add
           </SubmitFormBtn>

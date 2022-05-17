@@ -780,28 +780,6 @@ function App() {
           }
           break
 
-        // case 'IMAGES':
-        //   switch (type) {
-        //     case 'IMAGE_LIST':
-        //       setImage(data)
-
-        //       removeLoadingProcess('IMAGES')
-        //       break
-
-        //     case 'IMAGES_ERROR':
-        //       // console.log('Images Error:', data.error)
-        //       setErrorMessage(data.error)
-        //       break
-
-        //     default:
-        //       setNotification(
-        //         `Error - Unrecognized Websocket Message Type: ${type}`,
-        //         'error'
-        //       )
-        //       break
-        //   }
-        //   break
-
         case 'GOVERNANCE':
           switch (type) {
             case 'PRIVILEGES_ERROR':
@@ -820,66 +798,21 @@ function App() {
 
             case 'GOVERNANCE_OPTIONS':
               console.log('GOVERNANCE_OPTIONS SUCCESS')
-              console.log('these are the governance options:')
-              console.log(data.governance_paths)
-
-              setGovernanceOptions((prevGovernanceOptions) => {
-                let oldGovernanceOptions = prevGovernanceOptions
-                let newGovernanceOption = data.governance_paths
-                let updatedGovernanceOptions = []
-
-                console.log(oldGovernanceOptions)
-                console.log(newGovernanceOption)
-
-                // (mikekebert) Loop through the new users and check them against the existing array
-                // newGovernanceOptions.forEach((newGovernanceOption) => {
-                oldGovernanceOptions.forEach((oldGovernancePath, index) => {
-                  console.log(oldGovernancePath)
-                  console.log(newGovernanceOption)
-                  if (
-                    oldGovernancePath !== null &&
-                    newGovernanceOption !== null &&
-                    oldGovernancePath.id === newGovernanceOption.id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldGovernanceOptions.splice(index, 1)
-                  }
-                })
-                updatedGovernanceOptions.push(newGovernanceOption)
-                // })
-                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-                if (oldGovernanceOptions.length > 0)
-                  updatedGovernanceOptions = [...updatedGovernanceOptions, ...oldGovernanceOptions]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedGovernanceOptions.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                console.log("==========================")
-                console.log(updatedGovernanceOptions)
-                console.log("==========================")
-                // setGovernanceOptions(updatedGovernanceOptions)
-                return updatedGovernanceOptions
-              })
-
-
-
-
-              // setGovernanceOptions(data.governance_paths)
+              setGovernanceOptions(data.governance_paths)
               removeLoadingProcess('ALL_GOVERNANCE')
               break
 
+            case 'GOVERNANCE_OPTION_ADDED':
+              console.log('GOVERNANCE_OPTION_ADDED')
+              setGovernanceOptions((prev) => {
+                let updatedGovernanceOptions = [...prev, data.governance_path]
+                return updatedGovernanceOptions
+              })
 
-
-
-
-
-
+              break
 
             case 'SELECTED_GOVERNANCE':
               console.log('SELECTED_GOVERNANCE')
-              console.log('Selected governance')
-              console.log(data)
               removeLoadingProcess('SELECTED_GOVERNANCE')
               setSelectedGovernance(data.selected_governance)
               break
