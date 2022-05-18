@@ -133,8 +133,6 @@ function Contact(props) {
     e.preventDefault()
 
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
-
-    // setNotification('Credential offer was successfully sent!', 'notice')
   }
   // Submits the credential form and shows notification
   function sendBasicMessage(e) {
@@ -143,8 +141,6 @@ function Contact(props) {
     props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'SEND_BASIC_MESSAGE', {
       connection_id: contactSelected.Connections[0].connection_id,
     })
-
-    // setNotification('Basic message was successfully sent!', 'notice')
   }
 
   function askQuestion(e) {
@@ -153,26 +149,22 @@ function Contact(props) {
     props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'ASK_QUESTION', {
       connection_id: contactSelected.Connections[0].connection_id,
     })
-
-    // setNotification('ASK QUESTION was successfully sent!', 'notice')
   }
+
   function requestDemographics(e) {
     e.preventDefault()
     console.log('connection ID', contactSelected.Connections[0].connection_id)
     props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_DEMOGRAPHICS', {
       connection_id: contactSelected.Connections[0].connection_id,
     })
-
-    // setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
   }
+
   function requestMedicalRelease(e) {
     e.preventDefault()
     console.log('connection ID', contactSelected.Connections[0].connection_id)
     props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_MEDICAL_RELEASE', {
       connection_id: contactSelected.Connections[0].connection_id,
     })
-
-    // setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
   }
 
   const credentialRows = props.credentials.map((credential_record) => {
