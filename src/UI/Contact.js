@@ -134,7 +134,7 @@ function Contact(props) {
 
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
 
-    setNotification('Credential offer was successfully sent!', 'notice')
+    // setNotification('Credential offer was successfully sent!', 'notice')
   }
   // Submits the credential form and shows notification
   function sendBasicMessage(e) {
@@ -163,7 +163,7 @@ function Contact(props) {
       connection_id: contactSelected.Connections[0].connection_id,
     })
 
-    setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
+    // setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
   }
   function requestMedicalRelease(e) {
     e.preventDefault()
@@ -172,7 +172,7 @@ function Contact(props) {
       connection_id: contactSelected.Connections[0].connection_id,
     })
 
-    setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
+    // setNotification('REQUEST DEMOGRAPHICS was successfully sent!', 'notice')
   }
 
   const credentialRows = props.credentials.map((credential_record) => {
