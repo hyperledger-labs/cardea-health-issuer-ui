@@ -144,6 +144,10 @@ function Settings(props) {
   const [selectedGovernance, setSelectedGovernance] = useState(props.selectedGovernance)
   const [governanceOptions, setGovernanceOptions] = useState(props.governanceOptions)
 
+  // console.log(props.selectedGovernance)
+  // console.log(props.governanceOptions)
+
+  // (eldersonar) Setting up selected governance and governance options
   useEffect(() => {
     let options = []
     // (eldersonar) Handle selected governance state
