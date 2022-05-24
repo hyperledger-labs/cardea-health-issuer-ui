@@ -119,6 +119,7 @@ function App() {
 
   // Governance state
   const [privileges, setPrivileges] = useState([])
+  const [actionNotification, setActionNotification] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -826,6 +827,15 @@ function App() {
               setPrivileges(data.privileges)
               removeLoadingProcess('GOVERNANCE')
               break
+            case 'ACTION_ERROR':
+              setErrorMessage(data.error)
+              break
+            case 'ACTION_SUCCESS':
+              setSuccessMessage(data.notice)
+              break
+            case 'PRIVILEGES_SUCCESS':
+              setPrivileges(data.success)
+              break
 
             default:
               setNotification(
@@ -1160,10 +1170,6 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            sendRequest={sendMessage}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
                             contactId={match.params.contactId}
                             contacts={contacts}
                             credentials={credentials}
@@ -1179,6 +1185,9 @@ function App() {
                               contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
+                              clearResponseState={clearResponseState}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
                             />
                           </Main>
                         </Frame>
