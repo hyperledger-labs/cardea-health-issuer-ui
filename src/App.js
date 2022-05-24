@@ -258,9 +258,6 @@ function App() {
   // Send a message to the Controller server
   function sendMessage(context, type, data = {}) {
     if (websocket) {
-      console.log('context', context)
-      console.log('type', type)
-      console.log('data', data)
       controllerSocket.current.send(JSON.stringify({ context, type, data }))
     }
   }
@@ -820,11 +817,9 @@ function App() {
               break
             case 'ACTION_ERROR':
               setErrorMessage(data.error)
-              console.log('This is governance action error')
               break
             case 'ACTION_SUCCESS':
               setSuccessMessage(data.notice)
-              console.log('This is governance action success')
               break
             case 'PRIVILEGES_SUCCESS':
               setPrivileges(data.success)
@@ -1163,10 +1158,6 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            // sendRequest={sendMessage}
-                            // successMessage={successMessage}
-                            // errorMessage={errorMessage}
-
                             contactId={match.params.contactId}
                             contacts={contacts}
                             credentials={credentials}
