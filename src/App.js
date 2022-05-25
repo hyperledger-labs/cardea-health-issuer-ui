@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 
 import {
   BrowserRouter as Router,
@@ -68,8 +68,8 @@ function App() {
 
   const cookies = new Cookies()
 
-  // Keep track of loading processes
-  let loadingArray = []
+  // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
+  const loadingList = useMemo(() => [], [])
 
   const setNotification = useNotification()
 
@@ -199,7 +199,8 @@ function App() {
       loggedIn &&
       websocket &&
       readyForMessages &&
-      loggedInUserState
+      loggedInUserState &&
+      loadingList.length === 0
     ) {
       sendMessage('SETTINGS', 'GET_THEME', {})
       addLoadingProcess('THEME')
@@ -840,6 +841,7 @@ function App() {
               console.log(data)
               console.log('Privileges Error', data.error)
               setErrorMessage(data.error)
+              removeLoadingProcess('GOVERNANCE')
               break
 
             case 'PRIVILEGES_SUCCESS':
@@ -874,22 +876,21 @@ function App() {
   }
 
   function addLoadingProcess(process) {
-    loadingArray.push(process)
+    loadingList.push(process)
   }
 
   function clearLoadingProcess() {
-    loadingArray = []
+    loadingList = []
     setAppIsLoaded(true)
   }
 
   function removeLoadingProcess(process) {
-    const index = loadingArray.indexOf(process)
-
+    const index = loadingList.indexOf(process)
     if (index > -1) {
-      loadingArray.splice(index, 1)
+      loadingList.splice(index, 1)
     }
 
-    if (loadingArray.length === 0) {
+    if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
   }
