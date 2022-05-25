@@ -1,7 +1,7 @@
 import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 
 import {
   BrowserRouter as Router,
@@ -68,8 +68,8 @@ function App() {
 
   const cookies = new Cookies()
 
-  // Keep track of loading processes
-  let loadingArray = []
+  // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
+  const loadingList = useMemo(() => [], [])
 
   const setNotification = useNotification()
 
@@ -192,11 +192,17 @@ function App() {
     document.title = siteTitle
   }, [siteTitle])
 
-  // Define Websocket event listeners
   useEffect(() => {
     // Perform operation on websocket open
     // Run web sockets only if authenticated
-    if (session && loggedIn && websocket && readyForMessages) {
+    if (
+      session &&
+      loggedIn &&
+      websocket &&
+      readyForMessages &&
+      loggedInUserState &&
+      loadingList.length === 0
+    ) {
       sendMessage('SETTINGS', 'GET_THEME', {})
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
@@ -239,13 +245,12 @@ function App() {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      // This is the example of atuthorizing websockets
       if (check(rules, loggedInUserState, 'users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loggedIn, websocket, readyForMessages])
+  }, [session, loggedIn, websocket, readyForMessages, loggedInUserState])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -469,29 +474,32 @@ function App() {
         case 'ROLES':
           switch (type) {
             case 'ROLES':
-              let oldRoles = roles
-              let newRoles = data.roles
-              let updatedRoles = []
-              // (mikekebert) Loop through the new roles and check them against the existing array
-              newRoles.forEach((newRole) => {
-                oldRoles.forEach((oldRole, index) => {
-                  if (
-                    oldRole !== null &&
-                    newRole !== null &&
-                    oldRole.role_id === newRole.role_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldRoles.splice(index, 1)
-                  }
+              setRoles((prevRoles) => {
+                let oldRoles = prevRoles
+                let newRoles = data.roles
+                let updatedRoles = []
+                // (mikekebert) Loop through the new roles and check them against the existing array
+                newRoles.forEach((newRole) => {
+                  oldRoles.forEach((oldRole, index) => {
+                    if (
+                      oldRole !== null &&
+                      newRole !== null &&
+                      oldRole.role_id === newRole.role_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldRoles.splice(index, 1)
+                    }
+                  })
+                  updatedRoles.push(newRole)
                 })
-                updatedRoles.push(newRole)
-              })
-              // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
-              if (oldRoles.length > 0)
-                updatedRoles = [...updatedRoles, ...oldRoles]
+                // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
+                if (oldRoles.length > 0)
+                  updatedRoles = [...updatedRoles, ...oldRoles]
 
-              setRoles(updatedRoles)
+                return updatedRoles
+              })
               removeLoadingProcess('ROLES')
+
               break
 
             default:
@@ -506,32 +514,34 @@ function App() {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              let oldUsers = users
-              let newUsers = data.users
-              let updatedUsers = []
-              // (mikekebert) Loop through the new users and check them against the existing array
-              newUsers.forEach((newUser) => {
-                oldUsers.forEach((oldUser, index) => {
-                  if (
-                    oldUser !== null &&
-                    newUser !== null &&
-                    oldUser.user_id === newUser.user_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldUsers.splice(index, 1)
-                  }
+              setUsers((prevUsers) => {
+                let oldUsers = prevUsers
+                let newUsers = data.users
+                let updatedUsers = []
+                // (mikekebert) Loop through the new users and check them against the existing array
+                newUsers.forEach((newUser) => {
+                  oldUsers.forEach((oldUser, index) => {
+                    if (
+                      oldUser !== null &&
+                      newUser !== null &&
+                      oldUser.user_id === newUser.user_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldUsers.splice(index, 1)
+                    }
+                  })
+                  updatedUsers.push(newUser)
                 })
-                updatedUsers.push(newUser)
-              })
-              // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-              if (oldUsers.length > 0)
-                updatedUsers = [...updatedUsers, ...oldUsers]
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedUsers.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
+                if (oldUsers.length > 0)
+                  updatedUsers = [...updatedUsers, ...oldUsers]
+                // (mikekebert) Sort the array by data created, newest on top
+                updatedUsers.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
-              setUsers(updatedUsers)
+                return updatedUsers
+              })
               removeLoadingProcess('USERS')
 
               break
@@ -542,40 +552,45 @@ function App() {
               break
 
             case 'USER_UPDATED':
-              setUsers(
-                users.map((x) =>
+              setUsers((prevUsers) => {
+                return prevUsers.map((x) =>
                   x.user_id === data.updatedUser.user_id ? data.updatedUser : x
                 )
-              )
+              })
               setUser(data.updatedUser)
+
               break
 
             case 'PASSWORD_UPDATED':
               // (eldersonar) Replace the user with the updated user based on password)
-              // console.log('PASSWORD UPDATED')
-              setUsers(
-                users.map((x) =>
+              setUsers((prevUsers) => {
+                return prevUsers.map((x) =>
                   x.user_id === data.updatedUserPassword.user_id
                     ? data.updatedUserPassword
                     : x
                 )
-              )
+              })
+
               break
 
             case 'USER_CREATED':
-              let newUser = data.user[0]
-              let oldUsers2 = users
-              oldUsers2.push(newUser)
-              setUsers(oldUsers2)
+              setUsers((prevUsers) => {
+                let updatedUsers = [...prevUsers, data.user[0]]
+                return updatedUsers.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+              })
               setUser(data.user[0])
+
               break
 
             case 'USER_DELETED':
-              // console.log('USER DELETED')
-              const index = users.findIndex((v) => v.user_id === data)
-              let alteredUsers = [...users]
-              alteredUsers.splice(index, 1)
-              setUsers(alteredUsers)
+              setUsers((prevUsers) => {
+                const index = prevUsers.findIndex((v) => v.user_id === data)
+                let alteredUsers = [...prevUsers]
+                alteredUsers.splice(index, 1)
+                return alteredUsers
+              })
 
               break
 
@@ -604,38 +619,44 @@ function App() {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-              let oldCredentials = credentials
-              let newCredentials = data.credential_records
-              let updatedCredentials = []
-              // (mikekebert) Loop through the new credentials and check them against the existing array
-              newCredentials.forEach((newCredential) => {
-                oldCredentials.forEach((oldCredential, index) => {
-                  if (
-                    oldCredential !== null &&
-                    newCredential !== null &&
-                    oldCredential.credential_exchange_id ===
-                      newCredential.credential_exchange_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldCredentials.splice(index, 1)
+              setCredentials((prevCred) => {
+                let oldCredentials = prevCred
+                let newCredentials = data.credential_records
+                let updatedCredentials = []
+                // (mikekebert) Loop through the new credentials and check them against the existing array
+                newCredentials.forEach((newCredential) => {
+                  oldCredentials.forEach((oldCredential, index) => {
+                    if (
+                      oldCredential !== null &&
+                      newCredential !== null &&
+                      oldCredential.credential_exchange_id ===
+                        newCredential.credential_exchange_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldCredentials.splice(index, 1)
+                    }
+                  })
+                  updatedCredentials.push(newCredential)
+                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                  if (newCredential.connection_id === focusedConnectionID) {
+                    setFocusedConnectionID('')
                   }
                 })
-                updatedCredentials.push(newCredential)
-                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                if (newCredential.connection_id === focusedConnectionID) {
-                  setFocusedConnectionID('')
-                }
-              })
-              // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
-              if (oldCredentials.length > 0)
-                updatedCredentials = [...updatedCredentials, ...oldCredentials]
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedCredentials.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
+                if (oldCredentials.length > 0)
+                  updatedCredentials = [
+                    ...updatedCredentials,
+                    ...oldCredentials,
+                  ]
+                // (mikekebert) Sort the array by data created, newest on top
+                updatedCredentials.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
-              setCredentials(updatedCredentials)
+                return updatedCredentials
+              })
               removeLoadingProcess('CREDENTIALS')
+
               break
 
             case 'CREDENTIALS_ERROR':
@@ -660,43 +681,46 @@ function App() {
               break
 
             case 'PRESENTATION_REPORTS':
-              let oldPresentations = presentationReports
-              let newPresentations = data.presentation_reports
-              let updatedPresentations = []
+              setPresentationReports((prevPresentations) => {
+                let oldPresentations = prevPresentations
+                let newPresentations = data.presentation_reports
+                let updatedPresentations = []
 
-              // (mikekebert) Loop through the new presentation and check them against the existing array
-              newPresentations.forEach((newPresentation) => {
-                oldPresentations.forEach((oldPresentation, index) => {
-                  if (
-                    oldPresentation !== null &&
-                    newPresentation !== null &&
-                    oldPresentation.presentation_exchange_id ===
-                      newPresentation.presentation_exchange_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    console.log('splice', oldPresentation)
-                    oldPresentations.splice(index, 1)
+                // (mikekebert) Loop through the new presentation and check them against the existing array
+                newPresentations.forEach((newPresentation) => {
+                  oldPresentations.forEach((oldPresentation, index) => {
+                    if (
+                      oldPresentation !== null &&
+                      newPresentation !== null &&
+                      oldPresentation.presentation_exchange_id ===
+                        newPresentation.presentation_exchange_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      console.log('splice', oldPresentation)
+                      oldPresentations.splice(index, 1)
+                    }
+                  })
+                  updatedPresentations.push(newPresentation)
+                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                  if (newPresentation.connection_id === focusedConnectionID) {
+                    setFocusedConnectionID('')
                   }
                 })
-                updatedPresentations.push(newPresentation)
-                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                if (newPresentation.connection_id === focusedConnectionID) {
-                  setFocusedConnectionID('')
-                }
-              })
-              // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
-              if (oldPresentations.length > 0)
-                updatedPresentations = [
-                  ...updatedPresentations,
-                  ...oldPresentations,
-                ]
-              // (mikekebert) Sort the array by date created, newest on top
-              updatedPresentations.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
+                if (oldPresentations.length > 0)
+                  updatedPresentations = [
+                    ...updatedPresentations,
+                    ...oldPresentations,
+                  ]
+                // (mikekebert) Sort the array by date created, newest on top
+                updatedPresentations.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
-              setPresentationReports(updatedPresentations)
+                return updatedPresentations
+              })
               removeLoadingProcess('PRESENTATIONS')
+
               break
 
             default:
@@ -818,6 +842,7 @@ function App() {
               console.log(data)
               console.log('Privileges Error', data.error)
               setErrorMessage(data.error)
+              removeLoadingProcess('GOVERNANCE')
               break
 
             case 'PRIVILEGES_SUCCESS':
@@ -861,22 +886,21 @@ function App() {
   }
 
   function addLoadingProcess(process) {
-    loadingArray.push(process)
+    loadingList.push(process)
   }
 
   function clearLoadingProcess() {
-    loadingArray = []
+    loadingList = []
     setAppIsLoaded(true)
   }
 
   function removeLoadingProcess(process) {
-    const index = loadingArray.indexOf(process)
-
+    const index = loadingList.indexOf(process)
     if (index > -1) {
-      loadingArray.splice(index, 1)
+      loadingList.splice(index, 1)
     }
 
-    if (loadingArray.length === 0) {
+    if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
   }
@@ -890,7 +914,7 @@ function App() {
 
   // Update theme state locally
   const updateTheme = (update) => {
-    return setTheme({ ...theme, ...update })
+    return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
   }
 
   // Update theme in the database
@@ -921,7 +945,7 @@ function App() {
       for (let key in defaultTheme)
         if ((key = undoKey)) {
           const undo = { [`${key}`]: defaultTheme[key] }
-          return setTheme({ ...theme, ...undo })
+          return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
         }
     }
   }
