@@ -77,7 +77,7 @@ If you are a new contributor to the project, please read our [contribution guide
 
 ## License
 
-Copyright © The Cardea Project 2022. All rights reserved. 
+Copyright © The Cardea Project 2022. All rights reserved.
 
 This project is licensed under the Apache License Version 2.0. Please see the LICENSE.md file for the complete license and the LICENSE_3RD_PARTY.md file for a list of dependencies and their licenses.
 
