@@ -68,12 +68,9 @@ function App() {
 
   const cookies = new Cookies()
 
-<<<<<<< HEAD
-=======
   // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
   const loadingList = useMemo(() => [], [])
 
->>>>>>> main
   const setNotification = useNotification()
 
   // Websocket reference hook
@@ -125,12 +122,9 @@ function App() {
 
   // Governance state
   const [privileges, setPrivileges] = useState([])
-<<<<<<< HEAD
   const [governanceOptions, setGovernanceOptions] = useState([])
   const [selectedGovernance, setSelectedGovernance] = useState('')
-=======
   const [actionNotification, setActionNotification] = useState('')
->>>>>>> main
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -636,22 +630,6 @@ function App() {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-<<<<<<< HEAD
-              let oldCredentials = credentials
-              let newCredentials = data.credential_records
-              let updatedCredentials = []
-              // (mikekebert) Loop through the new credentials and check them against the existing array
-              newCredentials.forEach((newCredential) => {
-                oldCredentials.forEach((oldCredential, index) => {
-                  if (
-                    oldCredential !== null &&
-                    newCredential !== null &&
-                    oldCredential.credential_exchange_id ===
-                    newCredential.credential_exchange_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldCredentials.splice(index, 1)
-=======
               setCredentials((prevCred) => {
                 let oldCredentials = prevCred
                 let newCredentials = data.credential_records
@@ -673,7 +651,6 @@ function App() {
                   // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
                   if (newCredential.connection_id === focusedConnectionID) {
                     setFocusedConnectionID('')
->>>>>>> main
                   }
                 })
                 // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
@@ -715,24 +692,6 @@ function App() {
               break
 
             case 'PRESENTATION_REPORTS':
-<<<<<<< HEAD
-              let oldPresentations = presentationReports
-              let newPresentations = data.presentation_reports
-              let updatedPresentations = []
-
-              // (mikekebert) Loop through the new presentation and check them against the existing array
-              newPresentations.forEach((newPresentation) => {
-                oldPresentations.forEach((oldPresentation, index) => {
-                  if (
-                    oldPresentation !== null &&
-                    newPresentation !== null &&
-                    oldPresentation.presentation_exchange_id ===
-                    newPresentation.presentation_exchange_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    console.log('splice', oldPresentation)
-                    oldPresentations.splice(index, 1)
-=======
               setPresentationReports((prevPresentations) => {
                 let oldPresentations = prevPresentations
                 let newPresentations = data.presentation_reports
@@ -756,7 +715,6 @@ function App() {
                   // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
                   if (newPresentation.connection_id === focusedConnectionID) {
                     setFocusedConnectionID('')
->>>>>>> main
                   }
                 })
                 // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
@@ -921,38 +879,18 @@ function App() {
   }
 
   function addLoadingProcess(process) {
-<<<<<<< HEAD
-    setLoadingArray(loadingArray.push(process))
-    console.log(loadingArray)
-  }
-
-  function clearLoadingProcess() {
-    setLoadingArray([])
-=======
     loadingList.push(process)
   }
 
   function clearLoadingProcess() {
     loadingList = []
->>>>>>> main
     setAppIsLoaded(true)
   }
 
   function removeLoadingProcess(process) {
-<<<<<<< HEAD
-    console.log("REMOVING PROCESS " + process)
-    console.log("LOADING ARRAY: " + loadingArray)
-    console.log("LOADING ARRAY LENGTH: " + loadingArray.length)
-    console.log("LOADING ARRAY TYPE: " + typeof loadingArray)
-    const index = loadingArray.indexOf(process)
-
-    if (index > -1) {
-      setLoadingArray(loadingArray.splice(index, 1))
-=======
     const index = loadingList.indexOf(process)
     if (index > -1) {
       loadingList.splice(index, 1)
->>>>>>> main
     }
 
     if (loadingList.length === 0) {
