@@ -63,8 +63,6 @@ const StyledSubLink = styled(NavLink)`
 function AppMenu(props) {
   const localUser = props.loggedInUserState
 
-  // console.log(props.selectedGovernance.value)
-
   let pathMatch = ''
   if (props.match.path !== undefined) {
     pathMatch = props.match.path
@@ -168,14 +166,6 @@ function AppMenu(props) {
             )}
             no={() => ''}
           />
-          <div
-            className='selected_governance'
-          >
-            {/* <StyledLink to="/settings">Settings</StyledLink>
-             */}
-             <h4>Governance in use</h4>
-             <p>{props.selectedGovernance ? props.selectedGovernance.value : ''}</p>
-          </div>
         </List>
       </nav>
     )

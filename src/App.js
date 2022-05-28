@@ -13,6 +13,7 @@ import styled, { ThemeProvider } from 'styled-components'
 
 import AccountSetup from './UI/AccountSetup'
 import AppHeader from './UI/AppHeader'
+import AppFooter from './UI/AppFooter'
 
 import { check, CanUser } from './UI/CanUser'
 import rules from './UI/rbac-rules'
@@ -124,7 +125,6 @@ function App() {
   const [privileges, setPrivileges] = useState([])
   const [governanceOptions, setGovernanceOptions] = useState([])
   const [selectedGovernance, setSelectedGovernance] = useState('')
-  const [actionNotification, setActionNotification] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -212,8 +212,8 @@ function App() {
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
       addLoadingProcess('SCHEMAS')
-      // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
-      // addLoadingProcess('GOVERNANCE')
+      sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+      addLoadingProcess('GOVERNANCE')
 
       sendMessage('GOVERNANCE', 'GET_ALL', {})
       addLoadingProcess('ALL_GOVERNANCE')
@@ -270,7 +270,7 @@ function App() {
 
   // Send a message to the Controller server
   function sendMessage(context, type, data = {}) {
-    if (websocket) {
+    if (controllerSocket.current.readyState === 1) {
       controllerSocket.current.send(JSON.stringify({ context, type, data }))
     }
   }
@@ -641,7 +641,7 @@ function App() {
                       oldCredential !== null &&
                       newCredential !== null &&
                       oldCredential.credential_exchange_id ===
-                        newCredential.credential_exchange_id
+                      newCredential.credential_exchange_id
                     ) {
                       // (mikekebert) If you find a match, delete the old copy from the old array
                       oldCredentials.splice(index, 1)
@@ -704,7 +704,7 @@ function App() {
                       oldPresentation !== null &&
                       newPresentation !== null &&
                       oldPresentation.presentation_exchange_id ===
-                        newPresentation.presentation_exchange_id
+                      newPresentation.presentation_exchange_id
                     ) {
                       // (mikekebert) If you find a match, delete the old copy from the old array
                       console.log('splice', oldPresentation)
@@ -843,6 +843,26 @@ function App() {
             case 'GOVERNANCE_OPTION_ADDED':
               console.log('GOVERNANCE_OPTION_ADDED')
               setGovernanceOptions((prev) => {
+
+                console.log(prev)
+                console.log(data.governance_path)
+
+                prev.forEach((governanceOption, index) => {
+                  console.log("forEach")
+                  console.log(governanceOption.governance_path)
+                  console.log(data.governance_path)
+                  if (
+                    governanceOption !== null &&
+                    data.governance_path !== null &&
+                    governanceOption.governance_path ===
+                    data.governance_path.governance_path
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    console.log('splice', governanceOption)
+                    prev.splice(index, 1)
+                  }
+                })
+
                 let updatedGovernanceOptions = [...prev, data.governance_path]
                 return updatedGovernanceOptions
               })
@@ -851,8 +871,24 @@ function App() {
 
             case 'SELECTED_GOVERNANCE':
               console.log('SELECTED_GOVERNANCE')
-              removeLoadingProcess('SELECTED_GOVERNANCE')
+              console.log(data)
+
               setSelectedGovernance(data.selected_governance)
+              removeLoadingProcess('SELECTED_GOVERNANCE')
+              break
+
+            case 'UPDATED_SELECTED_GOVERNANCE':
+              console.log('UPDATED_SELECTED_GOVERNANCE')
+              console.log(data)
+
+              setSelectedGovernance(data.selected_governance)
+
+              console.log("==================")
+              // setTimeout(() => {
+              console.log("asking for new privilages ")
+              sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+              // }, 3000)
+              console.log("==================")
               break
 
             default:
@@ -1114,6 +1150,9 @@ function App() {
                             focusedConnectionID={focusedConnectionID}
                           />
                         </Main>
+                        <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                       </Frame>
                     )
                   }}
@@ -1136,6 +1175,9 @@ function App() {
                           <Main>
                             <p>Invitations</p>
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1168,6 +1210,9 @@ function App() {
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1208,6 +1253,9 @@ function App() {
                               errorMessage={errorMessage}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1237,6 +1285,9 @@ function App() {
                               credentials={credentials}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1264,6 +1315,9 @@ function App() {
                               credentials={credentials}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1289,6 +1343,9 @@ function App() {
                         <Main>
                           <p>Verification</p>
                         </Main>
+                        <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                       </Frame>
                     )
                   }}
@@ -1310,6 +1367,9 @@ function App() {
                         <Main>
                           <p>Messages</p>
                         </Main>
+                        <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                       </Frame>
                     )
                   }}
@@ -1337,6 +1397,9 @@ function App() {
                               contacts={contacts}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1367,6 +1430,9 @@ function App() {
                               contacts={contacts}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1402,6 +1468,9 @@ function App() {
                               sendRequest={sendMessage}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1428,6 +1497,9 @@ function App() {
                             history={history}
                           />
                         </Main>
+                        <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                       </Frame>
                     )
                   }}
@@ -1466,6 +1538,9 @@ function App() {
                               selectedGovernance={selectedGovernance}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}>
+                          </AppFooter>
                         </Frame>
                       )
                     } else {
