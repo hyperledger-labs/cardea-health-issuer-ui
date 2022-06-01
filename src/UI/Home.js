@@ -92,21 +92,21 @@ function Home(props) {
 
   const presentOutOfBand = () => {
     // Simple use of governance
-    if (privileges && privileges.includes('verify_identity')) {
+    // if (privileges && privileges.includes('verify_identity')) {
       setDisplayModalIsOpen((o) => !o)
       props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
-    } else {
-      setNotification("Error: you don't have the right privileges", 'error')
-    }
+    // } else {
+    //   setNotification("Error: you don't have the right privileges", 'error')
+    // }
   }
 
   const presentInvitation = () => {
-    if (privileges && privileges.includes('verify_identity')) {
+    // if (privileges && privileges.includes('verify_identity')) {
       setDisplayModalIsOpen((o) => !o)
       props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
-    } else {
-      setNotification("Error: you don't have the right privileges", 'error')
-    }
+    // } else {
+    //   setNotification("Error: you don't have the right privileges", 'error')
+    // }
   }
 
   return (

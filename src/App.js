@@ -212,8 +212,8 @@ function App() {
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
       addLoadingProcess('SCHEMAS')
-      sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
-      addLoadingProcess('GOVERNANCE')
+      // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+      // addLoadingProcess('GOVERNANCE')
 
       sendMessage('GOVERNANCE', 'GET_ALL', {})
       addLoadingProcess('ALL_GOVERNANCE')
@@ -880,15 +880,14 @@ function App() {
             case 'UPDATED_SELECTED_GOVERNANCE':
               console.log('UPDATED_SELECTED_GOVERNANCE')
               console.log(data)
-
               setSelectedGovernance(data.selected_governance)
 
-              console.log("==================")
-              // setTimeout(() => {
-              console.log("asking for new privilages ")
-              sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
-              // }, 3000)
-              console.log("==================")
+              // console.log("==================")
+              // // setTimeout(() => {
+              // console.log("asking for new privilages ")
+              // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+              // // }, 3000)
+              // console.log("==================")
               break
 
             default:
