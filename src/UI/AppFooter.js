@@ -20,11 +20,12 @@ const Footer = styled.div`
 function AppFooter(props) {
   const selectedGovernance = props.selectedGovernance
 
-
   return (
     <Footer id="app-footer">
       {/* <h3 style={{ marginTop: '0.2em', marginBottom: '0em' }}>Governance in use</h3> */}
-      <p style={{margin: '0.3em 0 0.5em 0'}}>Governance in use: {selectedGovernance ? selectedGovernance.label : ''}</p>
+      <p style={{ margin: '0.3em 0 0.5em 0' }}>
+        Governance in use: {selectedGovernance ? selectedGovernance.label : ''}
+      </p>
     </Footer>
   )
 }

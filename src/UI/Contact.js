@@ -96,15 +96,6 @@ function Contact(props) {
     }
   }, [error, success])
 
-  // // Get governance privileges
-  // useEffect(() => {
-  //   isMounted.current = true
-  //   props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
-  //   return () => {
-  //     isMounted.current = false
-  //   }
-  // }, [])
-
   useEffect(() => {
     setContactSelected(contactToSelect)
   }, [contactToSelect])
@@ -358,14 +349,15 @@ function Contact(props) {
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() =>
-                  // privileges && privileges.includes('issue_lab_result')
-                  //   ? 
+                onClick={
+                  () =>
+                    // privileges && privileges.includes('issue_lab_result')
+                    //   ?
                     setLabResultModalIsOpen((o) => !o)
-                    // : setNotification(
-                    //     "Error: you don't have the right privileges",
-                    //     'error'
-                    //   )
+                  // : setNotification(
+                  //     "Error: you don't have the right privileges",
+                  //     'error'
+                  //   )
                 }
               >
                 Issue Lab Result Credential

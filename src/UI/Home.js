@@ -75,15 +75,6 @@ function Home(props) {
     } else return
   }, [error, success, warning])
 
-  // // Get governance privileges
-  // useEffect(() => {
-  //   isMounted.current = true
-  //   props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
-  //   return () => {
-  //     isMounted.current = false
-  //   }
-  // }, [])
-
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)
 
@@ -93,8 +84,8 @@ function Home(props) {
   const presentOutOfBand = () => {
     // Simple use of governance
     // if (privileges && privileges.includes('verify_identity')) {
-      setDisplayModalIsOpen((o) => !o)
-      props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
     // } else {
     //   setNotification("Error: you don't have the right privileges", 'error')
     // }
@@ -102,8 +93,8 @@ function Home(props) {
 
   const presentInvitation = () => {
     // if (privileges && privileges.includes('verify_identity')) {
-      setDisplayModalIsOpen((o) => !o)
-      props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
     // } else {
     //   setNotification("Error: you don't have the right privileges", 'error')
     // }

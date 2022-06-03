@@ -641,7 +641,7 @@ function App() {
                       oldCredential !== null &&
                       newCredential !== null &&
                       oldCredential.credential_exchange_id ===
-                      newCredential.credential_exchange_id
+                        newCredential.credential_exchange_id
                     ) {
                       // (mikekebert) If you find a match, delete the old copy from the old array
                       oldCredentials.splice(index, 1)
@@ -704,7 +704,7 @@ function App() {
                       oldPresentation !== null &&
                       newPresentation !== null &&
                       oldPresentation.presentation_exchange_id ===
-                      newPresentation.presentation_exchange_id
+                        newPresentation.presentation_exchange_id
                     ) {
                       // (mikekebert) If you find a match, delete the old copy from the old array
                       console.log('splice', oldPresentation)
@@ -843,19 +843,18 @@ function App() {
             case 'GOVERNANCE_OPTION_ADDED':
               console.log('GOVERNANCE_OPTION_ADDED')
               setGovernanceOptions((prev) => {
-
                 console.log(prev)
                 console.log(data.governance_path)
 
                 prev.forEach((governanceOption, index) => {
-                  console.log("forEach")
+                  console.log('forEach')
                   console.log(governanceOption.governance_path)
                   console.log(data.governance_path)
                   if (
                     governanceOption !== null &&
                     data.governance_path !== null &&
                     governanceOption.governance_path ===
-                    data.governance_path.governance_path
+                      data.governance_path.governance_path
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', governanceOption)
@@ -1150,8 +1149,8 @@ function App() {
                           />
                         </Main>
                         <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1175,8 +1174,8 @@ function App() {
                             <p>Invitations</p>
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1210,8 +1209,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1253,8 +1252,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1285,8 +1284,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1315,8 +1314,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1343,8 +1342,8 @@ function App() {
                           <p>Verification</p>
                         </Main>
                         <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1367,8 +1366,8 @@ function App() {
                           <p>Messages</p>
                         </Main>
                         <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1397,8 +1396,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1430,8 +1429,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1468,8 +1467,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1497,8 +1496,8 @@ function App() {
                           />
                         </Main>
                         <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1538,8 +1537,8 @@ function App() {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}>
-                          </AppFooter>
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {

@@ -11,7 +11,7 @@ import ReactTooltip from 'react-tooltip'
 import { IconHelp } from './CommonStylesTables'
 
 // import { Select } from './FormsCommon'
-import Select from "react-select"
+import Select from 'react-select'
 
 const H3 = styled.h3`
   margin: 5px 0;
@@ -141,8 +141,12 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
-  const [selectedGovernance, setSelectedGovernance] = useState(props.selectedGovernance)
-  const [governanceOptions, setGovernanceOptions] = useState(props.governanceOptions)
+  const [selectedGovernance, setSelectedGovernance] = useState(
+    props.selectedGovernance
+  )
+  const [governanceOptions, setGovernanceOptions] = useState(
+    props.governanceOptions
+  )
 
   // console.log(props.selectedGovernance)
   // console.log(props.governanceOptions)
@@ -153,11 +157,15 @@ function Settings(props) {
     // (eldersonar) Handle selected governance state
     if (props.selectedGovernance) {
       setSelectedGovernance(props.selectedGovernance)
-    }  
+    }
     // (eldersonar) Handle governance options state
     if (props.governanceOptions) {
       for (let i = 0; i < props.governanceOptions.length; i++) {
-        options.push({ id: props.governanceOptions[i].id, label: props.governanceOptions[i].governance_path, value: props.governanceOptions[i].governance_path })
+        options.push({
+          id: props.governanceOptions[i].id,
+          label: props.governanceOptions[i].governance_path,
+          value: props.governanceOptions[i].governance_path,
+        })
       }
       setGovernanceOptions(options)
     }
@@ -826,7 +834,6 @@ function Settings(props) {
         </Form>
       </PageSection>
 
-
       <PageSection>
         <SettingsHeader>Governance Configuration</SettingsHeader>
         <IconHelp
@@ -858,17 +865,13 @@ function Settings(props) {
             placeholder="https://mrg.com/governance.json"
             required
           />
-          <SubmitFormBtn
-            type="submit"
-            onClick={addGovernance}
-          >
+          <SubmitFormBtn type="submit" onClick={addGovernance}>
             Add
           </SubmitFormBtn>
         </Form>
         <H3>Governance file options</H3>
         <OptionSelect />
       </PageSection>
-
 
       <PageSection>
         <SettingsHeader>Theme Settings</SettingsHeader>
