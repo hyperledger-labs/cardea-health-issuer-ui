@@ -12,11 +12,6 @@ const Footer = styled.div`
   background-color: ${(props) => props.theme.primary_color};
   color: ${(props) => props.theme.text_light};
   text-align: center;
-  /*opacity: 50%;
-
-  &:hover {
-    opacity: 100%;
-  }*/
   z-index: 100;
 `
 

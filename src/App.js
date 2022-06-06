@@ -1521,7 +1521,6 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            selectedGovernance={selectedGovernance}
                           />
                           <Main>
                             <Settings
