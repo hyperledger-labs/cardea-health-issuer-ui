@@ -44,15 +44,14 @@ import './App.css'
 const Frame = styled.div`
   /*display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;*/
+  flex-wrap: nowrap;/*
   display: grid;
-  grid-template-columns: 1fr min-content;
-  grid-template-columns: 240px 1fr;
+  grid-template-columns: 240px 1fr;*/
 `
 const Main = styled.main`
-  /*flex: 9;*/
-  grid-row: 1;
-  grid-column: 2;
+  flex: 9;
+  /*grid-row: 1;
+  grid-column: 2;*/
   padding: 30px;
 `
 
@@ -1539,7 +1538,6 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            selectedGovernance={selectedGovernance}
                           />
                           <Main>
                             <Settings
