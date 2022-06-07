@@ -5,6 +5,7 @@ import {
   Modal,
   ModalHeader,
   ModalContent,
+  ModalContentWrapper,
   FormContainer,
   InputFieldModal,
   ModalLabel,
@@ -27,14 +28,22 @@ function FormInvitationAccept(props) {
 
     const form = invitationForm.current
 
-    props.sendRequest(
-      'INVITATIONS',
-      'ACCEPT_INVITATION',
-      `${form['invitation'].value}`
-    )
+    if (props.oob) {
+      props.sendRequest(
+        'OUT_OF_BAND',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    } else {
+      props.sendRequest(
+        'INVITATIONS',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    }
 
     closeModal()
-    window.location.reload()
+    // window.location.reload()
   }
 
   return (
@@ -45,27 +54,29 @@ function FormInvitationAccept(props) {
     >
       <Modal className="modal">
         <ModalHeader>Scan QR Code</ModalHeader>
-        <ModalContent>
-          <form id="form" onSubmit={handleSubmit} ref={invitationForm}>
-            <FormContainer>
-              <ModalLabel htmlFor="invitation">Invitation</ModalLabel>
-              <InputFieldModal
-                type="invitation"
-                name="invitation"
-                id="invitation"
-                placeholder="Invitation URL"
-                required
-              />
-            </FormContainer>
-            <Actions>
-              <CancelBtn type="button" onClick={closeModal}>
-                Cancel
-              </CancelBtn>
-              <SubmitBtnModal type="submit">Submit</SubmitBtnModal>
-            </Actions>
-          </form>
-        </ModalContent>
-        <CloseBtn onClick={closeModal}>&times;</CloseBtn>
+        <ModalContentWrapper>
+          <ModalContent>
+            <form id="form" onSubmit={handleSubmit} ref={invitationForm}>
+              <FormContainer>
+                <ModalLabel htmlFor="invitation">Invitation</ModalLabel>
+                <InputFieldModal
+                  type="invitation"
+                  name="invitation"
+                  id="invitation"
+                  placeholder="Invitation URL"
+                  required
+                />
+              </FormContainer>
+              <Actions>
+                <CancelBtn type="button" onClick={closeModal}>
+                  Cancel
+                </CancelBtn>
+                <SubmitBtnModal type="submit">Submit</SubmitBtnModal>
+              </Actions>
+            </form>
+          </ModalContent>
+          <CloseBtn onClick={closeModal}>&times;</CloseBtn>
+        </ModalContentWrapper>
       </Modal>
     </StyledPopup>
   )

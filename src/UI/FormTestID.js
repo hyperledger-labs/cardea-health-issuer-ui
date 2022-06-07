@@ -1,5 +1,7 @@
 import React, { useRef } from 'react'
 
+import { useNotification } from './NotificationProvider'
+
 import {
   StyledPopup,
   InputBox,
@@ -18,6 +20,7 @@ import {
 
 function FormTestID(props) {
   const credentialForm = useRef(null)
+  const setNotification = useNotification()
 
   const surname =
     props.contactSelected && props.contactSelected.Passport
@@ -185,7 +188,13 @@ function FormTestID(props) {
           value: form.get('ordering_facility_name') || '',
         },
       ]
+    } else {
+      return setNotification(
+        'Please "Edit" the Contact to Provide Demographic Information.',
+        'error'
+      )
     }
+
     let newCredential = {
       connectionID: props.contactSelected.Connections[0].connection_id,
       schemaID: 'X2JpGAqC7ZFY4hwKG6kLw9:2:Test_ID:1.2',

@@ -10,6 +10,12 @@ import ReactTooltip from 'react-tooltip'
 
 import { IconHelp } from './CommonStylesTables'
 
+import Select from 'react-select'
+
+const H3 = styled.h3`
+  margin: 5px 0;
+`
+
 const SettingsHeader = styled.h2`
   display: inline-block;
   margin-right: 10px;
@@ -113,24 +119,16 @@ const SaveBtn = styled.button`
 `
 
 const SubmitFormBtn = styled.button``
-const SMTPInput = styled.input`
+const BlockInput = styled.input`
   display: block;
   margin-bottom: 15px;
 `
-const ColorInput = styled.input``
-const FileInput = styled.input``
-const SMTPForm = styled.form``
-const OrganizationDetailsForm = styled.form`
-  margin-bottom: 15px;
-  height: 120px;
-`
-const ManifestForm = styled.form`
-  margin-bottom: 15px;
-  height: 215px;
-`
+
+const Input = styled.input``
+
 const Form = styled.form`
-  margin-bottom: 15px;
-  height: 72px;
+  overflow: hidden;
+  margin-bottom: 10px;
 `
 
 function Settings(props) {
@@ -139,7 +137,38 @@ function Settings(props) {
 
   const error = props.errorMessage
   const success = props.successMessage
+  let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
+
+  const [selectedGovernance, setSelectedGovernance] = useState(
+    props.selectedGovernance
+  )
+  const [governanceOptions, setGovernanceOptions] = useState(
+    props.governanceOptions
+  )
+
+  // console.log(props.selectedGovernance)
+  // console.log(props.governanceOptions)
+
+  // (eldersonar) Setting up selected governance and governance options
+  useEffect(() => {
+    let options = []
+    // (eldersonar) Handle selected governance state
+    if (props.selectedGovernance) {
+      setSelectedGovernance(props.selectedGovernance)
+    }
+    // (eldersonar) Handle governance options state
+    if (props.governanceOptions) {
+      for (let i = 0; i < props.governanceOptions.length; i++) {
+        options.push({
+          id: props.governanceOptions[i].id,
+          label: props.governanceOptions[i].governance_path,
+          value: props.governanceOptions[i].governance_path,
+        })
+      }
+      setGovernanceOptions(options)
+    }
+  }, [props.selectedGovernance, props.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -180,8 +209,13 @@ function Settings(props) {
   // SMTP input references
   const smtpForm = useRef(null)
   const host = useRef(null)
+  const mailUsername = useRef(null)
   const userEmail = useRef(null)
   const userPassword = useRef(null)
+  const port = useRef(null)
+  const mailer = useRef(null)
+  const encryption = useRef(null)
+  const mailFromName = useRef(null)
 
   // Organization input references
   const organizationForm = useRef(null)
@@ -194,6 +228,10 @@ function Settings(props) {
   const manifestName = useRef(null)
   const manifestThemeColor = useRef(null)
   const manifestBackgroundColor = useRef(null)
+
+  const governanceForm = useRef(null)
+  const governancePath = useRef(null)
+  const governanceFileOption = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -227,14 +265,21 @@ function Settings(props) {
 
     const smtpConfigs = {
       host: form.get('host'),
+      port: form.get('port'),
+      mailer: form.get('mailer'),
+      mailFromName: form.get('mailFromName'),
+      encryption: form.get('encryption'),
       auth: {
-        user: form.get('email'),
+        email: form.get('email'),
         pass: form.get('password'),
+        mailUsername: form.get('mailUsername'),
       },
     }
+
     props.sendRequest('SETTINGS', 'SET_SMTP', smtpConfigs)
 
-    smtpForm.current.reset()
+    // (eldersonar) Wait for 2 seconds to update the SMTP object
+    setTimeout(() => props.sendRequest('SETTINGS', 'GET_SMTP'), 2000)
   }
 
   // Save manifest settings
@@ -261,10 +306,10 @@ function Settings(props) {
     e.preventDefault()
     const form = new FormData(organizationForm.current)
     const name = {
-      companyName: form.get('organizationName'),
+      organizationName: form.get('organizationName'),
       title: form.get('siteTitle'),
     }
-    props.sendRequest('SETTINGS', 'SET_ORGANIZATION_NAME', name)
+    props.sendRequest('SETTINGS', 'SET_ORGANIZATION', name)
     organizationForm.current.reset()
   }
 
@@ -424,6 +469,35 @@ function Settings(props) {
     }
   }
 
+  // Save manifest settings
+  const addGovernance = (e) => {
+    e.preventDefault()
+    const form = new FormData(governanceForm.current)
+    const goverancePath = form.get('governance_path')
+
+    props.sendRequest('GOVERNANCE', 'ADD_GOVERNANCE', goverancePath)
+
+    governanceForm.current.reset()
+  }
+
+  function selectGovernance(governancePath) {
+    setSelectedGovernance(governancePath)
+    props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
+  }
+
+  const OptionSelect = () => {
+    return (
+      <Select
+        name="governance_paths"
+        placeholder="Select governance..."
+        defaultValue={selectedGovernance}
+        options={governanceOptions}
+        onChange={(e) => selectGovernance(e.value)}
+        menuPortalTarget={document.body}
+      />
+    )
+  }
+
   return (
     <div id="settings">
       <PageHeader title={'Settings'} />
@@ -455,19 +529,19 @@ function Settings(props) {
             web users and search engines.
           </span>
         </ReactTooltip>
-        <OrganizationDetailsForm onSubmit={handleSubmit} ref={organizationForm}>
-          <SMTPInput
+        <Form onSubmit={handleSubmit} ref={organizationForm}>
+          <BlockInput
             name="organizationName"
             placeholder="Organization Name"
             ref={organizationName}
           />
-          <SMTPInput
+          <BlockInput
             name="siteTitle"
             placeholder="Website Title"
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>
-        </OrganizationDetailsForm>
+        </Form>
       </PageSection>
       <PageSection>
         <SettingsHeader>Change Logo</SettingsHeader>
@@ -493,11 +567,11 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleLogoSubmit}>
-          <FileInput
+          <Input
             type="file"
             accept=".jpeg, .jpg, .png, .gif, .webp"
             onChange={logoSelectHandler}
-          ></FileInput>
+          ></Input>
           <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
         </Form>
       </PageSection>
@@ -526,11 +600,11 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleLogo192Submit}>
-          <FileInput
+          <Input
             type="file"
             accept=".png"
             onChange={logo192SelectHandler}
-          ></FileInput>
+          ></Input>
           <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
         </Form>
       </PageSection>
@@ -559,11 +633,11 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleLogo512Submit}>
-          <FileInput
+          <Input
             type="file"
             accept=".png"
             onChange={logo512SelectHandler}
-          ></FileInput>
+          ></Input>
           <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
         </Form>
       </PageSection>
@@ -592,11 +666,11 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleFaviconSubmit}>
-          <FileInput
+          <Input
             type="file"
             accept=".ico"
             onChange={faviconSelectHandler}
-          ></FileInput>
+          ></Input>
           <SubmitFormBtn type="submit">Upload</SubmitFormBtn>
         </Form>
       </PageSection>
@@ -624,33 +698,33 @@ function Settings(props) {
             users with quicker access and a richer experience.
           </span>
         </ReactTooltip>
-        <ManifestForm onSubmit={handleSubmit} ref={manifestDetailsForm}>
-          <SMTPInput
+        <Form onSubmit={handleSubmit} ref={manifestDetailsForm}>
+          <BlockInput
             type="text"
             name="short_manifest_name"
             placeholder="Short name in manifest"
             ref={manifestShortName}
           />
-          <SMTPInput
+          <BlockInput
             type="text"
             name="manifest_name"
             placeholder="Full name in manifest"
             ref={manifestName}
           />
-          <SMTPInput
+          <BlockInput
             type="text"
             name="theme_color"
             placeholder="Theme color (#555555)"
             ref={manifestThemeColor}
           />
-          <SMTPInput
+          <BlockInput
             type="text"
             name="background_color"
             placeholder="Background color (#ffffff)"
             ref={manifestBackgroundColor}
           />
           <SaveBtn onClick={handleManifest}>Save</SaveBtn>
-        </ManifestForm>
+        </Form>
       </PageSection>
 
       <PageSection>
@@ -671,22 +745,133 @@ function Settings(props) {
           <span>
             The SMTP configuration is used for sending
             <br />
-            new user and password reset emails
+            new user and password reset emails.
+            <br />
+            <br />
+            Default gmail SMTP configuration uses only
+            <br />
+            host, user email and user password.
+            <br />
+            <br />
+            For another provider, please refer to
+            <br />
+            its official documentation.
           </span>
         </ReactTooltip>
-        <SMTPForm onSubmit={handleSubmit} ref={smtpForm}>
-          <SMTPInput name="host" placeholder="Host" ref={host} />
-          <SMTPInput name="email" placeholder="User email" ref={userEmail} />
-          <SMTPInput
+        <Form onSubmit={handleSubmit} ref={smtpForm}>
+          <H3>Host</H3>
+          <BlockInput
+            name="host"
+            ref={host}
+            defaultValue={smtpConf ? (smtpConf.host ? smtpConf.host : '') : ''}
+          />
+          <H3>Mail Username</H3>
+          <BlockInput
+            name="mailUsername"
+            ref={mailUsername}
+            ref={host}
+            defaultValue={
+              smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
+            }
+          />
+          <H3>User email</H3>
+          <BlockInput
+            name="email"
+            ref={userEmail}
+            defaultValue={
+              smtpConf ? (smtpConf.auth ? smtpConf.auth.email : '') : ''
+            }
+          />
+          <H3>User password</H3>
+          <BlockInput
             type="password"
             name="password"
-            placeholder="User password"
             ref={userPassword}
-            style={{ display: 'inline-block' }}
+            defaultValue={
+              smtpConf ? (smtpConf.auth ? smtpConf.auth.pass : '') : ''
+            }
+          />
+          <H3>Port</H3>
+          <BlockInput
+            name="port"
+            placeholder="587"
+            ref={port}
+            defaultValue={smtpConf ? (smtpConf.port ? smtpConf.port : '') : ''}
+          />
+          <H3>Mailer</H3>
+          <BlockInput
+            name="mailer"
+            placeholder="smtp"
+            ref={mailer}
+            defaultValue={
+              smtpConf ? (smtpConf.mailer ? smtpConf.mailer : '') : ''
+            }
+          />
+          <H3>Encryption Type</H3>
+          <BlockInput
+            name="encryption"
+            placeholder="tls"
+            ref={encryption}
+            defaultValue={
+              smtpConf ? (smtpConf.encryption ? smtpConf.encryption : '') : ''
+            }
+          />
+          <H3>From Name</H3>
+          <BlockInput
+            name="mailFromName"
+            placeholder="Client Name"
+            ref={mailFromName}
+            defaultValue={
+              smtpConf
+                ? smtpConf.mailFromName
+                  ? smtpConf.mailFromName
+                  : ''
+                : ''
+            }
           />
           <SaveBtn onClick={handleSMTP}>Save</SaveBtn>
-        </SMTPForm>
+        </Form>
       </PageSection>
+
+      <PageSection>
+        <SettingsHeader>Governance Configuration</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="governanceTip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="governanceTip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            You can add a new governance file that
+            <br />
+            will be available for choosing by the admin
+            <br />
+            below.
+          </span>
+        </ReactTooltip>
+        <Form onSubmit={handleSubmit} ref={governanceForm}>
+          <H3>Governance file path</H3>
+          <Input
+            name="governance_path"
+            ref={governancePath}
+            placeholder="https://mrg.com/governance.json"
+            required
+          />
+          <SubmitFormBtn type="submit" onClick={addGovernance}>
+            Add
+          </SubmitFormBtn>
+        </Form>
+        <H3>Governance file options</H3>
+        <OptionSelect />
+      </PageSection>
+
       <PageSection>
         <SettingsHeader>Theme Settings</SettingsHeader>
         <IconHelp
@@ -709,8 +894,8 @@ function Settings(props) {
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit}>
-          <h3>Change primary color</h3>
-          <ColorInput placeholder="Hex or string" ref={primaryColorInput} />
+          <H3>Change primary color</H3>
+          <Input placeholder="Hex or string" ref={primaryColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -733,8 +918,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change secondary color</h3>
-          <ColorInput placeholder="Hex or string" ref={secondaryColorInput} />
+          <H3>Change secondary color</H3>
+          <Input placeholder="Hex or string" ref={secondaryColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -757,8 +942,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change neutral color</h3>
-          <ColorInput placeholder="Hex or string" ref={neutralColorInput} />
+          <H3>Change neutral color</H3>
+          <Input placeholder="Hex or string" ref={neutralColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -781,8 +966,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change negative color</h3>
-          <ColorInput placeholder="Hex or string" ref={negativeColorInput} />
+          <H3>Change negative color</H3>
+          <Input placeholder="Hex or string" ref={negativeColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -805,8 +990,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change warning color</h3>
-          <ColorInput placeholder="Hex or string" ref={warningColorInput} />
+          <H3>Change warning color</H3>
+          <Input placeholder="Hex or string" ref={warningColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -829,8 +1014,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change positive color</h3>
-          <ColorInput placeholder="Hex or string" ref={positiveColorInput} />
+          <H3>Change positive color</H3>
+          <Input placeholder="Hex or string" ref={positiveColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -853,8 +1038,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change text color</h3>
-          <ColorInput placeholder="Hex or string" ref={textColorInput} />
+          <H3>Change text color</H3>
+          <Input placeholder="Hex or string" ref={textColorInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -872,8 +1057,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change text light</h3>
-          <ColorInput placeholder="Hex or string" ref={textLightInput} />
+          <H3>Change text light</H3>
+          <Input placeholder="Hex or string" ref={textLightInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -891,11 +1076,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change border</h3>
-          <ColorInput
-            placeholder="5px solid #ff0000 or string"
-            ref={borderInput}
-          />
+          <H3>Change border</H3>
+          <Input placeholder="5px solid #ff0000 or string" ref={borderInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -913,8 +1095,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change drop shadow</h3>
-          <ColorInput
+          <H3>Change drop shadow</H3>
+          <Input
             placeholder="3px 3px 3px rgba(0, 0, 0, 0.3)"
             ref={dropShadowInput}
           />
@@ -937,11 +1119,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change primary background</h3>
-          <ColorInput
-            placeholder="Hex or string"
-            ref={primaryBackgroundInput}
-          />
+          <H3>Change primary background</H3>
+          <Input placeholder="Hex or string" ref={primaryBackgroundInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
@@ -964,11 +1143,8 @@ function Settings(props) {
           </UndoStyle>
         </Form>
         <Form onSubmit={handleSubmit}>
-          <h3>Change secondary background</h3>
-          <ColorInput
-            placeholder="Hex or string"
-            ref={secondaryBackgroundInput}
-          />
+          <H3>Change secondary background</H3>
+          <Input placeholder="Hex or string" ref={secondaryBackgroundInput} />
           <SubmitFormBtn
             type="submit"
             onClick={() =>
