@@ -10,7 +10,6 @@ import ReactTooltip from 'react-tooltip'
 
 import { IconHelp } from './CommonStylesTables'
 
-// import { Select } from './FormsCommon'
 import Select from 'react-select'
 
 const H3 = styled.h3`

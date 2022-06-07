@@ -3,18 +3,16 @@ import styled from 'styled-components'
 
 const Footer = styled.div`
   position: fixed;
-  left: 0;
+  right: 0;
+  left: 240px;
   bottom: 0;
-  width: 100%;
+  /*grid-row: 2;
+  grid-column: 1 / span 2;*/
   height: 30px;
   background-color: ${(props) => props.theme.primary_color};
-  color: ${(props) => props.theme.secondary_color};
+  color: ${(props) => props.theme.text_light};
   text-align: center;
-  opacity: 50%;
-
-  &:hover {
-    opacity: 100%;
-  }
+  z-index: 100;
 `
 
 function AppFooter(props) {
