@@ -103,6 +103,7 @@ function App() {
 
   // Message states
   const [contacts, setContacts] = useState([])
+  const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
@@ -378,6 +379,21 @@ function App() {
 
               setContacts(updatedContacts)
               removeLoadingProcess('CONTACTS')
+              break
+
+            case 'CONTACT_CREATED_OR_UPDATED':
+              let newContact = data.contacts[0]
+              let oldContacts = contacts
+              let updContacts = []
+
+              updContacts.push(newContact)
+
+              if (oldContacts.length > 0) {
+                updContacts = [...updContacts, ...oldContacts]
+              }
+
+              setContacts(updContacts)
+              setContact(data.contacts[0])
               break
 
             case 'CONTACTS_ERROR':
@@ -1144,6 +1160,7 @@ function App() {
                         <Main>
                           <Home
                             loggedInUserState={loggedInUserState}
+                            history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
                             successMessage={successMessage}
@@ -1151,6 +1168,7 @@ function App() {
                             clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                             focusedConnectionID={focusedConnectionID}
+                            contact={contact}
                           />
                         </Main>
                         <AppFooter
