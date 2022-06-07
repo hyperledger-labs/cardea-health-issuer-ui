@@ -355,25 +355,25 @@ function App() {
                 let updContacts = []
 
                 // (mikekebert) Loop through the new contacts and check them against the existing array
-              newContacts.forEach((newContact) => {
-                oldContacts.forEach((oldContact, index) => {
-                  if (
-                    oldContact !== null &&
-                    newContact !== null &&
-                    oldContact.contact_id === newContact.contact_id
-                  ) {
-                    // (mikekebert) If you find a match, delete the old copy from the old array
-                    oldContacts.splice(index, 1)
-                  }
+                newContacts.forEach((newContact) => {
+                  oldContacts.forEach((oldContact, index) => {
+                    if (
+                      oldContact !== null &&
+                      newContact !== null &&
+                      oldContact.contact_id === newContact.contact_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldContacts.splice(index, 1)
+                    }
+                  })
+                  updContacts.push(newContact)
                 })
-                updContacts.push(newContact)
-              })
 
                 if (oldContacts.length > 0) {
                   // (mikekebert) Sort the array by data created, newest on top
                   updContacts.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
+                    a.created_at < b.created_at ? 1 : -1
+                  )
                   updContacts = [...updContacts, ...oldContacts]
                 }
 
