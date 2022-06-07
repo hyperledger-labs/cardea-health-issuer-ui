@@ -15,6 +15,7 @@ See also: https://mit-license.org/
 - [Prettier](https://github.com/prettier/prettier)
 - [qrcode react](https://github.com/zpao/qrcode.react)
 - [React Router](https://github.com/ReactTraining/react-router)
+- [react-select] (https://github.com/JedWatson/react-select/tree/master/packages/react-select)
 - [react-tooltip](https://github.com/wwayne/react-tooltip)
 - [Reactjs-popup](https://github.com/yjose/reactjs-popup)
 - [Styled Components](https://github.com/styled-components/styled-components)

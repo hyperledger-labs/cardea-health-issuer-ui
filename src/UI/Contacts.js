@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import { CanUser } from './CanUser'
 import FormQR from './FormQR'
@@ -41,25 +41,29 @@ function Contacts(props) {
     }
   }
 
-  const contactRows = contacts.map((contact) => {
-    return (
-      <DataRow
-        key={contact.contact_id}
-        onClick={() => {
-          openContact(history, contact.contact_id, contact)
-        }}
-      >
-        <DataCell>{contact.label}</DataCell>
-        <DataCell>
-          {contact.Demographic !== null && contact.Demographic !== undefined
-            ? contact.Demographic.mpid || ''
-            : ''}
-        </DataCell>
-        <DataCell>{contact.Connections[0].state}</DataCell>
-        <DataCell>{new Date(contact.created_at).toLocaleString()}</DataCell>
-      </DataRow>
-    )
-  })
+  let contactRows = ''
+
+  if (contacts) {
+    contactRows = contacts.map((contact) => {
+      return (
+        <DataRow
+          key={contact.contact_id}
+          onClick={() => {
+            openContact(history, contact.contact_id, contact)
+          }}
+        >
+          <DataCell>{contact.label}</DataCell>
+          <DataCell>
+            {contact.Demographic !== null && contact.Demographic !== undefined
+              ? contact.Demographic.mpid || ''
+              : ''}
+          </DataCell>
+          <DataCell>{contact.Connections[0].state}</DataCell>
+          <DataCell>{new Date(contact.created_at).toLocaleString()}</DataCell>
+        </DataRow>
+      )
+    })
+  }
 
   return (
     <>

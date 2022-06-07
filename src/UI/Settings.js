@@ -10,8 +10,7 @@ import ReactTooltip from 'react-tooltip'
 
 import { IconHelp } from './CommonStylesTables'
 
-// import { Select } from './FormsCommon'
-import Select from "react-select"
+import Select from 'react-select'
 
 const H3 = styled.h3`
   margin: 5px 0;
@@ -140,6 +139,36 @@ function Settings(props) {
   const success = props.successMessage
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
+
+  const [selectedGovernance, setSelectedGovernance] = useState(
+    props.selectedGovernance
+  )
+  const [governanceOptions, setGovernanceOptions] = useState(
+    props.governanceOptions
+  )
+
+  // console.log(props.selectedGovernance)
+  // console.log(props.governanceOptions)
+
+  // (eldersonar) Setting up selected governance and governance options
+  useEffect(() => {
+    let options = []
+    // (eldersonar) Handle selected governance state
+    if (props.selectedGovernance) {
+      setSelectedGovernance(props.selectedGovernance)
+    }
+    // (eldersonar) Handle governance options state
+    if (props.governanceOptions) {
+      for (let i = 0; i < props.governanceOptions.length; i++) {
+        options.push({
+          id: props.governanceOptions[i].id,
+          label: props.governanceOptions[i].governance_path,
+          value: props.governanceOptions[i].governance_path,
+        })
+      }
+      setGovernanceOptions(options)
+    }
+  }, [props.selectedGovernance, props.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -441,34 +470,32 @@ function Settings(props) {
   }
 
   // Save manifest settings
-  const handleGovernance = (e) => {
+  const addGovernance = (e) => {
     e.preventDefault()
-    console.log("add new governance")
     const form = new FormData(governanceForm.current)
-
     const goverancePath = form.get('governance_path')
 
-    console.log(goverancePath)
-    // props.sendRequest('SETTINGS', 'SET_MANIFEST', manifestConfigs)
+    props.sendRequest('GOVERNANCE', 'ADD_GOVERNANCE', goverancePath)
 
-    manifestDetailsForm.current.reset()
+    governanceForm.current.reset()
   }
 
-  const [governancePaths, setGovernancePaths] = useState([{ label: "https://stuff.com/g1.json", value: "https://stuff.com/g1.json" }, { label: "https://stuff.com/g2.json", value: "https://stuff.com/g2.json" }, { label: "https://stuff.com/g3.json", value: "https://stuff.com/g3.json" }])
+  function selectGovernance(governancePath) {
+    setSelectedGovernance(governancePath)
+    props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
+  }
 
-  const [optionSelected, setOptionSelected] = useState("Select governance...")
-
-  function handler(e) {
-    setOptionSelected(e)
-    // let newOptions = []
-    // newOptions.push({ label: e, value: e })
-    // for (let i in governancePaths) {
-    //   if (governancePaths[i].path !== e) {
-    //     newOptions.push(governancePaths[i])
-    //   }
-    // }
-    // setGovernancePaths(newOptions)
-    console.log(e)
+  const OptionSelect = () => {
+    return (
+      <Select
+        name="governance_paths"
+        placeholder="Select governance..."
+        defaultValue={selectedGovernance}
+        options={governanceOptions}
+        onChange={(e) => selectGovernance(e.value)}
+        menuPortalTarget={document.body}
+      />
+    )
   }
 
   return (
@@ -806,18 +833,17 @@ function Settings(props) {
         </Form>
       </PageSection>
 
-
       <PageSection>
         <SettingsHeader>Governance Configuration</SettingsHeader>
         <IconHelp
           data-tip
-          data-for="smtpTip"
+          data-for="governanceTip"
           data-delay-hide="250"
           data-multiline="true"
           alt="Help"
         />
         <ReactTooltip
-          id="smtpTip"
+          id="governanceTip"
           effect="solid"
           type="info"
           backgroundColor={useTheme().primary_color}
@@ -826,7 +852,6 @@ function Settings(props) {
             You can add a new governance file that
             <br />
             will be available for choosing by the admin
-            <br />
             <br />
             below.
           </span>
@@ -837,28 +862,15 @@ function Settings(props) {
             name="governance_path"
             ref={governancePath}
             placeholder="https://mrg.com/governance.json"
-            // onChange={multipleSelect}
-            // defaultValue={selectedRoles}
             required
           />
-          <SubmitFormBtn
-            type="submit"
-            onClick={handleGovernance}
-          >
+          <SubmitFormBtn type="submit" onClick={addGovernance}>
             Add
           </SubmitFormBtn>
-          <H3>Governance file options</H3>
-          <Select
-            name="governance_paths"
-            defaultValue={optionSelected}
-            options={governancePaths}
-            onChange={(e) => handler(e.value)}
-            menuPortalTarget={document.body}
-            isSearchable={false}
-          />
         </Form>
+        <H3>Governance file options</H3>
+        <OptionSelect />
       </PageSection>
-
 
       <PageSection>
         <SettingsHeader>Theme Settings</SettingsHeader>
