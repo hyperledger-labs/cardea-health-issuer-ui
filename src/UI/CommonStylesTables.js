@@ -42,7 +42,7 @@ export const AttributeTable = styled.table`
 export const AttributeRow = styled.tr`
   th {
     padding: 0 6px;
-    text-align: right;
+    text-align: left;
   }
 `
 

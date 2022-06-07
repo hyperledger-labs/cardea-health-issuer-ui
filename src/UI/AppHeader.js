@@ -1,4 +1,3 @@
-import Axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { handleImageSrc } from './util'
 
@@ -8,7 +7,9 @@ import { Logo, LogoHolder } from './CommonStylesForms'
 import AppMenu from './AppMenu.js'
 
 const Header = styled.header`
-  flex: 3;
+  /*flex: 3;*/
+  grid-row: 1;
+  grid-column: 1;
   min-width: 240px;
   max-width: 240px;
   min-height: 100vh;
@@ -66,12 +67,6 @@ function AppHeader(props) {
   }, [logo])
 
   const handleLogout = () => {
-    // Log out
-    Axios({
-      method: 'POST',
-      url: '/api/user/log-out',
-    }).then((res) => {})
-
     props.handleLogout(props.history)
   }
 
@@ -91,7 +86,11 @@ function AppHeader(props) {
         </UserName>
         <Logout onClick={handleLogout}>Log Out</Logout>
       </LogoutWrapper>
-      <AppMenu match={props.match} userRole={props.userRole} />
+      <AppMenu
+        match={props.match}
+        loggedInUserState={props.loggedInUserState}
+        selectedGovernance={props.selectedGovernance}
+      />
     </Header>
   )
 }

@@ -27,14 +27,22 @@ function FormInvitationAccept(props) {
 
     const form = invitationForm.current
 
-    props.sendRequest(
-      'INVITATIONS',
-      'ACCEPT_INVITATION',
-      `${form['invitation'].value}`
-    )
+    if (props.oob) {
+      props.sendRequest(
+        'OUT_OF_BAND',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    } else {
+      props.sendRequest(
+        'INVITATIONS',
+        'ACCEPT_INVITATION',
+        `${form['invitation'].value}`
+      )
+    }
 
     closeModal()
-    window.location.reload()
+    // window.location.reload()
   }
 
   return (
