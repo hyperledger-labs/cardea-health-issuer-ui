@@ -42,17 +42,16 @@ import SessionProvider from './UI/SessionProvider'
 import './App.css'
 
 const Frame = styled.div`
-  /*display: flex;
+  display: flex;
   flex-direction: row;
-  flex-wrap: nowrap;*/
-  display: grid;
-  grid-template-columns: 1fr min-content;
-  grid-template-columns: 240px 1fr;
+  flex-wrap: nowrap;
+  /*display: grid;
+  grid-template-columns: 240px 1fr;*/
 `
 const Main = styled.main`
-  /*flex: 9;*/
-  grid-row: 1;
-  grid-column: 2;
+  flex: 9;
+  /*grid-row: 1;
+  grid-column: 2;*/
   padding: 30px;
 `
 
@@ -349,51 +348,38 @@ function App() {
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
-              // let oldContacts = contacts
-              // let newContacts = data.contacts
-              // let updatedContacts = []
-              // // (mikekebert) Loop through the new contacts and check them against the existing array
-              // newContacts.forEach((newContact) => {
-              //   oldContacts.forEach((oldContact, index) => {
-              //     if (
-              //       oldContact !== null &&
-              //       newContact !== null &&
-              //       oldContact.contact_id === newContact.contact_id
-              //     ) {
-              //       // (mikekebert) If you find a match, delete the old copy from the old array
-              //       oldContacts.splice(index, 1)
-              //     }
-              //   })
-              //   updatedContacts.push(newContact)
-              // })
-              let updatedContacts = data.contacts
+              setContacts((prevContacts) => {
+                let newContacts = data.contacts
+                let oldContacts = prevContacts
+                let updContacts = []
 
-              // (mikekebert) When you reach the end of the list of new contacts, simply add any remaining old contacts to the new array
-              // if (oldContacts.length > 0)
-              //   updatedContacts = [...updatedContacts, ...oldContacts]
+                // (mikekebert) Loop through the new contacts and check them against the existing array
+                newContacts.forEach((newContact) => {
+                  oldContacts.forEach((oldContact, index) => {
+                    if (
+                      oldContact !== null &&
+                      newContact !== null &&
+                      oldContact.contact_id === newContact.contact_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldContacts.splice(index, 1)
+                    }
+                  })
+                  updContacts.push(newContact)
+                })
 
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedContacts.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                if (oldContacts.length > 0) {
+                  // (mikekebert) Sort the array by data created, newest on top
+                  updContacts.sort((a, b) =>
+                    a.created_at < b.created_at ? 1 : -1
+                  )
+                  updContacts = [...updContacts, ...oldContacts]
+                }
 
-              setContacts(updatedContacts)
+                setContact(data.contacts[0])
+                return updContacts
+              })
               removeLoadingProcess('CONTACTS')
-              break
-
-            case 'CONTACT_CREATED_OR_UPDATED':
-              let newContact = data.contacts[0]
-              let oldContacts = contacts
-              let updContacts = []
-
-              updContacts.push(newContact)
-
-              if (oldContacts.length > 0) {
-                updContacts = [...updContacts, ...oldContacts]
-              }
-
-              setContacts(updContacts)
-              setContact(data.contacts[0])
               break
 
             case 'CONTACTS_ERROR':
