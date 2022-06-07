@@ -50,7 +50,7 @@ function Home(props) {
 
   // Redirect to contact when contact is created
   useEffect(() => {
-    if (contact.contact_id && history !== undefined) {
+    if (displayModalIsOpen && contact.contact_id && history !== undefined) {
       closeScanModal()
       history.push('/contacts/' + contact.contact_id)
     }
