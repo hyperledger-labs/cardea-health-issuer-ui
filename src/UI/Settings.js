@@ -10,6 +10,8 @@ import ReactTooltip from 'react-tooltip'
 
 import { IconHelp } from './CommonStylesTables'
 
+import Select from 'react-select'
+
 const H3 = styled.h3`
   margin: 5px 0;
 `
@@ -138,6 +140,36 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
+  const [selectedGovernance, setSelectedGovernance] = useState(
+    props.selectedGovernance
+  )
+  const [governanceOptions, setGovernanceOptions] = useState(
+    props.governanceOptions
+  )
+
+  // console.log(props.selectedGovernance)
+  // console.log(props.governanceOptions)
+
+  // (eldersonar) Setting up selected governance and governance options
+  useEffect(() => {
+    let options = []
+    // (eldersonar) Handle selected governance state
+    if (props.selectedGovernance) {
+      setSelectedGovernance(props.selectedGovernance)
+    }
+    // (eldersonar) Handle governance options state
+    if (props.governanceOptions) {
+      for (let i = 0; i < props.governanceOptions.length; i++) {
+        options.push({
+          id: props.governanceOptions[i].id,
+          label: props.governanceOptions[i].governance_path,
+          value: props.governanceOptions[i].governance_path,
+        })
+      }
+      setGovernanceOptions(options)
+    }
+  }, [props.selectedGovernance, props.governanceOptions])
+
   useEffect(() => {
     if (success) {
       // console.log('SUCCESS RAN')
@@ -196,6 +228,10 @@ function Settings(props) {
   const manifestName = useRef(null)
   const manifestThemeColor = useRef(null)
   const manifestBackgroundColor = useRef(null)
+
+  const governanceForm = useRef(null)
+  const governancePath = useRef(null)
+  const governanceFileOption = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -431,6 +467,35 @@ function Settings(props) {
     } else {
       setNotification('The image is not selected.', 'error')
     }
+  }
+
+  // Save manifest settings
+  const addGovernance = (e) => {
+    e.preventDefault()
+    const form = new FormData(governanceForm.current)
+    const goverancePath = form.get('governance_path')
+
+    props.sendRequest('GOVERNANCE', 'ADD_GOVERNANCE', goverancePath)
+
+    governanceForm.current.reset()
+  }
+
+  function selectGovernance(governancePath) {
+    setSelectedGovernance(governancePath)
+    props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
+  }
+
+  const OptionSelect = () => {
+    return (
+      <Select
+        name="governance_paths"
+        placeholder="Select governance..."
+        defaultValue={selectedGovernance}
+        options={governanceOptions}
+        onChange={(e) => selectGovernance(e.value)}
+        menuPortalTarget={document.body}
+      />
+    )
   }
 
   return (
@@ -769,6 +834,46 @@ function Settings(props) {
           <SaveBtn onClick={handleSMTP}>Save</SaveBtn>
         </Form>
       </PageSection>
+
+      <PageSection>
+        <SettingsHeader>Governance Configuration</SettingsHeader>
+        <IconHelp
+          data-tip
+          data-for="governanceTip"
+          data-delay-hide="250"
+          data-multiline="true"
+          alt="Help"
+        />
+        <ReactTooltip
+          id="governanceTip"
+          effect="solid"
+          type="info"
+          backgroundColor={useTheme().primary_color}
+        >
+          <span>
+            You can add a new governance file that
+            <br />
+            will be available for choosing by the admin
+            <br />
+            below.
+          </span>
+        </ReactTooltip>
+        <Form onSubmit={handleSubmit} ref={governanceForm}>
+          <H3>Governance file path</H3>
+          <Input
+            name="governance_path"
+            ref={governancePath}
+            placeholder="https://mrg.com/governance.json"
+            required
+          />
+          <SubmitFormBtn type="submit" onClick={addGovernance}>
+            Add
+          </SubmitFormBtn>
+        </Form>
+        <H3>Governance file options</H3>
+        <OptionSelect />
+      </PageSection>
+
       <PageSection>
         <SettingsHeader>Theme Settings</SettingsHeader>
         <IconHelp

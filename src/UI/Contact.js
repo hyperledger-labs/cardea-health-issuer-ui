@@ -96,15 +96,6 @@ function Contact(props) {
     }
   }, [error, success])
 
-  // Get governance privileges
-  useEffect(() => {
-    isMounted.current = true
-    props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-
   useEffect(() => {
     setContactSelected(contactToSelect)
   }, [contactToSelect])
@@ -133,8 +124,34 @@ function Contact(props) {
     e.preventDefault()
 
     props.sendRequest('CREDENTIALS', 'ISSUE_USING_SCHEMA', newCredential)
+  }
+  // Submits the credential form and shows notification
+  function sendBasicMessage(e) {
+    e.preventDefault()
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'SEND_BASIC_MESSAGE', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+  }
 
-    setNotification('Credential offer was successfully sent!', 'notice')
+  function askQuestion(e) {
+    e.preventDefault()
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'ASK_QUESTION', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+  }
+
+  function requestDemographics(e) {
+    e.preventDefault()
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_DEMOGRAPHICS', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
+  }
+
+  function requestMedicalRelease(e) {
+    e.preventDefault()
+    props.sendRequest('TEST_ATOMIC_FUNCTIONS', 'REQUEST_MEDICAL_RELEASE', {
+      connection_id: contactSelected.Connections[0].connection_id,
+    })
   }
 
   const credentialRows = props.credentials.map((credential_record) => {
@@ -332,19 +349,42 @@ function Contact(props) {
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
-                onClick={() =>
-                  privileges && privileges.includes('issue_lab_result')
-                    ? setLabResultModalIsOpen((o) => !o)
-                    : setNotification(
-                        "Error: you don't have the right privileges",
-                        'error'
-                      )
+                onClick={
+                  () =>
+                    // privileges && privileges.includes('issue_lab_result')
+                    //   ?
+                    setLabResultModalIsOpen((o) => !o)
+                  // : setNotification(
+                  //     "Error: you don't have the right privileges",
+                  //     'error'
+                  //   )
                 }
               >
                 Issue Lab Result Credential
               </IssueCredential>
             )}
           />
+
+          <IssueCredential onClick={sendBasicMessage}>
+            Send Basic Message
+          </IssueCredential>
+          <IssueCredential onClick={askQuestion}>Ask Question</IssueCredential>
+          <IssueCredential onClick={requestDemographics}>
+            Request Demographics
+          </IssueCredential>
+          <CanUser
+            user={localUser}
+            perform="credentials:issue"
+            yes={() => (
+              <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
+                Issue Medical Release Credential
+              </IssueCredential>
+            )}
+          />
+          <IssueCredential onClick={requestMedicalRelease}>
+            Request Medical Release
+          </IssueCredential>
+
           {/* <CanUser
             user={localUser}
             perform="credentials:issue"
@@ -454,14 +494,14 @@ function Contact(props) {
           closeCredentialModal={closeExemptionModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        />
+        /> */}
         <FormMedical
-          contactSelected={contFactSelected}
+          contactSelected={contactSelected}
           credentialModalIsOpen={medicalModalIsOpen}
           closeCredentialModal={closeMedicalModal}
           submitCredential={submitNewCredential}
           schemas={props.schemas}
-        /> */}
+        />
       </div>
     </>
   )

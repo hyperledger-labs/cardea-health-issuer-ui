@@ -41,9 +41,19 @@ function Home(props) {
   const success = props.successMessage
   const warning = props.warningMessage
   const localUser = props.loggedInUserState
-  const privileges = props.privileges
+  const history = props.history
+  const contact = props.contact
 
-  const [govGranted, setGovGranted] = useState(undefined)
+  // Redirect to contact when contact is created
+  useEffect(() => {
+    if (displayModalIsOpen && contact.contact_id && history !== undefined) {
+      closeScanModal()
+      history.push('/contacts/' + contact.contact_id)
+    }
+  }, [props.contact])
+  // const privileges = props.privileges
+
+  // const [govGranted, setGovGranted] = useState(undefined)
 
   const [index, setIndex] = useState(false)
 
@@ -55,7 +65,7 @@ function Home(props) {
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  const isMounted = useRef(null)
+  // const isMounted = useRef(null)
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -75,15 +85,6 @@ function Home(props) {
     } else return
   }, [error, success, warning])
 
-  // Get governance privileges
-  useEffect(() => {
-    isMounted.current = true
-    props.sendRequest('GOVERNANCE', 'GET_PRIVILEGES', {})
-    return () => {
-      isMounted.current = false
-    }
-  }, [])
-
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)
 
@@ -92,21 +93,21 @@ function Home(props) {
 
   const presentOutOfBand = () => {
     // Simple use of governance
-    if (privileges && privileges.includes('verify_identity')) {
-      setDisplayModalIsOpen((o) => !o)
-      props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
-    } else {
-      setNotification("Error: you don't have the right privileges", 'error')
-    }
+    // if (privileges && privileges.includes('verify_identity')) {
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('OUT_OF_BAND', 'CREATE_INVITATION', {})
+    // } else {
+    //   setNotification("Error: you don't have the right privileges", 'error')
+    // }
   }
 
   const presentInvitation = () => {
-    if (privileges && privileges.includes('verify_identity')) {
-      setDisplayModalIsOpen((o) => !o)
-      props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
-    } else {
-      setNotification("Error: you don't have the right privileges", 'error')
-    }
+    // if (privileges && privileges.includes('verify_identity')) {
+    setDisplayModalIsOpen((o) => !o)
+    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+    // } else {
+    //   setNotification("Error: you don't have the right privileges", 'error')
+    // }
   }
 
   return (
