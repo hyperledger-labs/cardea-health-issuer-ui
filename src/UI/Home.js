@@ -51,9 +51,9 @@ function Home(props) {
       history.push('/contacts/' + contact.contact_id)
     }
   }, [props.contact])
-  const privileges = props.privileges
+  // const privileges = props.privileges
 
-  const [govGranted, setGovGranted] = useState(undefined)
+  // const [govGranted, setGovGranted] = useState(undefined)
 
   const [index, setIndex] = useState(false)
 
@@ -65,7 +65,7 @@ function Home(props) {
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  const isMounted = useRef(null)
+  // const isMounted = useRef(null)
 
   // Accessing notification context
   const setNotification = useNotification()
