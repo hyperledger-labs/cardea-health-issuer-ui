@@ -59,8 +59,6 @@ function Home(props) {
 
   const [oob, setOOB] = useState(false)
 
-  const [oob, setOOB] = useState(false)
-
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
   const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
 
