@@ -1144,6 +1144,7 @@ function App() {
                             errorMessage={errorMessage}
                             clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
+                            // outOfBandQRCodeURL={outOfBandQRCodeURL}
                             focusedConnectionID={focusedConnectionID}
                             contact={contact}
                           />
