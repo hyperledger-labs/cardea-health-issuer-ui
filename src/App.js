@@ -1231,24 +1231,22 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            contactId={match.params.contactId}
-                            contacts={contacts}
-                            credentials={credentials}
-                            schemas={schemas}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Contact
                               loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
+                              clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
                               contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
                               clearResponseState={clearResponseState}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
                             />
                           </Main>
                           <AppFooter
@@ -1305,6 +1303,8 @@ function App() {
                             logo={image}
                             organizationName={organizationName}
                             match={match}
+                            history={history}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Credential
@@ -1487,6 +1487,8 @@ function App() {
                           logo={image}
                           organizationName={organizationName}
                           match={match}
+                          history={history}
+                          handleLogout={handleLogout}
                         />
                         <Main>
                           <User
@@ -1531,6 +1533,8 @@ function App() {
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
                               smtp={smtp}
+                              organizationName={organizationName}
+                              siteTitle={siteTitle}
                               governanceOptions={governanceOptions}
                               selectedGovernance={selectedGovernance}
                             />
