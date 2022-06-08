@@ -263,23 +263,35 @@ function Settings(props) {
 
     const form = new FormData(smtpForm.current)
 
-    const smtpConfigs = {
-      host: form.get('host'),
-      port: form.get('port'),
-      mailer: form.get('mailer'),
-      mailFromName: form.get('mailFromName'),
-      encryption: form.get('encryption'),
-      auth: {
-        email: form.get('email'),
-        pass: form.get('password'),
-        mailUsername: form.get('mailUsername'),
-      },
+    if (
+      !form.get('host') ||
+      !form.get('mailUsername') ||
+      !form.get('email') ||
+      !form.get('password')
+    ) {
+      setNotification(
+        'Host, Mail Username, User Email and Password are required fields. See the tooltip for more info',
+        'error'
+      )
+    } else {
+      const smtpConfigs = {
+        host: form.get('host'),
+        port: form.get('port'),
+        mailer: form.get('mailer'),
+        mailFromName: form.get('mailFromName'),
+        encryption: form.get('encryption'),
+        auth: {
+          email: form.get('email'),
+          pass: form.get('password'),
+          mailUsername: form.get('mailUsername'),
+        },
+      }
+
+      props.sendRequest('SETTINGS', 'SET_SMTP', smtpConfigs)
+
+      // (eldersonar) Wait for 2 seconds to update the SMTP object
+      setTimeout(() => props.sendRequest('SETTINGS', 'GET_SMTP'), 2000)
     }
-
-    props.sendRequest('SETTINGS', 'SET_SMTP', smtpConfigs)
-
-    // (eldersonar) Wait for 2 seconds to update the SMTP object
-    setTimeout(() => props.sendRequest('SETTINGS', 'GET_SMTP'), 2000)
   }
 
   // Save manifest settings
@@ -517,16 +529,21 @@ function Settings(props) {
           backgroundColor={useTheme().primary_color}
         >
           <span>
-            Organization name is used in
+            The SMTP configuration is used for sending
             <br />
-            the UI and email messages.
+            new user and password reset emails.
             <br />
             <br />
-            A website title identifies what
+            Default gmail SMTP configuration only uses
             <br />
-            the web page is about for both
+            host, mail username, user email and user password.
             <br />
-            web users and search engines.
+            Please, put user email into the mail username box.
+            <br />
+            <br />
+            For another provider, please refer to
+            <br />
+            its official documentation.
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={organizationForm}>
@@ -766,6 +783,7 @@ function Settings(props) {
             name="host"
             ref={host}
             defaultValue={smtpConf ? (smtpConf.host ? smtpConf.host : '') : ''}
+            required
           />
           <H3>Mail Username</H3>
           <BlockInput
@@ -775,6 +793,7 @@ function Settings(props) {
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
             }
+            required
           />
           <H3>User email</H3>
           <BlockInput
@@ -783,6 +802,7 @@ function Settings(props) {
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.email : '') : ''
             }
+            required
           />
           <H3>User password</H3>
           <BlockInput
@@ -792,6 +812,7 @@ function Settings(props) {
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.pass : '') : ''
             }
+            required
           />
           <H3>Port</H3>
           <BlockInput
