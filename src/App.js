@@ -13,6 +13,7 @@ import styled, { ThemeProvider } from 'styled-components'
 
 import AccountSetup from './UI/AccountSetup'
 import AppHeader from './UI/AppHeader'
+import AppFooter from './UI/AppFooter'
 
 import { check, CanUser } from './UI/CanUser'
 import rules from './UI/rbac-rules'
@@ -44,9 +45,13 @@ const Frame = styled.div`
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
+  /*display: grid;
+  grid-template-columns: 240px 1fr;*/
 `
 const Main = styled.main`
   flex: 9;
+  /*grid-row: 1;
+  grid-column: 2;*/
   padding: 30px;
 `
 
@@ -80,6 +85,9 @@ function App() {
   const [websocket, setWebsocket] = useState(false)
   const [readyForMessages, setReadyForMessages] = useState(false)
 
+  // Keep track of loading processes
+  const [loadingArray, setLoadingArray] = useState([])
+
   // State governs whether the app should be loaded. Depends on the loadingArray
   const [appIsLoaded, setAppIsLoaded] = useState(false)
 
@@ -94,6 +102,7 @@ function App() {
 
   // Message states
   const [contacts, setContacts] = useState([])
+  const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
@@ -119,7 +128,8 @@ function App() {
 
   // Governance state
   const [privileges, setPrivileges] = useState([])
-  const [actionNotification, setActionNotification] = useState('')
+  const [governanceOptions, setGovernanceOptions] = useState([])
+  const [selectedGovernance, setSelectedGovernance] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -207,8 +217,14 @@ function App() {
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
       addLoadingProcess('SCHEMAS')
-      sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
-      addLoadingProcess('GOVERNANCE')
+      // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
+      // addLoadingProcess('GOVERNANCE')
+
+      sendMessage('GOVERNANCE', 'GET_ALL', {})
+      addLoadingProcess('ALL_GOVERNANCE')
+
+      sendMessage('SETTINGS', 'GET_SELECTED_GOVERNANCE', {})
+      addLoadingProcess('SELECTED_GOVERNANCE')
 
       if (
         check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
@@ -259,7 +275,7 @@ function App() {
 
   // Send a message to the Controller server
   function sendMessage(context, type, data = {}) {
-    if (websocket) {
+    if (controllerSocket.current.readyState === 1) {
       controllerSocket.current.send(JSON.stringify({ context, type, data }))
     }
   }
@@ -332,35 +348,37 @@ function App() {
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
-              // let oldContacts = contacts
-              // let newContacts = data.contacts
-              // let updatedContacts = []
-              // // (mikekebert) Loop through the new contacts and check them against the existing array
-              // newContacts.forEach((newContact) => {
-              //   oldContacts.forEach((oldContact, index) => {
-              //     if (
-              //       oldContact !== null &&
-              //       newContact !== null &&
-              //       oldContact.contact_id === newContact.contact_id
-              //     ) {
-              //       // (mikekebert) If you find a match, delete the old copy from the old array
-              //       oldContacts.splice(index, 1)
-              //     }
-              //   })
-              //   updatedContacts.push(newContact)
-              // })
-              let updatedContacts = data.contacts
+              setContacts((prevContacts) => {
+                let newContacts = data.contacts
+                let oldContacts = prevContacts
+                let updContacts = []
 
-              // (mikekebert) When you reach the end of the list of new contacts, simply add any remaining old contacts to the new array
-              // if (oldContacts.length > 0)
-              //   updatedContacts = [...updatedContacts, ...oldContacts]
+                // (mikekebert) Loop through the new contacts and check them against the existing array
+                newContacts.forEach((newContact) => {
+                  oldContacts.forEach((oldContact, index) => {
+                    if (
+                      oldContact !== null &&
+                      newContact !== null &&
+                      oldContact.contact_id === newContact.contact_id
+                    ) {
+                      // (mikekebert) If you find a match, delete the old copy from the old array
+                      oldContacts.splice(index, 1)
+                    }
+                  })
+                  updContacts.push(newContact)
+                })
 
-              // (mikekebert) Sort the array by data created, newest on top
-              updatedContacts.sort((a, b) =>
-                a.created_at < b.created_at ? 1 : -1
-              )
+                if (oldContacts.length > 0) {
+                  // (mikekebert) Sort the array by data created, newest on top
+                  updContacts.sort((a, b) =>
+                    a.created_at < b.created_at ? 1 : -1
+                  )
+                  updContacts = [...updContacts, ...oldContacts]
+                }
 
-              setContacts(updatedContacts)
+                setContact(data.contacts[0])
+                return updContacts
+              })
               removeLoadingProcess('CONTACTS')
               break
 
@@ -383,8 +401,8 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('Demographics Error')
+              // console.log(data.error)
+              // console.log('Demographics Error')
               setErrorMessage(data.error)
 
               break
@@ -596,9 +614,7 @@ function App() {
 
             case 'USER_ERROR':
               // console.log('User Error', data.error)
-
               setErrorMessage(data.error)
-
               break
 
             case 'USER_SUCCESS':
@@ -780,51 +796,11 @@ function App() {
 
             case 'SETTINGS_ERROR':
               // console.log('Settings Error:', data.error)
-
               setErrorMessage(data.error)
               break
 
             case 'SETTINGS_SUCCESS':
               setSuccessMessage(data)
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'IMAGES':
-          switch (type) {
-            case 'IMAGE_LIST':
-              setImage(data)
-
-              removeLoadingProcess('IMAGES')
-              break
-
-            case 'IMAGES_ERROR':
-              // console.log('Images Error:', data.error)
-              setErrorMessage(data.error)
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'ORGANIZATION':
-          switch (type) {
-            case 'ORGANIZATION_NAME':
-              setOrganizationName(data[0].value.name)
-
-              removeLoadingProcess('ORGANIZATION')
               break
 
             default:
@@ -860,6 +836,55 @@ function App() {
               break
             case 'PRIVILEGES_SUCCESS':
               setPrivileges(data.success)
+              break
+
+            case 'GOVERNANCE_OPTIONS':
+              console.log('GOVERNANCE_OPTIONS SUCCESS')
+              setGovernanceOptions(data.governance_paths)
+              removeLoadingProcess('ALL_GOVERNANCE')
+              break
+
+            case 'GOVERNANCE_OPTION_ADDED':
+              console.log('GOVERNANCE_OPTION_ADDED')
+              setGovernanceOptions((prev) => {
+                console.log(prev)
+                console.log(data.governance_path)
+
+                prev.forEach((governanceOption, index) => {
+                  console.log('forEach')
+                  console.log(governanceOption.governance_path)
+                  console.log(data.governance_path)
+                  if (
+                    governanceOption !== null &&
+                    data.governance_path !== null &&
+                    governanceOption.governance_path ===
+                      data.governance_path.governance_path
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    console.log('splice', governanceOption)
+                    prev.splice(index, 1)
+                  }
+                })
+
+                let updatedGovernanceOptions = [...prev, data.governance_path]
+                return updatedGovernanceOptions
+              })
+
+              break
+
+            case 'SELECTED_GOVERNANCE':
+              console.log('SELECTED_GOVERNANCE')
+              console.log(data)
+
+              setSelectedGovernance(data.selected_governance)
+              removeLoadingProcess('SELECTED_GOVERNANCE')
+              break
+
+            case 'UPDATED_SELECTED_GOVERNANCE':
+              console.log('UPDATED_SELECTED_GOVERNANCE')
+              console.log(data)
+              setSelectedGovernance(data.selected_governance)
+
               break
 
             default:
@@ -903,6 +928,7 @@ function App() {
     if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
+    console.log(loadingArray)
   }
 
   function setUpUser(id, username, roles) {
@@ -1111,6 +1137,7 @@ function App() {
                         <Main>
                           <Home
                             loggedInUserState={loggedInUserState}
+                            history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
                             successMessage={successMessage}
@@ -1118,8 +1145,12 @@ function App() {
                             clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                             focusedConnectionID={focusedConnectionID}
+                            contact={contact}
                           />
                         </Main>
+                        <AppFooter
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1142,6 +1173,9 @@ function App() {
                           <Main>
                             <p>Invitations</p>
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1174,6 +1208,9 @@ function App() {
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1194,26 +1231,27 @@ function App() {
                             organizationName={organizationName}
                             match={match}
                             history={history}
-                            contactId={match.params.contactId}
-                            contacts={contacts}
-                            credentials={credentials}
-                            schemas={schemas}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Contact
                               loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
+                              successMessage={successMessage}
+                              errorMessage={errorMessage}
+                              clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
                               contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
                               clearResponseState={clearResponseState}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1243,6 +1281,9 @@ function App() {
                               credentials={credentials}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1262,6 +1303,8 @@ function App() {
                             logo={image}
                             organizationName={organizationName}
                             match={match}
+                            history={history}
+                            handleLogout={handleLogout}
                           />
                           <Main>
                             <Credential
@@ -1270,6 +1313,9 @@ function App() {
                               credentials={credentials}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1295,6 +1341,9 @@ function App() {
                         <Main>
                           <p>Verification</p>
                         </Main>
+                        <AppFooter
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1316,6 +1365,9 @@ function App() {
                         <Main>
                           <p>Messages</p>
                         </Main>
+                        <AppFooter
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1343,6 +1395,9 @@ function App() {
                               contacts={contacts}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1373,6 +1428,9 @@ function App() {
                               contacts={contacts}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1408,6 +1466,9 @@ function App() {
                               sendRequest={sendMessage}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {
@@ -1426,6 +1487,8 @@ function App() {
                           logo={image}
                           organizationName={organizationName}
                           match={match}
+                          history={history}
+                          handleLogout={handleLogout}
                         />
                         <Main>
                           <User
@@ -1434,6 +1497,9 @@ function App() {
                             history={history}
                           />
                         </Main>
+                        <AppFooter
+                          selectedGovernance={selectedGovernance}
+                        ></AppFooter>
                       </Frame>
                     )
                   }}
@@ -1467,8 +1533,15 @@ function App() {
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
                               smtp={smtp}
+                              organizationName={organizationName}
+                              siteTitle={siteTitle}
+                              governanceOptions={governanceOptions}
+                              selectedGovernance={selectedGovernance}
                             />
                           </Main>
+                          <AppFooter
+                            selectedGovernance={selectedGovernance}
+                          ></AppFooter>
                         </Frame>
                       )
                     } else {

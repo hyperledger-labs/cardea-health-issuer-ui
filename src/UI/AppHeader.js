@@ -8,6 +8,8 @@ import AppMenu from './AppMenu.js'
 
 const Header = styled.header`
   flex: 3;
+  /*grid-row: 1;
+  grid-column: 1;*/
   min-width: 240px;
   max-width: 240px;
   min-height: 100vh;

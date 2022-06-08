@@ -218,7 +218,7 @@ export const TextItem = styled.span`
 `
 export const ActionButton = styled.span`
   position: fixed;
-  bottom: 10px;
+  bottom: 40px;
   right: 10px;
   display: block;
   height: 64px;
@@ -234,4 +234,5 @@ export const ActionButton = styled.span`
   :hover {
     cursor: pointer;
   }
+  z-index: 1000;
 `
