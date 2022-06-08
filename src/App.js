@@ -401,8 +401,8 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('Demographics Error')
+              // console.log(data.error)
+              // console.log('Demographics Error')
               setErrorMessage(data.error)
 
               break
@@ -614,9 +614,7 @@ function App() {
 
             case 'USER_ERROR':
               // console.log('User Error', data.error)
-
               setErrorMessage(data.error)
-
               break
 
             case 'USER_SUCCESS':
@@ -798,7 +796,6 @@ function App() {
 
             case 'SETTINGS_ERROR':
               // console.log('Settings Error:', data.error)
-
               setErrorMessage(data.error)
               break
 
@@ -888,12 +885,6 @@ function App() {
               console.log(data)
               setSelectedGovernance(data.selected_governance)
 
-              // console.log("==================")
-              // // setTimeout(() => {
-              // console.log("asking for new privilages ")
-              // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
-              // // }, 3000)
-              // console.log("==================")
               break
 
             default:

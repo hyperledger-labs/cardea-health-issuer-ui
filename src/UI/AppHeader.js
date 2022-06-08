@@ -89,7 +89,6 @@ function AppHeader(props) {
       <AppMenu
         match={props.match}
         loggedInUserState={props.loggedInUserState}
-        selectedGovernance={props.selectedGovernance}
       />
     </Header>
   )
