@@ -1246,7 +1246,6 @@ function App() {
                               contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
-                              clearResponseState={clearResponseState}
                             />
                           </Main>
                           <AppFooter
