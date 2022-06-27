@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react'
 
+import { connect } from 'react-redux'
+import { setLoggedInUserState } from '../redux/loginReducer'
+import { setContact, setContacts } from '../redux/contactReducer'
+
 import styled from 'styled-components'
 
 import FormContacts from './FormContacts'
@@ -42,14 +46,19 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
+  // console.log('!!!!This is the log of props in Contact', props)
+
+  const { loggedInUserState } = props.login
+  const { contacts, contact } = props.contactsState
+
   const isMounted = useRef(null)
-  const localUser = props.loggedInUserState
+  const localUser = loggedInUserState
 
   // Accessing notification context
   const setNotification = useNotification()
 
   const history = props.history
-  const contactId = props.contactId
+  // const contactId = props.contactId
   const error = props.errorMessage
   const success = props.successMessage
   const privileges = props.privileges
@@ -78,9 +87,12 @@ function Contact(props) {
   const closeVaccineModal = () => setVaccineModalIsOpen(false)
   const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
-  for (let i = 0; i < props.contacts.length; i++) {
-    if (props.contacts[i].contact_id == contactId) {
-      contactToSelect = props.contacts[i]
+  for (let i = 0; i < contacts.length; i++) {
+    if (contacts[i].contact_id === contact.contact_id) {
+      console.log('This is the log of contacts', contacts[i])
+      console.log('This is the log of contact', contact)
+
+      contactToSelect = contacts[i]
       break
     }
   }
@@ -506,5 +518,15 @@ function Contact(props) {
     </>
   )
 }
+const mapStateToProps = (state) => state
 
-export default Contact
+export default connect(mapStateToProps, {
+  // setLogo,
+  // setLoggedIn,
+  // setLoggedInUserId,
+  // setLoggedInUsername,
+  // setLoggedInRoles,
+  setLoggedInUserState,
+  setContact,
+  setContacts,
+})(Contact)

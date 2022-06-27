@@ -2,6 +2,7 @@ import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
+import { connect } from 'react-redux'
 
 import {
   BrowserRouter as Router,
@@ -39,6 +40,16 @@ import Users from './UI/Users'
 
 import SessionProvider from './UI/SessionProvider'
 
+import {
+  setLoggedIn,
+  setLoggedInUserId,
+  setLoggedInUsername,
+  setLoggedInRoles,
+  setLoggedInUserState,
+  logoutUser,
+} from './redux/loginReducer'
+import { setContact, setContacts } from './redux/contactReducer'
+
 import './App.css'
 
 const Frame = styled.div`
@@ -55,7 +66,7 @@ const Main = styled.main`
   padding: 30px;
 `
 
-function App() {
+function App(props) {
   const defaultTheme = {
     primary_color: '#0065B3',
     secondary_color: '#00AEEF',
@@ -70,6 +81,30 @@ function App() {
     background_primary: '#fff',
     background_secondary: '#f5f5f5',
   }
+
+  const { contact, contacts } = props.contactsState
+
+  console.log('////This is the log of  prop.contacts', contacts)
+
+  const {
+    // logo,
+    // loggedInUserId,
+    loggedInUsername,
+    // loggedInRoles,
+    loggedIn,
+    loggedInUserState,
+  } = props.login
+
+  const {
+    setLoggedIn,
+    setLoggedInUserId,
+    setLoggedInUsername,
+    setLoggedInRoles,
+    setLoggedInUserState,
+    logoutUser,
+    setContact,
+    setContacts,
+  } = props
 
   const cookies = new Cookies()
 
@@ -101,8 +136,8 @@ function App() {
   const [stylesArray, setStylesArray] = useState([])
 
   // Message states
-  const [contacts, setContacts] = useState([])
-  const [contact, setContact] = useState({})
+  // const [contacts, setContacts] = useState([])
+  // const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
@@ -116,11 +151,11 @@ function App() {
 
   // Session states
   const [session, setSession] = useState('')
-  const [loggedInUserId, setLoggedInUserId] = useState('')
-  const [loggedInUserState, setLoggedInUserState] = useState(null)
-  const [loggedInUsername, setLoggedInUsername] = useState('')
-  const [loggedInRoles, setLoggedInRoles] = useState([])
-  const [loggedIn, setLoggedIn] = useState(false)
+  // const [loggedInUserId, setLoggedInUserId] = useState('')
+  // const [loggedInUserState, setLoggedInUserState] = useState(null)
+  // const [loggedInUsername, setLoggedInUsername] = useState('')
+  // const [loggedInRoles, setLoggedInRoles] = useState([])
+  // const [loggedIn, setLoggedIn] = useState(false)
   const [sessionTimer, setSessionTimer] = useState(60)
 
   const [QRCodeURL, setQRCodeURL] = useState('')
@@ -348,37 +383,43 @@ function App() {
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
-              setContacts((prevContacts) => {
-                let newContacts = data.contacts
-                let oldContacts = prevContacts
-                let updContacts = []
+              // setContacts((prevContacts) => {
+              // console.log(
+              //   'Log of prevContacts at contacts case',
+              //   prevContacts
+              // )
 
-                // (mikekebert) Loop through the new contacts and check them against the existing array
-                newContacts.forEach((newContact) => {
-                  oldContacts.forEach((oldContact, index) => {
-                    if (
-                      oldContact !== null &&
-                      newContact !== null &&
-                      oldContact.contact_id === newContact.contact_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldContacts.splice(index, 1)
-                    }
-                  })
-                  updContacts.push(newContact)
+              let newContacts = data.contacts
+              let oldContacts = contacts
+              let updContacts = []
+
+              // (mikekebert) Loop through the new contacts and check them against the existing array
+              newContacts.forEach((newContact) => {
+                oldContacts.forEach((oldContact, index) => {
+                  if (
+                    oldContact !== null &&
+                    newContact !== null &&
+                    oldContact.contact_id === newContact.contact_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldContacts.splice(index, 1)
+                  }
                 })
-
-                if (oldContacts.length > 0) {
-                  // (mikekebert) Sort the array by data created, newest on top
-                  updContacts.sort((a, b) =>
-                    a.created_at < b.created_at ? 1 : -1
-                  )
-                  updContacts = [...updContacts, ...oldContacts]
-                }
-
-                setContact(data.contacts[0])
-                return updContacts
+                updContacts.push(newContact)
               })
+
+              if (oldContacts.length > 0) {
+                // (mikekebert) Sort the array by data created, newest on top
+                updContacts.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+                updContacts = [...updContacts, ...oldContacts]
+              }
+
+              setContact(data.contacts[0])
+              setContacts(updContacts)
+              // return updContacts
+              // })
               removeLoadingProcess('CONTACTS')
               break
 
@@ -1560,4 +1601,15 @@ function App() {
   }
 }
 
-export default App
+const mapStateToProps = (state) => state
+
+export default connect(mapStateToProps, {
+  setLoggedIn,
+  setLoggedInUserId,
+  setLoggedInUsername,
+  setLoggedInRoles,
+  setLoggedInUserState,
+  logoutUser,
+  setContact,
+  setContacts,
+})(App)
