@@ -84,8 +84,6 @@ function App(props) {
 
   const { contact, contacts } = props.contactsState
 
-  console.log('////This is the log of  prop.contacts', contacts)
-
   const {
     // logo,
     // loggedInUserId,

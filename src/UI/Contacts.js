@@ -18,8 +18,6 @@ function Contacts(props) {
   const { loggedInUserState } = props.login
   const { contacts } = props.contactsState
 
-  console.log('****This is the log of props contacts', contacts)
-
   const localUser = loggedInUserState
 
   // Accessing notification context

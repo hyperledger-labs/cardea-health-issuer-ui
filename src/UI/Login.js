@@ -34,7 +34,6 @@ const ForgotPasswordLink = styled.a`
 `
 
 function Login(props) {
-  // console.log('!!!!!!!!!!!!This is log of props in Login function', props)
   // const [logo, setLogo] = useState(null)
 
   const { setLogo, setLoggedIn, setUpUser } = props

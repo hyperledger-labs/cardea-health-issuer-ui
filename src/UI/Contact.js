@@ -46,8 +46,6 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
-  // console.log('!!!!This is the log of props in Contact', props)
-
   const { loggedInUserState } = props.login
   const { contacts, contact } = props.contactsState
 
@@ -58,7 +56,11 @@ function Contact(props) {
   const setNotification = useNotification()
 
   const history = props.history
-  // const contactId = props.contactId
+  const contactId = props.contactId
+
+  console.log('!!!!This is the log of contactId:', contactId)
+  console.log('****This is the log of contacts:', contacts)
+
   const error = props.errorMessage
   const success = props.successMessage
   const privileges = props.privileges
@@ -88,10 +90,13 @@ function Contact(props) {
   const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
   for (let i = 0; i < contacts.length; i++) {
-    if (contacts[i].contact_id === contact.contact_id) {
-      console.log('This is the log of contacts', contacts[i])
-      console.log('This is the log of contact', contact)
-
+    // if (contacts[i].contact_id === contact.contact_id) {
+    if (contacts[i].contact_id === contactId) {
+      console.log(
+        'This is the log of contacts[i].contact_id:',
+        contacts[i].contact_id
+      )
+      console.log('This is the log of contactId:', contactId)
       contactToSelect = contacts[i]
       break
     }
