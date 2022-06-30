@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import {
   Actions,
@@ -20,10 +21,11 @@ import {
 import { useNotification } from './NotificationProvider'
 
 function FormUserEdit(props) {
+  const loginState = useSelector((state) => state.login)
   const email = props.userEmail
   const roles = props.roles
   const users = props.users
-  const loggedInUserState = props.loggedInUserState
+  // const loggedInUserState = props.loggedInUserState
   const error = props.error
 
   // Get the selected user
@@ -87,7 +89,11 @@ function FormUserEdit(props) {
     listUser.email = email
     listUser.roles = options
 
-    if (listUser && loggedInUserState.id === listUser.user_id && !username)
+    if (
+      listUser &&
+      loginState.loggedInUserState.id === listUser.user_id &&
+      !username
+    )
       setNotification('You are not allowed to remove your username.', 'error')
     else props.sendRequest('USERS', 'UPDATE', listUser)
   }
@@ -116,7 +122,9 @@ function FormUserEdit(props) {
           checked={checked}
           onChange={handleCheckboxChange}
           disabled={
-            listUser && loggedInUserState.id === listUser.user_id ? true : false
+            listUser && loginState.loggedInUserState.id === listUser.user_id
+              ? true
+              : false
           }
         />
       </div>

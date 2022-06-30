@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 // import { connect } from 'react-redux'
 // import { setLoggedInUserState } from '../redux/loginReducer'
-// import { setContact, setContacts } from '../redux/contactReducer'
+import { setContactSelected } from '../redux/contactsReducer'
 
 import styled from 'styled-components'
 
@@ -47,9 +47,14 @@ const IssueCredential = styled.button`
 
 function Contact(props) {
   const loginState = useSelector((state) => state.login)
+  const contactsState = useSelector((state) => state.contacts)
+
   const localUser = loginState.loggedInUserState
 
-  const contacts = props.contacts
+  const contacts = contactsState.contacts
+  const contactSelected = contactsState.contacts
+
+  const dispatch = useDispatch()
 
   // const { loggedInUserState } = props.login
   // const { contacts, contact } = props.contactsState
@@ -71,7 +76,7 @@ function Contact(props) {
 
   const [index, setIndex] = useState(false)
 
-  const [contactSelected, setContactSelected] = useState(contactToSelect)
+  // const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
@@ -93,6 +98,7 @@ function Contact(props) {
 
   if (contacts) {
     for (let i = 0; i < contacts.length; i++) {
+      console.log('This is the log of contacts.length', contacts.length)
       if (contacts[i].contact_id === Number(contactId)) {
         contactToSelect = contacts[i]
         break
@@ -112,7 +118,7 @@ function Contact(props) {
   }, [error, success])
 
   useEffect(() => {
-    setContactSelected(contactToSelect)
+    dispatch(setContactSelected(contactToSelect))
   }, [contactToSelect])
 
   function updateDemographics(updatedDemographic, e) {
@@ -125,7 +131,7 @@ function Contact(props) {
 
     setNotification('Contact was updated!', 'notice')
 
-    setContactSelected({ ...contactSelected, ...Demographic })
+    dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
   }
 
   function openCredential(history, id) {

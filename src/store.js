@@ -1,12 +1,12 @@
 import { createStore, combineReducers } from 'redux'
 
 import loginReducer from './redux/loginReducer'
-import contactReducer from './redux/contactReducer'
+import contactsReducer from './redux/contactsReducer'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 const rootReducer = combineReducers({
   login: loginReducer,
-  contactsState: contactReducer,
+  contacts: contactsReducer,
 })
 
 export default createStore(rootReducer, composeWithDevTools())

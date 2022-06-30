@@ -49,7 +49,7 @@ import {
   setLoggedInUserState,
   logoutUser,
 } from './redux/loginReducer'
-import { setContact, setContacts } from './redux/contactReducer'
+import { setContact, setContacts } from './redux/contactsReducer'
 
 import './App.css'
 
@@ -84,6 +84,7 @@ function App(props) {
   }
 
   const loginState = useSelector((state) => state.login)
+  const contactsState = useSelector((state) => state.contacts)
   const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
 
@@ -137,8 +138,8 @@ function App(props) {
   const [stylesArray, setStylesArray] = useState([])
 
   // Message states
-  const [contacts, setContacts] = useState([])
-  const [contact, setContact] = useState({})
+  // const [contacts, setContacts] = useState([])
+  // const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
@@ -263,7 +264,12 @@ function App(props) {
       addLoadingProcess('SELECTED_GOVERNANCE')
 
       if (
-        check(rules, loginState.loggedInUserState, 'contacts:read', 'demographics:read')
+        check(
+          rules,
+          loginState.loggedInUserState,
+          'contacts:read',
+          'demographics:read'
+        )
       ) {
         sendMessage('CONTACTS', 'GET_ALL', {
           additional_tables: ['Demographic'],
@@ -302,7 +308,13 @@ function App(props) {
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loginState.loggedIn, websocket, readyForMessages, loginState.loggedInUserState])
+  }, [
+    session,
+    loginState.loggedIn,
+    websocket,
+    readyForMessages,
+    loginState.loggedInUserState,
+  ])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -391,7 +403,7 @@ function App(props) {
               // )
 
               let newContacts = data.contacts
-              let oldContacts = contacts
+              let oldContacts = contactsState.contacts
               let updContacts = []
 
               // (mikekebert) Loop through the new contacts and check them against the existing array
@@ -417,8 +429,8 @@ function App(props) {
                 updContacts = [...updContacts, ...oldContacts]
               }
 
-              setContact(data.contacts[0])
-              setContacts(updContacts)
+              dispatch(setContact(data.contacts[0]))
+              dispatch(setContacts(updContacts))
               // return updContacts
               // })
               removeLoadingProcess('CONTACTS')
@@ -1048,7 +1060,10 @@ function App(props) {
     })
   }
 
-  if ((loginState.loggedIn && !appIsLoaded) || (!loginState.loggedIn && !appIsLoaded)) {
+  if (
+    (loginState.loggedIn && !appIsLoaded) ||
+    (!loginState.loggedIn && !appIsLoaded)
+  ) {
     // Show the spinner while the app is loading
     return (
       <ThemeProvider theme={theme}>
@@ -1189,7 +1204,7 @@ function App(props) {
                             QRCodeURL={QRCodeURL}
                             // outOfBandQRCodeURL={outOfBandQRCodeURL}
                             focusedConnectionID={focusedConnectionID}
-                            contact={contact}
+                            // contact={contact}
                           />
                         </Main>
                         <AppFooter
@@ -1202,7 +1217,13 @@ function App(props) {
                 <Route
                   path="/invitations"
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'invitations:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'invitations:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1231,7 +1252,13 @@ function App(props) {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'contacts:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'contacts:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1248,7 +1275,7 @@ function App(props) {
                               // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              contacts={contacts}
+                              // contacts={contacts}
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
@@ -1265,7 +1292,13 @@ function App(props) {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'contacts:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'contacts:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1287,7 +1320,7 @@ function App(props) {
                               clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
-                              contacts={contacts}
+                              // contacts={contacts}
                               schemas={schemas}
                               credentials={credentials}
                             />
@@ -1306,7 +1339,13 @@ function App(props) {
                   path="/credentials"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'credentials:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1337,7 +1376,13 @@ function App(props) {
                 <Route
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'credentials:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1419,7 +1464,13 @@ function App(props) {
                   path="/presentations"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'presentations:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1435,7 +1486,7 @@ function App(props) {
                             <Presentations
                               history={history}
                               presentationReports={presentationReports}
-                              contacts={contacts}
+                              // contacts={contacts}
                             />
                           </Main>
                           <AppFooter
@@ -1451,7 +1502,13 @@ function App(props) {
                 <Route
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'presentations:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1468,7 +1525,7 @@ function App(props) {
                               history={history}
                               presentation={match.params.presentationId}
                               presentationReports={presentationReports}
-                              contacts={contacts}
+                              // contacts={contacts}
                             />
                           </Main>
                           <AppFooter
@@ -1485,7 +1542,9 @@ function App(props) {
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'users:read')) {
+                    if (
+                      check(rules, loginState.loggedInUserState, 'users:read')
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1550,7 +1609,13 @@ function App(props) {
                 <Route
                   path="/settings"
                   render={({ match, history }) => {
-                    if (check(rules, loginState.loggedInUserState, 'settings:update')) {
+                    if (
+                      check(
+                        rules,
+                        loginState.loggedInUserState,
+                        'settings:update'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader

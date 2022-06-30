@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux'
 
 import { CanUser } from './CanUser'
 
@@ -25,6 +26,7 @@ import {
 import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {
+  const loginState = useSelector((state) => state.login)
   const error = props.errorMessage
   const success = props.successMessage
 
@@ -57,7 +59,7 @@ function Users(props) {
 
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const loggedInUserState = props.loggedInUserState
+  // const loggedInUserState = props.loggedInUserState
 
   const roles = props.roles
   const users = props.users
@@ -115,7 +117,7 @@ function Users(props) {
           <DataCell>{userRoles}</DataCell>
 
           <CanUser
-            user={loggedInUserState}
+            user={loginState.loggedInUserState}
             perform="users:update, users:updateRoles"
             yes={() => (
               <IconCell
@@ -128,9 +130,10 @@ function Users(props) {
               </IconCell>
             )}
           />
-          {loggedInUserState && loggedInUserState.id !== userId ? (
+          {loginState.loggedInUserState &&
+          loginState.loggedInUserState.id !== userId ? (
             <CanUser
-              user={loggedInUserState}
+              user={loginState.loggedInUserState}
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -148,7 +151,7 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-              user={loggedInUserState}
+              user={loginState.loggedInUserState}
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -192,7 +195,7 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-                  user={loggedInUserState}
+                  user={loginState.loggedInUserState}
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -201,7 +204,7 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  user={loggedInUserState}
+                  user={loginState.loggedInUserState}
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -210,7 +213,7 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  user={loggedInUserState}
+                  user={loginState.loggedInUserState}
                   perform="users:create"
                   yes={() => (
                     <DataHeader>
@@ -239,7 +242,7 @@ function Users(props) {
           roles={roles}
           userEmail={userEmail}
           users={users}
-          loggedInUserState={loggedInUserState}
+          loggedInUserState={loginState.loggedInUserState}
           userEditModalIsOpen={userEditModalIsOpen}
           closeUserEditModal={closeUserEditModal}
         />

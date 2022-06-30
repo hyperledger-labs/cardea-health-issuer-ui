@@ -6,9 +6,6 @@ const initialState = {
   loggedIn: false,
   // logo: null,
 }
-// loggedInRoles
-// loggedIn
-//
 
 const SET_LOGO = 'SET_LOGO'
 const SET_LOGGED_IN = 'SET_LOGGED_IN'
