@@ -1,12 +1,12 @@
 const initialState = {
   contact: {},
   contacts: [],
-  contactSelected: '',
+  // contactSelected: '',
 }
 
 const SET_CONTACT = 'SET_CONTACT'
 const SET_CONTACTS = 'SET_CONTACTS'
-const SET_CONTACT_SELECTED = 'SET_CONTACT_SELECTED'
+// const SET_CONTACT_SELECTED = 'SET_CONTACT_SELECTED'
 
 export function setContact(contact) {
   return {
@@ -22,12 +22,12 @@ export function setContacts(contacts) {
   }
 }
 
-export function setContactSelected(contactSelected) {
-  return {
-    type: SET_CONTACT,
-    payload: contactSelected,
-  }
-}
+// export function setContactSelected(contactSelected) {
+//   return {
+//     type: SET_CONTACT,
+//     payload: contactSelected,
+//   }
+// }
 
 export default function (state = initialState, action) {
   //Reducer contains a switch statement which takes in action.type, performs different functionality based on the action.type from the actions above.
@@ -38,8 +38,8 @@ export default function (state = initialState, action) {
     case SET_CONTACTS:
       return { ...state, contacts: action.payload }
 
-    case SET_CONTACT_SELECTED:
-      return { ...state, contactSelected: action.payload }
+    // case SET_CONTACT_SELECTED:
+    //   return { ...state, contactSelected: action.payload }
 
     default:
       return state

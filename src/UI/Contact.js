@@ -52,7 +52,7 @@ function Contact(props) {
   const localUser = loginState.loggedInUserState
 
   const contacts = contactsState.contacts
-  const contactSelected = contactsState.contacts
+  // const contactSelected = contactsState.contacts
 
   const dispatch = useDispatch()
 
@@ -76,7 +76,7 @@ function Contact(props) {
 
   const [index, setIndex] = useState(false)
 
-  // const [contactSelected, setContactSelected] = useState(contactToSelect)
+  const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
@@ -118,7 +118,8 @@ function Contact(props) {
   }, [error, success])
 
   useEffect(() => {
-    dispatch(setContactSelected(contactToSelect))
+    setContactSelected(contactToSelect)
+    // dispatch(setContactSelected(contactToSelect))
   }, [contactToSelect])
 
   function updateDemographics(updatedDemographic, e) {
@@ -131,7 +132,8 @@ function Contact(props) {
 
     setNotification('Contact was updated!', 'notice')
 
-    dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
+    setContactSelected({ ...contactSelected, ...Demographic })
+    // dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
   }
 
   function openCredential(history, id) {
