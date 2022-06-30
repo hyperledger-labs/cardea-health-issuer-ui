@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -61,7 +62,9 @@ const StyledSubLink = styled(NavLink)`
   }
 `
 function AppMenu(props) {
-  const localUser = props.loggedInUserState
+  // const localUser = props.loggedInUserState
+  const loginState = useSelector((state) => state.login)
+  const localUser = loginState.loggedInUserState
 
   let pathMatch = ''
   if (props.match.path !== undefined) {

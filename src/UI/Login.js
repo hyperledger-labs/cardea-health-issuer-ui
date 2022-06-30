@@ -1,15 +1,9 @@
 import Axios from 'axios'
 import React, { useRef, useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
-import { connect } from 'react-redux'
-import {
-  setLogo,
-  setLoggedIn,
-  setLoggedInUserId,
-  setLoggedInUsername,
-  setLoggedInRoles,
-} from '../redux/loginReducer'
+import { setLoggedIn } from '../redux/loginReducer'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
@@ -34,10 +28,11 @@ const ForgotPasswordLink = styled.a`
 `
 
 function Login(props) {
-  // const [logo, setLogo] = useState(null)
-
-  const { setLogo, setLoggedIn, setUpUser } = props
-  const { logo } = props.login
+  const [logo, setLogo] = useState(null)
+  const dispatch = useDispatch()
+  const { setUpUser } = props
+  // const { setLogo, setLoggedIn, setUpUser } = props
+  // const { logo } = props.login
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -73,7 +68,7 @@ function Login(props) {
       if (res.data.error) setNotification(res.data.error, 'error')
       else {
         // props.setLoggedIn(true)
-        setLoggedIn(true)
+        dispatch(setLoggedIn(true))
 
         // props.setUpUser(res.data.id, res.data.username, res.data.roles)
         setUpUser(res.data.id, res.data.username, res.data.roles)
@@ -108,12 +103,13 @@ function Login(props) {
     </FormContainer>
   )
 }
-const mapStateToProps = (state) => state
+// const mapStateToProps = (state) => state
 
-export default connect(mapStateToProps, {
-  setLogo,
-  setLoggedIn,
-  setLoggedInUserId,
-  setLoggedInUsername,
-  setLoggedInRoles,
-})(Login)
+// export default connect(mapStateToProps, {
+//   // setLogo,
+//   setLoggedIn,
+//   setLoggedInUserId,
+//   setLoggedInUsername,
+//   setLoggedInRoles,
+// })(Login)
+export default Login

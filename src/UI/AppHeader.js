@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { handleImageSrc } from './util'
-
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Logo, LogoHolder } from './CommonStylesForms'
 
@@ -59,6 +59,7 @@ function AppHeader(props) {
   const [src, setSrc] = useState(null)
   const logo = props.logo
   const organizationName = props.organizationName
+  const loginState = useSelector((state) => state.login)
 
   useEffect(() => {
     if (logo && logo.image) {
@@ -82,13 +83,13 @@ function AppHeader(props) {
       <OrganizationName>{organizationName}</OrganizationName>
       <LogoutWrapper>
         <UserName onClick={handleUserProfile}>
-          {props.loggedInUsername}
+          {loginState.loggedInUsername}
         </UserName>
         <Logout onClick={handleLogout}>Log Out</Logout>
       </LogoutWrapper>
       <AppMenu
         match={props.match}
-        loggedInUserState={props.loggedInUserState}
+        loggedInUserState={loginState.loggedInUserState}
       />
     </Header>
   )

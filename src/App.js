@@ -2,7 +2,8 @@ import Axios from 'axios'
 
 import Cookies from 'universal-cookie'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { connect } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+// import { connect } from 'react-redux'
 
 import {
   BrowserRouter as Router,
@@ -82,27 +83,29 @@ function App(props) {
     background_secondary: '#f5f5f5',
   }
 
-  const { contact, contacts } = props.contactsState
+  const loginState = useSelector((state) => state.login)
+  const dispatch = useDispatch()
+  // const { contact, contacts } = props.contactsState
 
-  const {
-    // logo,
-    // loggedInUserId,
-    loggedInUsername,
-    // loggedInRoles,
-    loggedIn,
-    loggedInUserState,
-  } = props.login
+  // const {
+  //   // logo,
+  //   // loggedInUserId,
+  //   loggedInUsername,
+  //   // loggedInRoles,
+  //   loggedIn,
+  //   loggedInUserState,
+  // } = props.login
 
-  const {
-    setLoggedIn,
-    setLoggedInUserId,
-    setLoggedInUsername,
-    setLoggedInRoles,
-    setLoggedInUserState,
-    logoutUser,
-    setContact,
-    setContacts,
-  } = props
+  // const {
+  //   setLoggedIn,
+  //   setLoggedInUserId,
+  //   setLoggedInUsername,
+  //   setLoggedInRoles,
+  //   setLoggedInUserState,
+  //   logoutUser,
+  //   setContact,
+  //   setContacts,
+  // } = props
 
   const cookies = new Cookies()
 
@@ -134,8 +137,8 @@ function App(props) {
   const [stylesArray, setStylesArray] = useState([])
 
   // Message states
-  // const [contacts, setContacts] = useState([])
-  // const [contact, setContact] = useState({})
+  const [contacts, setContacts] = useState([])
+  const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
@@ -178,23 +181,23 @@ function App(props) {
         if (cookies.get('sessionId')) {
           // Update session expiration date
           setSession(cookies.get('sessionId'))
-          setLoggedIn(true)
+          dispatch(setLoggedIn(true))
 
-          setLoggedInUserState(res.data)
-          setLoggedInUserId(res.data.id)
-          setLoggedInUsername(res.data.username)
-          setLoggedInRoles(res.data.roles)
+          dispatch(setLoggedInUserState(res.data))
+          dispatch(setLoggedInUserId(res.data.id))
+          dispatch(setLoggedInUsername(res.data.username))
+          dispatch(setLoggedInRoles(res.data.roles))
         } else setAppIsLoaded(true)
       })
       .catch((error) => {
         // Unauthorized
         setAppIsLoaded(true)
       })
-  }, [loggedIn])
+  }, [loginState.loggedIn])
 
   // Setting up websocket and controllerSocket
   useEffect(() => {
-    if (session && loggedIn) {
+    if (session && loginState.loggedIn) {
       let url = new URL('/api/ws', window.location.href)
       url.protocol = url.protocol.replace('http', 'ws')
       controllerSocket.current = new WebSocket(url.href)
@@ -228,7 +231,7 @@ function App(props) {
         )
       }
     }
-  }, [loggedIn, session])
+  }, [loginState.loggedIn, session])
 
   // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
   useEffect(() => {
@@ -240,10 +243,10 @@ function App(props) {
     // Run web sockets only if authenticated
     if (
       session &&
-      loggedIn &&
+      loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      loggedInUserState &&
+      loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
       sendMessage('SETTINGS', 'GET_THEME', {})
@@ -260,7 +263,7 @@ function App(props) {
       addLoadingProcess('SELECTED_GOVERNANCE')
 
       if (
-        check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
+        check(rules, loginState.loggedInUserState, 'contacts:read', 'demographics:read')
       ) {
         sendMessage('CONTACTS', 'GET_ALL', {
           additional_tables: ['Demographic'],
@@ -268,17 +271,17 @@ function App(props) {
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(rules, loggedInUserState, 'credentials:read')) {
+      if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(rules, loggedInUserState, 'roles:read')) {
+      if (check(rules, loginState.loggedInUserState, 'roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
 
-      if (check(rules, loggedInUserState, 'presentations:read')) {
+      if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
@@ -286,7 +289,7 @@ function App(props) {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(rules, loggedInUserState, 'settings:update')) {
+      if (check(rules, loginState.loggedInUserState, 'settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -294,12 +297,12 @@ function App(props) {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(rules, loggedInUserState, 'users:read')) {
+      if (check(rules, loginState.loggedInUserState, 'users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loggedIn, websocket, readyForMessages, loggedInUserState])
+  }, [session, loginState.loggedIn, websocket, readyForMessages, loginState.loggedInUserState])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -972,9 +975,9 @@ function App(props) {
 
   function setUpUser(id, username, roles) {
     setSession(cookies.get('sessionId'))
-    setLoggedInUserId(id)
-    setLoggedInUsername(username)
-    setLoggedInRoles(roles)
+    dispatch(setLoggedInUserId(id))
+    dispatch(setLoggedInUsername(username))
+    dispatch(setLoggedInRoles(roles))
   }
 
   // Update theme state locally
@@ -1028,13 +1031,14 @@ function App(props) {
       url: '/api/user/log-out',
       withCredentals: true,
     }).then((res) => {
-      setLoggedIn(false)
+      // setLoggedIn(false)
       setSession('')
       setWebsocket(false)
-      setLoggedInUserState(null)
-      setLoggedInUserId('')
-      setLoggedInUsername('')
-      setLoggedInRoles([])
+      dispatch(logoutUser())
+      // setLoggedInUserState(null)
+      // setLoggedInUserId('')
+      // setLoggedInUsername('')
+      // setLoggedInRoles([])
 
       // (eldersonar) Does this close the connection and remove the connection object?
       closeWSConnection(1000, 'Log out')
@@ -1044,14 +1048,14 @@ function App(props) {
     })
   }
 
-  if ((loggedIn && !appIsLoaded) || (!loggedIn && !appIsLoaded)) {
+  if ((loginState.loggedIn && !appIsLoaded) || (!loginState.loggedIn && !appIsLoaded)) {
     // Show the spinner while the app is loading
     return (
       <ThemeProvider theme={theme}>
         <FullPageSpinner />
       </ThemeProvider>
     )
-  } else if (!loggedIn && appIsLoaded) {
+  } else if (!loginState.loggedIn && appIsLoaded) {
     return (
       <ThemeProvider theme={theme}>
         <NotificationProvider>
@@ -1165,17 +1169,17 @@ function App(props) {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
+                          // loggedInUserState={loggedInUserState}
                           logo={image}
                           organizationName={organizationName}
-                          loggedInUsername={loggedInUsername}
+                          // loggedInUsername={loggedInUsername}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
                         />
                         <Main>
                           <Home
-                            loggedInUserState={loggedInUserState}
+                            // loggedInUserState={loggedInUserState}
                             history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
@@ -1198,12 +1202,12 @@ function App(props) {
                 <Route
                   path="/invitations"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'invitations:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'invitations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1227,12 +1231,12 @@ function App(props) {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1241,7 +1245,7 @@ function App(props) {
                           />
                           <Main>
                             <Contacts
-                              loggedInUserState={loggedInUserState}
+                              // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
                               contacts={contacts}
@@ -1261,12 +1265,12 @@ function App(props) {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1275,7 +1279,7 @@ function App(props) {
                           />
                           <Main>
                             <Contact
-                              loggedInUserState={loggedInUserState}
+                              // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
                               successMessage={successMessage}
@@ -1302,12 +1306,12 @@ function App(props) {
                   path="/credentials"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1333,12 +1337,12 @@ function App(props) {
                 <Route
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1369,8 +1373,8 @@ function App(props) {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
                           logo={image}
                           organizationName={organizationName}
                           match={match}
@@ -1393,8 +1397,8 @@ function App(props) {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
                           logo={image}
                           organizationName={organizationName}
                           match={match}
@@ -1415,12 +1419,12 @@ function App(props) {
                   path="/presentations"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1447,12 +1451,12 @@ function App(props) {
                 <Route
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1481,12 +1485,12 @@ function App(props) {
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'users:read')) {
+                    if (check(rules, loginState.loggedInUserState, 'users:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1495,7 +1499,7 @@ function App(props) {
                           />
                           <Main>
                             <Users
-                              loggedInUserState={loggedInUserState}
+                              // loggedInUserState={loggedInUserState}
                               roles={roles}
                               users={users}
                               user={user}
@@ -1521,8 +1525,8 @@ function App(props) {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
+                          // loggedInUserState={loggedInUserState}
+                          // loggedInUsername={loggedInUsername}
                           logo={image}
                           organizationName={organizationName}
                           match={match}
@@ -1546,12 +1550,12 @@ function App(props) {
                 <Route
                   path="/settings"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'settings:update')) {
+                    if (check(rules, loginState.loggedInUserState, 'settings:update')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
+                            // loggedInUserState={loggedInUserState}
+                            // loggedInUsername={loggedInUsername}
                             logo={image}
                             organizationName={organizationName}
                             match={match}
@@ -1599,15 +1603,17 @@ function App(props) {
   }
 }
 
-const mapStateToProps = (state) => state
+export default App
 
-export default connect(mapStateToProps, {
-  setLoggedIn,
-  setLoggedInUserId,
-  setLoggedInUsername,
-  setLoggedInRoles,
-  setLoggedInUserState,
-  logoutUser,
-  setContact,
-  setContacts,
-})(App)
+// const mapStateToProps = (state) => state
+
+// export default connect(mapStateToProps, {
+//   setLoggedIn,
+//   setLoggedInUserId,
+//   setLoggedInUsername,
+//   setLoggedInRoles,
+//   setLoggedInUserState,
+//   logoutUser,
+//   setContact,
+//   setContacts,
+// })(App)

@@ -1,8 +1,8 @@
 import Axios from 'axios'
 import React, { useRef, useLayoutEffect, useState } from 'react'
 import jwt_decode from 'jwt-decode'
-import { connect } from 'react-redux'
-import { setLogo } from '../redux/loginReducer'
+// import { connect } from 'react-redux'
+// import { setLogo } from '../redux/loginReducer'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
@@ -20,8 +20,8 @@ import {
 
 function AccountSetup(props) {
   const token = window.location.hash.substring(1)
-  const { setLogo } = props
-  const { logo } = props.login
+  // const { setLogo } = props
+  // const { logo } = props.login
 
   const [id, setId] = useState({})
 
@@ -63,7 +63,7 @@ function AccountSetup(props) {
     } // Cleanup
   }, [])
 
-  // const [logo, setLogo] = useState(null)
+  const [logo, setLogo] = useState(null)
 
   useLayoutEffect(() => {
     let isMounted = true
@@ -168,7 +168,7 @@ function AccountSetup(props) {
     </FormContainer>
   )
 }
-// export default AccountSetup
-const mapStateToProps = (state) => state
+export default AccountSetup
+// const mapStateToProps = (state) => state
 
-export default connect(mapStateToProps, { setLogo })(AccountSetup)
+// export default connect(mapStateToProps, { setLogo })(AccountSetup)

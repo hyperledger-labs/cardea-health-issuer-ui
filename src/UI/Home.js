@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import styled from 'styled-components'
 
@@ -37,10 +38,13 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
+  const loginState = useSelector((state) => state.login)
+  const localUser = loginState.loggedInUserState
+
   const error = props.errorMessage
   const success = props.successMessage
   const warning = props.warningMessage
-  const localUser = props.loggedInUserState
+  // const localUser = props.loggedInUserState
   const history = props.history
   const contact = props.contact
 

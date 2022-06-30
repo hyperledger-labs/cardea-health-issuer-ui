@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-
-import { connect } from 'react-redux'
-import { setLoggedInUserState } from '../redux/loginReducer'
-import { setContacts } from '../redux/contactReducer'
+import { useSelector } from 'react-redux'
+// import { connect } from 'react-redux'
+// import { setLoggedInUserState } from '../redux/loginReducer'
+// import { setContacts } from '../redux/contactReducer'
 
 import { CanUser } from './CanUser'
 import FormQR from './FormQR'
@@ -15,10 +15,13 @@ import { DataTable, DataRow, DataHeader, DataCell } from './CommonStylesTables'
 import { ActionButton } from './CommonStylesForms'
 
 function Contacts(props) {
-  const { loggedInUserState } = props.login
-  const { contacts } = props.contactsState
+  // const { loggedInUserState } = props.login
+  const loginState = useSelector((state) => state.login)
+  const localUser = loginState.loggedInUserState
 
-  const localUser = loggedInUserState
+  // const { contacts } = props.contactsState
+
+  // const localUser = loggedInUserState
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -40,7 +43,7 @@ function Contacts(props) {
 
   const history = props.history
 
-  // const contacts = props.contacts
+  const contacts = props.contacts
 
   function openContact(history, id) {
     if (history !== undefined) {
@@ -114,9 +117,11 @@ function Contacts(props) {
   )
 }
 
-const mapStateToProps = (state) => state
+// const mapStateToProps = (state) => state
 
-export default connect(mapStateToProps, {
-  setLoggedInUserState,
-  setContacts,
-})(Contacts)
+// export default connect(mapStateToProps, {
+//   setLoggedInUserState,
+//   setContacts,
+// })(Contacts)
+
+export default Contacts
