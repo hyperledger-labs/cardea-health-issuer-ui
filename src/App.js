@@ -50,6 +50,7 @@ import {
   logoutUser,
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
+import { setUsers } from './redux/usersReducer'
 
 import './App.css'
 
@@ -85,6 +86,7 @@ function App(props) {
 
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
+  const usersState = useSelector((state) => state.users)
   const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
 
@@ -144,7 +146,7 @@ function App(props) {
   const [presentationReports, setPresentationReports] = useState([])
   const [image, setImage] = useState()
   const [roles, setRoles] = useState([])
-  const [users, setUsers] = useState([])
+  // const [users, setUsers] = useState([])
   const [user, setUser] = useState({})
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
@@ -586,34 +588,36 @@ function App(props) {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              setUsers((prevUsers) => {
-                let oldUsers = prevUsers
-                let newUsers = data.users
-                let updatedUsers = []
-                // (mikekebert) Loop through the new users and check them against the existing array
-                newUsers.forEach((newUser) => {
-                  oldUsers.forEach((oldUser, index) => {
-                    if (
-                      oldUser !== null &&
-                      newUser !== null &&
-                      oldUser.user_id === newUser.user_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldUsers.splice(index, 1)
-                    }
-                  })
-                  updatedUsers.push(newUser)
+              // setUsers((prevUsers) => {
+              let oldUsers = usersState.users
+              let newUsers = data.users
+              let updatedUsers = []
+              // (mikekebert) Loop through the new users and check them against the existing array
+              newUsers.forEach((newUser) => {
+                oldUsers.forEach((oldUser, index) => {
+                  if (
+                    oldUser !== null &&
+                    newUser !== null &&
+                    oldUser.user_id === newUser.user_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldUsers.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-                if (oldUsers.length > 0)
-                  updatedUsers = [...updatedUsers, ...oldUsers]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedUsers
+                updatedUsers.push(newUser)
               })
+              // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
+              if (oldUsers.length > 0)
+                updatedUsers = [...updatedUsers, ...oldUsers]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedUsers.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+
+              dispatch(setUsers(updatedUsers))
+
+              // return updatedUsers
+              // })
               removeLoadingProcess('USERS')
 
               break
@@ -1087,7 +1091,7 @@ function App(props) {
                           history={history}
                           sendRequest={sendMessage}
                           user={user}
-                          users={users}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -1105,7 +1109,7 @@ function App(props) {
                           history={history}
                           sendRequest={sendMessage}
                           user={user}
-                          users={users}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -1124,7 +1128,7 @@ function App(props) {
                           sendRequest={sendMessage}
                           messageHandler={messageHandler}
                           user={user}
-                          users={users}
+                          // users={users}
                         />
                       </Main>
                     </Frame>
@@ -1560,7 +1564,7 @@ function App(props) {
                             <Users
                               // loggedInUserState={loggedInUserState}
                               roles={roles}
-                              users={users}
+                              // users={users}
                               user={user}
                               successMessage={successMessage}
                               errorMessage={errorMessage}

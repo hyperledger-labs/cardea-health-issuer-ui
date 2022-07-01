@@ -22,9 +22,11 @@ import { useNotification } from './NotificationProvider'
 
 function FormUserEdit(props) {
   const loginState = useSelector((state) => state.login)
+  const usersState = useSelector((state) => state.users)
   const email = props.userEmail
   const roles = props.roles
-  const users = props.users
+  const users = usersState.users
+  // const users = props.users
   // const loggedInUserState = props.loggedInUserState
   const error = props.error
 

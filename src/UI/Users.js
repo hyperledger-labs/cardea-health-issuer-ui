@@ -27,6 +27,7 @@ import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {
   const loginState = useSelector((state) => state.login)
+  const usersState = useSelector((state) => state.users)
   const error = props.errorMessage
   const success = props.successMessage
 
@@ -62,7 +63,8 @@ function Users(props) {
   // const loggedInUserState = props.loggedInUserState
 
   const roles = props.roles
-  const users = props.users
+  // const users = props.users
+  const users = usersState.users
 
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
@@ -241,7 +243,7 @@ function Users(props) {
           error={index}
           roles={roles}
           userEmail={userEmail}
-          users={users}
+          // users={users}
           loggedInUserState={loginState.loggedInUserState}
           userEditModalIsOpen={userEditModalIsOpen}
           closeUserEditModal={closeUserEditModal}
