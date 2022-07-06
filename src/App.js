@@ -87,6 +87,10 @@ function App(props) {
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
   const usersState = useSelector((state) => state.users)
+  const users = usersState.users
+  console.log('6666 This is the log of users in App:', users)
+  // const usersRef = useRef(usersState.users)
+
   const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
 
@@ -330,9 +334,13 @@ function App(props) {
     }
   }
 
+  console.log('!!!! This is the log of users before messageHandler:', users)
+
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
     try {
+      const users = usersState.users
+      console.log('7777 This is the users in messageHandler:', users)
       console.log(
         `New Message with context: '${context}' and type: '${type}' with data:`,
         data
@@ -407,6 +415,10 @@ function App(props) {
               let newContacts = data.contacts
               let oldContacts = contactsState.contacts
               let updContacts = []
+              console.log(
+                '1111 this is oldContacts in Contacts case: ',
+                oldContacts
+              )
 
               // (mikekebert) Loop through the new contacts and check them against the existing array
               newContacts.forEach((newContact) => {
@@ -588,8 +600,12 @@ function App(props) {
         case 'USERS':
           switch (type) {
             case 'USERS':
+              console.log('*/*/*/This is usersRef:', usersRef)
               // setUsers((prevUsers) => {
-              let oldUsers = usersState.users
+              // let oldUsers = users
+              // let oldUsers = usersState.users
+              let oldUsers = usersRef
+              console.log('5555This is the log of oldUsers:', oldUsers)
               let newUsers = data.users
               let updatedUsers = []
               // (mikekebert) Loop through the new users and check them against the existing array
@@ -650,7 +666,21 @@ function App(props) {
               break
 
             case 'USER_CREATED':
+              // console.log(
+              //   '3333this is the log of usersState.users:',
+              //   usersState.users
+              // )
+              // dispatch(setUser(data.user[0]))
+              // setUser(data.user[0])
+              // dispatch(setUsers(...usersState.users, data.user[0]))
+
+              // let updatedUsers = [...users, data.user[0]]
+              //   return updatedUsers.sort((a, b) =>
+              //     a.created_at < b.created_at ? 1 : -1
+              //   )
+              // })
               setUsers((prevUsers) => {
+                console.log('8888 This is prevUsers:', prevUsers)
                 let updatedUsers = [...prevUsers, data.user[0]]
                 return updatedUsers.sort((a, b) =>
                   a.created_at < b.created_at ? 1 : -1

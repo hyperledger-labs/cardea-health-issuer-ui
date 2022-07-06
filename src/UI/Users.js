@@ -66,6 +66,8 @@ function Users(props) {
   // const users = props.users
   const users = usersState.users
 
+  console.log('this is the log of users:', users)
+
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
   const closeDeleteModal = () => setDeleteUserModalIsOpen(false)
@@ -90,6 +92,8 @@ function Users(props) {
   let userRows = ''
 
   if (users) {
+    console.log('9999 This is the users before the userRows:', users)
+
     userRows = users.map((user) => {
       let userId = ''
       let userName = ''
