@@ -23,8 +23,6 @@ import { useNotification } from './NotificationProvider'
 function FormUserEdit(props) {
   const loginState = useSelector((state) => state.login)
   const usersState = useSelector((state) => state.users)
-  console.log('****This is the log of usersState :', usersState)
-  console.log('===This is the log of usersState.users :', usersState.users)
   const email = props.userEmail
   const roles = props.roles
   const users = usersState.users
@@ -39,7 +37,6 @@ function FormUserEdit(props) {
       if (selectedUser) setListUser({ ...selectedUser })
     }
   }, [email, users])
-  // }, [users])
 
   useEffect(() => {
     if (error && submitBtn.current) {

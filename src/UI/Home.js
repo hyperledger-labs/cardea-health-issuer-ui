@@ -40,13 +40,15 @@ const DashboardButton = styled.div`
 function Home(props) {
   const loginState = useSelector((state) => state.login)
   const localUser = loginState.loggedInUserState
+  const contactsState = useSelector((state) => state.contacts)
+  const contact = contactsState.contact
 
   const error = props.errorMessage
   const success = props.successMessage
   const warning = props.warningMessage
   // const localUser = props.loggedInUserState
   const history = props.history
-  const contact = props.contact
+  // const contact = props.contact
 
   // Redirect to contact when contact is created
   useEffect(() => {
@@ -54,7 +56,7 @@ function Home(props) {
       closeScanModal()
       history.push('/contacts/' + contact.contact_id)
     }
-  }, [props.contact])
+  }, [contact])
   // const privileges = props.privileges
 
   // const [govGranted, setGovGranted] = useState(undefined)

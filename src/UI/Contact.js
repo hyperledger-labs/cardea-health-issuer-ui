@@ -98,7 +98,6 @@ function Contact(props) {
 
   if (contacts) {
     for (let i = 0; i < contacts.length; i++) {
-      console.log('This is the log of contacts.length', contacts.length)
       if (contacts[i].contact_id === Number(contactId)) {
         contactToSelect = contacts[i]
         break

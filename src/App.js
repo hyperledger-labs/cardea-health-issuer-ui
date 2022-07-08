@@ -41,6 +41,8 @@ import Users from './UI/Users'
 
 import SessionProvider from './UI/SessionProvider'
 
+import store from './store'
+
 import {
   setLoggedIn,
   setLoggedInUserId,
@@ -50,7 +52,7 @@ import {
   logoutUser,
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
-import { setUsers } from './redux/usersReducer'
+import { setUsers, setUser } from './redux/usersReducer'
 
 import './App.css'
 
@@ -86,10 +88,6 @@ function App(props) {
 
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
-  const usersState = useSelector((state) => state.users)
-  const users = usersState.users
-  console.log('6666 This is the log of users in App:', users)
-  // const usersRef = useRef(usersState.users)
 
   const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
@@ -151,7 +149,7 @@ function App(props) {
   const [image, setImage] = useState()
   const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
-  const [user, setUser] = useState({})
+  // const [user, setUser] = useState({})
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
   const [organizationName, setOrganizationName] = useState(null)
@@ -334,13 +332,13 @@ function App(props) {
     }
   }
 
-  console.log('!!!! This is the log of users before messageHandler:', users)
-
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
+    const currentState = store.getState()
+    const users = currentState.users.users
+    const contacts = currentState.contacts.contacts
+
     try {
-      const users = usersState.users
-      console.log('7777 This is the users in messageHandler:', users)
       console.log(
         `New Message with context: '${context}' and type: '${type}' with data:`,
         data
@@ -406,19 +404,9 @@ function App(props) {
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
-              // setContacts((prevContacts) => {
-              // console.log(
-              //   'Log of prevContacts at contacts case',
-              //   prevContacts
-              // )
-
               let newContacts = data.contacts
-              let oldContacts = contactsState.contacts
+              let oldContacts = contacts
               let updContacts = []
-              console.log(
-                '1111 this is oldContacts in Contacts case: ',
-                oldContacts
-              )
 
               // (mikekebert) Loop through the new contacts and check them against the existing array
               newContacts.forEach((newContact) => {
@@ -600,12 +588,7 @@ function App(props) {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              console.log('*/*/*/This is usersRef:', usersRef)
-              // setUsers((prevUsers) => {
-              // let oldUsers = users
-              // let oldUsers = usersState.users
-              let oldUsers = usersRef
-              console.log('5555This is the log of oldUsers:', oldUsers)
+              let oldUsers = users
               let newUsers = data.users
               let updatedUsers = []
               // (mikekebert) Loop through the new users and check them against the existing array
@@ -631,82 +614,73 @@ function App(props) {
               )
 
               dispatch(setUsers(updatedUsers))
-
-              // return updatedUsers
-              // })
               removeLoadingProcess('USERS')
 
               break
 
             case 'USER':
               let user = data.user[0]
-              setUser(user)
+              dispatch(setUser(user))
               break
 
             case 'USER_UPDATED':
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUser.user_id ? data.updatedUser : x
-                )
-              })
-              setUser(data.updatedUser)
+              const usersAfterUpdate = users.map((x) =>
+                x.user_id === data.updatedUser.user_id ? data.updatedUser : x
+              )
+              dispatch(setUsers(usersAfterUpdate))
+              dispatch(setUser(data.updatedUser))
 
               break
 
+            // case 'PASSWORD_UPDATED':
+            //   // (eldersonar) Replace the user with the updated user based on password)
+            //   setUsers((prevUsers) => {
+            //     return prevUsers.map((x) =>
+            //       x.user_id === data.updatedUserPassword.user_id
+            //         ? data.updatedUserPassword
+            //         : x
+            //     )
+            //   })
+
+            //   break
+
             case 'PASSWORD_UPDATED':
               // (eldersonar) Replace the user with the updated user based on password)
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUserPassword.user_id
-                    ? data.updatedUserPassword
-                    : x
-                )
-              })
+              // setUsers((prevUsers) => {
+              // return
+              const passwordUpdateUser = users.map((x) =>
+                x.user_id === data.updatedUserPassword.user_id
+                  ? data.updatedUserPassword
+                  : x
+              )
+              dispatch(setUsers(passwordUpdateUser))
+              // })
 
               break
 
             case 'USER_CREATED':
-              // console.log(
-              //   '3333this is the log of usersState.users:',
-              //   usersState.users
-              // )
-              // dispatch(setUser(data.user[0]))
-              // setUser(data.user[0])
-              // dispatch(setUsers(...usersState.users, data.user[0]))
-
-              // let updatedUsers = [...users, data.user[0]]
-              //   return updatedUsers.sort((a, b) =>
-              //     a.created_at < b.created_at ? 1 : -1
-              //   )
-              // })
-              setUsers((prevUsers) => {
-                console.log('8888 This is prevUsers:', prevUsers)
-                let updatedUsers = [...prevUsers, data.user[0]]
-                return updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-              })
-              setUser(data.user[0])
+              let usersCreated = [...users, data.user[0]]
+              usersCreated.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+              dispatch(setUsers(usersCreated))
+              dispatch(setUser(data.user[0]))
 
               break
 
             case 'USER_DELETED':
-              setUsers((prevUsers) => {
-                const index = prevUsers.findIndex((v) => v.user_id === data)
-                let alteredUsers = [...prevUsers]
-                alteredUsers.splice(index, 1)
-                return alteredUsers
-              })
+              const index = users.findIndex((v) => v.user_id === data)
+              let alteredUsers = [...users]
+              alteredUsers.splice(index, 1)
+              dispatch(setUsers(alteredUsers))
 
               break
 
             case 'USER_ERROR':
-              // console.log('User Error', data.error)
               setErrorMessage(data.error)
               break
 
             case 'USER_SUCCESS':
-              // console.log('USER SUCCESS')
               setSuccessMessage(data)
 
               break
@@ -1120,7 +1094,7 @@ function App(props) {
                           logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
+                          // user={user}
                           // users={users}
                         />
                       </Main>
@@ -1138,7 +1112,7 @@ function App(props) {
                           logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
+                          // user={user}
                           // users={users}
                         />
                       </Main>
@@ -1157,7 +1131,7 @@ function App(props) {
                           history={history}
                           sendRequest={sendMessage}
                           messageHandler={messageHandler}
-                          user={user}
+                          // user={user}
                           // users={users}
                         />
                       </Main>
@@ -1595,7 +1569,7 @@ function App(props) {
                               // loggedInUserState={loggedInUserState}
                               roles={roles}
                               // users={users}
-                              user={user}
+                              // user={user}
                               successMessage={successMessage}
                               errorMessage={errorMessage}
                               clearResponseState={clearResponseState}
