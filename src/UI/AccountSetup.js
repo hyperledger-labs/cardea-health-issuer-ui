@@ -1,8 +1,9 @@
 import Axios from 'axios'
 import React, { useRef, useLayoutEffect, useState } from 'react'
 import jwt_decode from 'jwt-decode'
+import { useSelector, useDispatch } from 'react-redux'
 // import { connect } from 'react-redux'
-// import { setLogo } from '../redux/loginReducer'
+import { setLogo } from '../redux/settingsReducer'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
@@ -20,8 +21,9 @@ import {
 
 function AccountSetup(props) {
   const token = window.location.hash.substring(1)
-  // const { setLogo } = props
-  // const { logo } = props.login
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
+  const dispatch = useDispatch()
 
   const [id, setId] = useState({})
 
@@ -63,7 +65,7 @@ function AccountSetup(props) {
     } // Cleanup
   }, [])
 
-  const [logo, setLogo] = useState(null)
+  // const [logo, setLogo] = useState(null)
 
   useLayoutEffect(() => {
     let isMounted = true
@@ -76,7 +78,7 @@ function AccountSetup(props) {
         setNotification(res.data.error, 'error')
       } else {
         if (isMounted) {
-          setLogo(handleImageSrc(res.data[0].image.data))
+          dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
         }
       }
     })
@@ -169,6 +171,3 @@ function AccountSetup(props) {
   )
 }
 export default AccountSetup
-// const mapStateToProps = (state) => state
-
-// export default connect(mapStateToProps, { setLogo })(AccountSetup)

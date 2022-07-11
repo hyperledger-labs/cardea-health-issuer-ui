@@ -1,9 +1,11 @@
 import Axios from 'axios'
 import jwt_decode from 'jwt-decode'
 import React, { useRef, useLayoutEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
+import { setLogo } from '../redux/settingsReducer'
 
 import {
   FormContainer,
@@ -18,6 +20,9 @@ import {
 
 function PasswordReset(props) {
   const token = window.location.hash.substring(1)
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
+  const dispatch = useDispatch()
 
   const [id, setId] = useState(undefined)
 
@@ -57,7 +62,7 @@ function PasswordReset(props) {
     })
   }, [])
 
-  const [logo, setLogo] = useState(null)
+  // const [logo, setLogo] = useState(null)
 
   useLayoutEffect(() => {
     let isMounted = true
@@ -70,7 +75,7 @@ function PasswordReset(props) {
         setNotification(res.data.error, 'error')
       } else {
         if (isMounted) {
-          setLogo(handleImageSrc(res.data[0].image.data))
+          dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
         }
       }
     })

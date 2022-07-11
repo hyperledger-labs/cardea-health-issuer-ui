@@ -3,7 +3,6 @@ import Axios from 'axios'
 import Cookies from 'universal-cookie'
 import React, { useState, useEffect, useRef, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-// import { connect } from 'react-redux'
 
 import {
   BrowserRouter as Router,
@@ -53,6 +52,7 @@ import {
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
 import { setUsers, setUser } from './redux/usersReducer'
+import { setLogo } from './redux/settingsReducer'
 
 import './App.css'
 
@@ -87,7 +87,7 @@ function App(props) {
   }
 
   const loginState = useSelector((state) => state.login)
-  const contactsState = useSelector((state) => state.contacts)
+  const settingsState = useSelector((state) => state.settings)
 
   const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
@@ -146,7 +146,7 @@ function App(props) {
   // const [contact, setContact] = useState({})
   const [credentials, setCredentials] = useState([])
   const [presentationReports, setPresentationReports] = useState([])
-  const [image, setImage] = useState()
+  // const [image, setImage] = useState()
   const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
   // const [user, setUser] = useState({})
@@ -841,7 +841,7 @@ function App(props) {
               break
 
             case 'LOGO':
-              setImage(data)
+              dispatch(setLogo(data.image.data))
               removeLoadingProcess('LOGO')
               break
 
@@ -1091,7 +1091,7 @@ function App(props) {
                     <Frame id="app-frame">
                       <Main>
                         <ForgotPassword
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
                           // user={user}
@@ -1109,7 +1109,7 @@ function App(props) {
                     <Frame id="app-frame">
                       <Main>
                         <PasswordReset
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
                           // user={user}
@@ -1127,7 +1127,7 @@ function App(props) {
                     <Frame id="app-frame">
                       <Main>
                         <AccountSetup
-                          logo={image}
+                          // logo={image}
                           history={history}
                           sendRequest={sendMessage}
                           messageHandler={messageHandler}
@@ -1146,11 +1146,11 @@ function App(props) {
                     <Frame id="app-frame">
                       <Main>
                         <Login
-                          logo={image}
+                          // logo={image}
                           history={history}
                           setUpUser={setUpUser}
                           sendRequest={sendMessage}
-                          setLoggedIn={setLoggedIn}
+                          // setLoggedIn={setLoggedIn}
                         />
                       </Main>
                     </Frame>
@@ -1193,7 +1193,7 @@ function App(props) {
                       <Frame id="app-frame">
                         <AppHeader
                           // loggedInUserState={loggedInUserState}
-                          logo={image}
+                          // logo={image}
                           organizationName={organizationName}
                           // loggedInUsername={loggedInUsername}
                           match={match}
@@ -1237,7 +1237,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1272,7 +1272,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1312,7 +1312,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1359,7 +1359,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1396,7 +1396,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1428,7 +1428,7 @@ function App(props) {
                         <AppHeader
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
-                          logo={image}
+                          // logo={image}
                           organizationName={organizationName}
                           match={match}
                           history={history}
@@ -1452,7 +1452,7 @@ function App(props) {
                         <AppHeader
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
-                          logo={image}
+                          // logo={image}
                           organizationName={organizationName}
                           match={match}
                           history={history}
@@ -1484,7 +1484,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1522,7 +1522,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1558,7 +1558,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1594,7 +1594,7 @@ function App(props) {
                         <AppHeader
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
-                          logo={image}
+                          // logo={image}
                           organizationName={organizationName}
                           match={match}
                           history={history}
@@ -1602,7 +1602,7 @@ function App(props) {
                         />
                         <Main>
                           <User
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             history={history}
                           />
@@ -1629,7 +1629,7 @@ function App(props) {
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
-                            logo={image}
+                            // logo={image}
                             organizationName={organizationName}
                             match={match}
                             history={history}
@@ -1643,7 +1643,7 @@ function App(props) {
                               errorMessage={errorMessage}
                               successMessage={successMessage}
                               clearResponseState={clearResponseState}
-                              imageResponse={image}
+                              // imageResponse={image}
                               stylesArray={stylesArray}
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}

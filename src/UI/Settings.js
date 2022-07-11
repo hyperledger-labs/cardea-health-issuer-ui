@@ -789,7 +789,7 @@ function Settings(props) {
           <BlockInput
             name="mailUsername"
             ref={mailUsername}
-            ref={host}
+            // ref={host}
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
             }

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react'
 import { handleImageSrc } from './util'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Logo, LogoHolder } from './CommonStylesForms'
+import { setLogo } from '../redux/settingsReducer'
 
 import AppMenu from './AppMenu.js'
 
@@ -56,14 +57,18 @@ const Logout = styled.button`
 `
 
 function AppHeader(props) {
-  const [src, setSrc] = useState(null)
-  const logo = props.logo
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
+  const dispatch = useDispatch()
+  // const [src, setSrc] = useState(null)
+  // const logo = props.logo
   const organizationName = props.organizationName
   const loginState = useSelector((state) => state.login)
 
   useEffect(() => {
-    if (logo && logo.image) {
-      setSrc(handleImageSrc(logo.image.data))
+    // if (logo && logo.image) {
+    if (logo) {
+      dispatch(setLogo(handleImageSrc(logo)))
     }
   }, [logo])
 
@@ -78,7 +83,7 @@ function AppHeader(props) {
   return (
     <Header id="app-header">
       <LogoHolder>
-        <Logo src={src} alt="Logo" />
+        <Logo src={logo} alt="Logo" />
       </LogoHolder>
       <OrganizationName>{organizationName}</OrganizationName>
       <LogoutWrapper>

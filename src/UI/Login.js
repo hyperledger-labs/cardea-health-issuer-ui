@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import { setLoggedIn } from '../redux/loginReducer'
+import { setLogo } from '../redux/settingsReducer'
 
 import { useNotification } from './NotificationProvider'
 import { handleImageSrc } from './util'
@@ -28,7 +29,9 @@ const ForgotPasswordLink = styled.a`
 `
 
 function Login(props) {
-  const [logo, setLogo] = useState(null)
+  // const [logo, setLogo] = useState(null)
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
   const dispatch = useDispatch()
   const { setUpUser } = props
   // const { setLogo, setLoggedIn, setUpUser } = props
@@ -46,10 +49,11 @@ function Login(props) {
       if (res.data.error) {
         setNotification(res.data.error, 'error')
       } else {
-        setLogo(handleImageSrc(res.data[0].image.data))
+        dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
       }
     })
-  }, [setNotification])
+  }, [])
+  // }, [setNotification])
 
   const loginForm = useRef()
 
@@ -103,13 +107,5 @@ function Login(props) {
     </FormContainer>
   )
 }
-// const mapStateToProps = (state) => state
 
-// export default connect(mapStateToProps, {
-//   // setLogo,
-//   setLoggedIn,
-//   setLoggedInUserId,
-//   setLoggedInUsername,
-//   setLoggedInRoles,
-// })(Login)
 export default Login
