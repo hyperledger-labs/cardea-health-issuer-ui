@@ -1,6 +1,6 @@
 import rules from './rbac-rules'
 
-export const check = (rules, user, actions) => {
+export const check = (user, actions) => {
   // Get user roles
   if (!user) return false
 
@@ -10,6 +10,13 @@ export const check = (rules, user, actions) => {
   roles = roles instanceof Array ? roles : [roles]
 
   let permissions = []
+
+console.log(rules)
+console.log(roles)
+console.log(user)
+console.log(actions)
+console.log(permissions)
+
 
   // Combine roles, ignore duplicate roles
   for (let i = 0; i < Object.keys(roles).length; i++) {
@@ -39,7 +46,7 @@ export const check = (rules, user, actions) => {
 }
 
 export const CanUser = (props) =>
-  check(rules, props.user, props.perform, props.data) ? props.yes() : props.no()
+  check(props.user, props.perform) ? props.yes() : props.no()
 
 CanUser.defaultProps = {
   yes: () => null,

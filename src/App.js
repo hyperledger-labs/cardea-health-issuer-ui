@@ -16,8 +16,8 @@ import AccountSetup from './UI/AccountSetup'
 import AppHeader from './UI/AppHeader'
 import AppFooter from './UI/AppFooter'
 
-import { check, CanUser } from './UI/CanUser'
-import rules from './UI/rbac-rules'
+import { check } from './UI/CanUser'
+// import rules from './UI/rbac-rules'
 
 import Contact from './UI/Contact'
 import Contacts from './UI/Contacts'
@@ -51,6 +51,8 @@ import {
   logoutUser,
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
+import { setCredential, setCredentials } from './redux/credentialsReducer'
+import { setPresentationReport, setPresentationReports } from './redux/presentationsReducer'
 import { setUsers, setUser } from './redux/usersReducer'
 import { setLogo } from './redux/settingsReducer'
 
@@ -144,8 +146,8 @@ function App(props) {
   // Message states
   // const [contacts, setContacts] = useState([])
   // const [contact, setContact] = useState({})
-  const [credentials, setCredentials] = useState([])
-  const [presentationReports, setPresentationReports] = useState([])
+  // const [credentials, setCredentials] = useState([])
+  // const [presentationReports, setPresentationReports] = useState([])
   // const [image, setImage] = useState()
   const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
@@ -269,7 +271,6 @@ function App(props) {
 
       if (
         check(
-          rules,
           loginState.loggedInUserState,
           'contacts:read',
           'demographics:read'
@@ -281,17 +282,17 @@ function App(props) {
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(rules, loginState.loggedInUserState, 'credentials:read')) {
+      if (check(loginState.loggedInUserState, 'credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(rules, loginState.loggedInUserState, 'roles:read')) {
+      if (check(loginState.loggedInUserState, 'roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
 
-      if (check(rules, loginState.loggedInUserState, 'presentations:read')) {
+      if (check(loginState.loggedInUserState, 'presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
@@ -299,7 +300,7 @@ function App(props) {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(rules, loginState.loggedInUserState, 'settings:update')) {
+      if (check(loginState.loggedInUserState, 'settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -307,7 +308,7 @@ function App(props) {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(rules, loginState.loggedInUserState, 'users:read')) {
+      if (check(loginState.loggedInUserState, 'users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
@@ -337,6 +338,8 @@ function App(props) {
     const currentState = store.getState()
     const users = currentState.users.users
     const contacts = currentState.contacts.contacts
+    const credentials = currentState.credentials.credentials
+    const presentations = currentState.presentations.presentationReports
 
     try {
       console.log(
@@ -697,8 +700,8 @@ function App(props) {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-              setCredentials((prevCred) => {
-                let oldCredentials = prevCred
+              // setCredentials((prevCred) => {
+                let oldCredentials = credentials
                 let newCredentials = data.credential_records
                 let updatedCredentials = []
                 // (mikekebert) Loop through the new credentials and check them against the existing array
@@ -731,8 +734,10 @@ function App(props) {
                   a.created_at < b.created_at ? 1 : -1
                 )
 
-                return updatedCredentials
-              })
+                dispatch(setCredential(data.credential_records[0]))
+                dispatch(setCredentials(updatedCredentials))
+                // return updatedCredentials
+              // })
               removeLoadingProcess('CREDENTIALS')
 
               break
@@ -759,8 +764,11 @@ function App(props) {
               break
 
             case 'PRESENTATION_REPORTS':
-              setPresentationReports((prevPresentations) => {
-                let oldPresentations = prevPresentations
+              // setPresentationReports((prevPresentations) => {
+
+              console.log(presentations)
+
+                let oldPresentations = presentations
                 let newPresentations = data.presentation_reports
                 let updatedPresentations = []
 
@@ -795,8 +803,9 @@ function App(props) {
                   a.created_at < b.created_at ? 1 : -1
                 )
 
-                return updatedPresentations
-              })
+                dispatch(setPresentationReports(updatedPresentations))
+                // return updatedPresentations
+              // })
               removeLoadingProcess('PRESENTATIONS')
 
               break
@@ -1227,7 +1236,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'invitations:read'
                       )
@@ -1262,7 +1270,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'contacts:read'
                       )
@@ -1302,7 +1309,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'contacts:read'
                       )
@@ -1330,7 +1336,7 @@ function App(props) {
                               contactId={match.params.contactId}
                               // contacts={contacts}
                               schemas={schemas}
-                              credentials={credentials}
+                              // credentials={credentials}
                             />
                           </Main>
                           <AppFooter
@@ -1349,7 +1355,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'credentials:read'
                       )
@@ -1368,7 +1373,7 @@ function App(props) {
                           <Main>
                             <Credentials
                               history={history}
-                              credentials={credentials}
+                              // credentials={credentials}
                             />
                           </Main>
                           <AppFooter
@@ -1386,7 +1391,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'credentials:read'
                       )
@@ -1405,8 +1409,8 @@ function App(props) {
                           <Main>
                             <Credential
                               history={history}
-                              credential={match.params.credentialId}
-                              credentials={credentials}
+                              credentialId={match.params.credentialId}
+                              // credentials={credentials}
                             />
                           </Main>
                           <AppFooter
@@ -1418,7 +1422,7 @@ function App(props) {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  credentials={credentials}
+                  // credentials={credentials}
                 />
                 <Route
                   path="/verification"
@@ -1474,7 +1478,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'presentations:read'
                       )
@@ -1493,7 +1496,7 @@ function App(props) {
                           <Main>
                             <Presentations
                               history={history}
-                              presentationReports={presentationReports}
+                              // presentationReports={presentationReports}
                               // contacts={contacts}
                             />
                           </Main>
@@ -1512,7 +1515,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'presentations:read'
                       )
@@ -1532,7 +1534,7 @@ function App(props) {
                             <Presentation
                               history={history}
                               presentation={match.params.presentationId}
-                              presentationReports={presentationReports}
+                              // presentationReports={presentationReports}
                               // contacts={contacts}
                             />
                           </Main>
@@ -1545,13 +1547,13 @@ function App(props) {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  presentationReports={presentationReports}
+                  // presentationReports={presentationReports}
                 />
                 <Route
                   path="/users"
                   render={({ match, history }) => {
                     if (
-                      check(rules, loginState.loggedInUserState, 'users:read')
+                      check(loginState.loggedInUserState, 'users:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1619,7 +1621,6 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        rules,
                         loginState.loggedInUserState,
                         'settings:update'
                       )

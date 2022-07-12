@@ -48,13 +48,15 @@ const IssueCredential = styled.button`
 function Contact(props) {
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
+  const credentialsState = useSelector((state) => state.credentials)
 
   const localUser = loginState.loggedInUserState
 
   const contacts = contactsState.contacts
+  const credentials = credentialsState.credentials
   // const contactSelected = contactsState.contacts
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   // const { loggedInUserState } = props.login
   // const { contacts, contact } = props.contactsState
@@ -176,7 +178,7 @@ function Contact(props) {
     })
   }
 
-  const credentialRows = props.credentials.map((credential_record) => {
+  const credentialRows = credentials.map((credential_record) => {
     if (
       contactSelected.Connections &&
       contactSelected.Connections[0].connection_id ===
