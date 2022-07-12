@@ -6,6 +6,7 @@ import credentialsReducer from './redux/credentialsReducer'
 import presentationsReducer from './redux/presentationsReducer'
 import usersReducer from './redux/usersReducer'
 import settingsReducer from './redux/settingsReducer'
+import notificationsReducer from './redux/notificationsReducer'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
 const rootReducer = combineReducers({
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   contacts: contactsReducer,
   credentials: credentialsReducer,
   presentations: presentationsReducer,
+  notifications: notificationsReducer,
   users: usersReducer,
   settings: settingsReducer,
 })

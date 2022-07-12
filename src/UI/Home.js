@@ -120,7 +120,7 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -129,7 +129,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -138,7 +138,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -147,7 +147,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>

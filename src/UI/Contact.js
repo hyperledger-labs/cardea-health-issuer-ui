@@ -222,7 +222,7 @@ function Contact(props) {
         />
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="contacts:update"
             yes={() => (
               <EditContact onClick={() => setContactModalIsOpen((o) => !o)}>
@@ -369,7 +369,7 @@ function Contact(props) {
         </PageSection>
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -397,7 +397,7 @@ function Contact(props) {
             Request Demographics
           </IssueCredential>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
@@ -410,7 +410,7 @@ function Contact(props) {
           </IssueCredential>
 
           {/* <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -428,7 +428,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -446,7 +446,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -464,7 +464,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>

@@ -53,8 +53,12 @@ import {
 import { setContact, setContacts } from './redux/contactsReducer'
 import { setCredential, setCredentials } from './redux/credentialsReducer'
 import { setPresentationReport, setPresentationReports } from './redux/presentationsReducer'
+import { setErrorMessage, setSuccessMessage, setWarningMessage, clearNotificationState } from './redux/notificationsReducer'
 import { setUsers, setUser } from './redux/usersReducer'
 import { setLogo } from './redux/settingsReducer'
+
+// const settingsState = useSelector((state) => state.settings)
+// const settingsState = useSelector((state) => state.settings)
 
 import './App.css'
 
@@ -73,6 +77,14 @@ const Main = styled.main`
 `
 
 function App(props) {
+let currentState
+const loginState = useSelector((state) => state.login)
+const dispatch = useDispatch()
+
+const updateState = () => {
+  currentState = store.getState()
+}
+
   const defaultTheme = {
     primary_color: '#0065B3',
     secondary_color: '#00AEEF',
@@ -88,10 +100,10 @@ function App(props) {
     background_secondary: '#f5f5f5',
   }
 
-  const loginState = useSelector((state) => state.login)
-  const settingsState = useSelector((state) => state.settings)
+  // const loginState = useSelector((state) => state.login)
+  // const settingsState = useSelector((state) => state.settings)
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
   // const { contact, contacts } = props.contactsState
 
   // const {
@@ -152,8 +164,8 @@ function App(props) {
   const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
   // const [user, setUser] = useState({})
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
+  // const [errorMessage, setErrorMessage] = useState(null)
+  // const [successMessage, setSuccessMessage] = useState(null)
   const [organizationName, setOrganizationName] = useState(null)
   const [smtp, setSmtp] = useState(null)
 
@@ -253,9 +265,12 @@ function App(props) {
       loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      loginState.loggedInUserState &&
+      // loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
+
+      console.log("we are here")
+
       sendMessage('SETTINGS', 'GET_THEME', {})
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
@@ -271,7 +286,7 @@ function App(props) {
 
       if (
         check(
-          loginState.loggedInUserState,
+          
           'contacts:read',
           'demographics:read'
         )
@@ -282,17 +297,17 @@ function App(props) {
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(loginState.loggedInUserState, 'credentials:read')) {
+      if (check( 'credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(loginState.loggedInUserState, 'roles:read')) {
+      if (check( 'roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
 
-      if (check(loginState.loggedInUserState, 'presentations:read')) {
+      if (check( 'presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
@@ -300,7 +315,7 @@ function App(props) {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(loginState.loggedInUserState, 'settings:update')) {
+      if (check( 'settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -308,7 +323,7 @@ function App(props) {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(loginState.loggedInUserState, 'users:read')) {
+      if (check( 'users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
@@ -318,7 +333,7 @@ function App(props) {
     loginState.loggedIn,
     websocket,
     readyForMessages,
-    loginState.loggedInUserState,
+    
   ])
 
   // (eldersonar) Shut down the websocket
@@ -335,11 +350,16 @@ function App(props) {
 
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
-    const currentState = store.getState()
+
+    //Update to current state
+    updateState()
+
+    // const currentState = store.getState()
     const users = currentState.users.users
     const contacts = currentState.contacts.contacts
     const credentials = currentState.credentials.credentials
     const presentations = currentState.presentations.presentationReports
+    // const notifications = currentState.notifications.notifications
 
     try {
       console.log(
@@ -358,7 +378,8 @@ function App(props) {
 
             case 'WEBSOCKET_ERROR':
               clearLoadingProcess()
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -391,7 +412,8 @@ function App(props) {
             case 'INVITATIONS_ERROR':
               // console.log(data.error)
               // console.log('Invitations Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -444,7 +466,8 @@ function App(props) {
             case 'CONTACTS_ERROR':
               // console.log(data.error)
               // console.log('Contacts Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -462,57 +485,16 @@ function App(props) {
             case 'DEMOGRAPHICS_ERROR':
               // console.log(data.error)
               // console.log('Demographics Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
             case 'CONTACTS_ERROR':
               // console.log(data.error)
               // console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            case 'CONTACTS_ERROR':
-              console.log(data.error)
-              console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -535,7 +517,8 @@ function App(props) {
             case 'INVITATIONS_ERROR':
               console.log(data.error)
               console.log('Invitations Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -680,11 +663,13 @@ function App(props) {
               break
 
             case 'USER_ERROR':
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'USER_SUCCESS':
-              setSuccessMessage(data)
+              // setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
 
               break
 
@@ -850,7 +835,7 @@ function App(props) {
               break
 
             case 'LOGO':
-              dispatch(setLogo(data.image.data))
+              dispatch(setLogo(data))
               removeLoadingProcess('LOGO')
               break
 
@@ -867,11 +852,13 @@ function App(props) {
 
             case 'SETTINGS_ERROR':
               // console.log('Settings Error:', data.error)
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'SETTINGS_SUCCESS':
-              setSuccessMessage(data)
+              // setSuccessMessage(data)
+              dispatch(setSuccessMessage(data.error))
               break
 
             default:
@@ -888,7 +875,8 @@ function App(props) {
             case 'PRIVILEGES_ERROR':
               console.log(data)
               console.log('Privileges Error', data.error)
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               removeLoadingProcess('GOVERNANCE')
               break
 
@@ -900,10 +888,12 @@ function App(props) {
               removeLoadingProcess('GOVERNANCE')
               break
             case 'ACTION_ERROR':
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
             case 'ACTION_SUCCESS':
-              setSuccessMessage(data.notice)
+              // setSuccessMessage(data.notice)
+              dispatch(setSuccessMessage(data.error))
               break
             case 'PRIVILEGES_SUCCESS':
               setPrivileges(data.success)
@@ -1049,8 +1039,9 @@ function App(props) {
 
   // Resetting state of error and success messages
   const clearResponseState = () => {
-    setErrorMessage(null)
-    setSuccessMessage(null)
+    // setErrorMessage(null)
+    // setSuccessMessage(null)
+    dispatch(clearNotificationState())
   }
 
   // Logout and redirect
@@ -1215,8 +1206,8 @@ function App(props) {
                             history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
+                            // successMessage={successMessage}
+                            // errorMessage={errorMessage}
                             clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                             // outOfBandQRCodeURL={outOfBandQRCodeURL}
@@ -1236,7 +1227,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'invitations:read'
                       )
                     ) {
@@ -1270,7 +1261,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'contacts:read'
                       )
                     ) {
@@ -1309,7 +1300,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'contacts:read'
                       )
                     ) {
@@ -1329,8 +1320,8 @@ function App(props) {
                               // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
                               clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
@@ -1355,7 +1346,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'credentials:read'
                       )
                     ) {
@@ -1391,7 +1382,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'credentials:read'
                       )
                     ) {
@@ -1478,7 +1469,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'presentations:read'
                       )
                     ) {
@@ -1515,7 +1506,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'presentations:read'
                       )
                     ) {
@@ -1553,7 +1544,9 @@ function App(props) {
                   path="/users"
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'users:read')
+                      check(
+                        // loginState.loggedInUserState, 
+                        'users:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1572,8 +1565,8 @@ function App(props) {
                               roles={roles}
                               // users={users}
                               // user={user}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
                               clearResponseState={clearResponseState}
                               sendRequest={sendMessage}
                             />
@@ -1621,7 +1614,7 @@ function App(props) {
                   render={({ match, history }) => {
                     if (
                       check(
-                        loginState.loggedInUserState,
+                        // loginState.loggedInUserState,
                         'settings:update'
                       )
                     ) {
@@ -1641,8 +1634,8 @@ function App(props) {
                               updateTheme={updateTheme}
                               saveTheme={saveTheme}
                               undoStyle={undoStyle}
-                              errorMessage={errorMessage}
-                              successMessage={successMessage}
+                              // errorMessage={errorMessage}
+                              // successMessage={successMessage}
                               clearResponseState={clearResponseState}
                               // imageResponse={image}
                               stylesArray={stylesArray}

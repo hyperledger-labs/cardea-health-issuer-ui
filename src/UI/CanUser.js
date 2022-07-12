@@ -1,6 +1,12 @@
 import rules from './rbac-rules'
+import store from '../store'
 
-export const check = (user, actions) => {
+export const check = (actions) => {
+  const currentState = store.getState()
+  const user = currentState.login.loggedInUserState
+  
+  console.log(user)
+
   // Get user roles
   if (!user) return false
 
@@ -46,7 +52,7 @@ console.log(permissions)
 }
 
 export const CanUser = (props) =>
-  check(props.user, props.perform) ? props.yes() : props.no()
+  check(props.perform) ? props.yes() : props.no()
 
 CanUser.defaultProps = {
   yes: () => null,
