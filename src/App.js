@@ -56,6 +56,7 @@ import { setPresentationReport, setPresentationReports } from './redux/presentat
 import { setErrorMessage, setSuccessMessage, setWarningMessage, clearNotificationState } from './redux/notificationsReducer'
 import { setUsers, setUser } from './redux/usersReducer'
 import { setLogo } from './redux/settingsReducer'
+import { setSelectedGovernance } from './redux/governanceReducer'
 
 // const settingsState = useSelector((state) => state.settings)
 // const settingsState = useSelector((state) => state.settings)
@@ -76,7 +77,7 @@ const Main = styled.main`
   padding: 30px;
 `
 
-function App(props) {
+function App() {
 let currentState
 const loginState = useSelector((state) => state.login)
 const dispatch = useDispatch()
@@ -184,7 +185,7 @@ const updateState = () => {
   // Governance state
   const [privileges, setPrivileges] = useState([])
   const [governanceOptions, setGovernanceOptions] = useState([])
-  const [selectedGovernance, setSelectedGovernance] = useState('')
+  // const [selectedGovernance, setSelectedGovernance] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -355,6 +356,7 @@ const updateState = () => {
     updateState()
 
     // const currentState = store.getState()
+    // (eldersonar) TODO: remove declaration and use direcrly where needed
     const users = currentState.users.users
     const contacts = currentState.contacts.contacts
     const credentials = currentState.credentials.credentials
@@ -858,7 +860,7 @@ const updateState = () => {
 
             case 'SETTINGS_SUCCESS':
               // setSuccessMessage(data)
-              dispatch(setSuccessMessage(data.error))
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -893,10 +895,7 @@ const updateState = () => {
               break
             case 'ACTION_SUCCESS':
               // setSuccessMessage(data.notice)
-              dispatch(setSuccessMessage(data.error))
-              break
-            case 'PRIVILEGES_SUCCESS':
-              setPrivileges(data.success)
+              dispatch(setSuccessMessage(data))
               break
 
             case 'GOVERNANCE_OPTIONS':
@@ -937,14 +936,14 @@ const updateState = () => {
               console.log('SELECTED_GOVERNANCE')
               console.log(data)
 
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
               removeLoadingProcess('SELECTED_GOVERNANCE')
               break
 
             case 'UPDATED_SELECTED_GOVERNANCE':
               console.log('UPDATED_SELECTED_GOVERNANCE')
               console.log(data)
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
 
               break
 
@@ -1216,7 +1215,7 @@ const updateState = () => {
                           />
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1246,7 +1245,7 @@ const updateState = () => {
                             <p>Invitations</p>
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1286,7 +1285,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1331,7 +1330,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1368,7 +1367,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1405,7 +1404,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1433,7 +1432,7 @@ const updateState = () => {
                           <p>Verification</p>
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1457,7 +1456,7 @@ const updateState = () => {
                           <p>Messages</p>
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1492,7 +1491,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1530,7 +1529,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1572,7 +1571,7 @@ const updateState = () => {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1603,7 +1602,7 @@ const updateState = () => {
                           />
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1646,11 +1645,11 @@ const updateState = () => {
                               organizationName={organizationName}
                               siteTitle={siteTitle}
                               governanceOptions={governanceOptions}
-                              selectedGovernance={selectedGovernance}
+                              // selectedGovernance={selectedGovernance}
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                            // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )

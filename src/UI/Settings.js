@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setSelectedGovernance } from '../redux/governanceReducer'
+
 import styled, { useTheme } from 'styled-components'
 
 import { useNotification } from './NotificationProvider'
@@ -134,8 +136,12 @@ const Form = styled.form`
 function Settings(props) {
   // Accessing notification context
   const setNotification = useNotification()
-  const notificationsState = useSelector((state) => state.notifications)
 
+  const dispatch = useDispatch()
+  const notificationsState = useSelector((state) => state.notifications)
+  const governanceState = useSelector((state) => state.governance)
+  
+  const selectedGovernance = governanceState.selectedGovernance
 
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
@@ -143,9 +149,9 @@ function Settings(props) {
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
-  const [selectedGovernance, setSelectedGovernance] = useState(
-    props.selectedGovernance
-  )
+  // const [selectedGovernance, setSelectedGovernance] = useState(
+    // props.selectedGovernance
+  // )
   const [governanceOptions, setGovernanceOptions] = useState(
     props.governanceOptions
   )
@@ -157,8 +163,8 @@ function Settings(props) {
   useEffect(() => {
     let options = []
     // (eldersonar) Handle selected governance state
-    if (props.selectedGovernance) {
-      setSelectedGovernance(props.selectedGovernance)
+    if (selectedGovernance) {
+      dispatch(setSelectedGovernance(selectedGovernance))
     }
     // (eldersonar) Handle governance options state
     if (props.governanceOptions) {
@@ -171,7 +177,7 @@ function Settings(props) {
       }
       setGovernanceOptions(options)
     }
-  }, [props.selectedGovernance, props.governanceOptions])
+  }, [selectedGovernance, props.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -496,7 +502,7 @@ function Settings(props) {
   }
 
   function selectGovernance(governancePath) {
-    setSelectedGovernance(governancePath)
+    dispatch(setSelectedGovernance(governancePath))
     props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
   }
 

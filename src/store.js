@@ -6,6 +6,7 @@ import credentialsReducer from './redux/credentialsReducer'
 import presentationsReducer from './redux/presentationsReducer'
 import usersReducer from './redux/usersReducer'
 import settingsReducer from './redux/settingsReducer'
+import governanceReducer from './redux/governanceReducer'
 import notificationsReducer from './redux/notificationsReducer'
 import { composeWithDevTools } from 'redux-devtools-extension'
 
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
   notifications: notificationsReducer,
   users: usersReducer,
   settings: settingsReducer,
+  governance: governanceReducer,
 })
 
 export default createStore(rootReducer, composeWithDevTools())
