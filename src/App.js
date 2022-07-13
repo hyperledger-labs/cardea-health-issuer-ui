@@ -52,9 +52,17 @@ import {
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
 import { setCredential, setCredentials } from './redux/credentialsReducer'
-import { setPresentationReport, setPresentationReports } from './redux/presentationsReducer'
+import {
+  setPresentationReport,
+  setPresentationReports,
+} from './redux/presentationsReducer'
 import { setUsers, setUser } from './redux/usersReducer'
-import { setLogo } from './redux/settingsReducer'
+import {
+  setLogo,
+  setOrganizationName,
+  setSmtp,
+  setTheme,
+} from './redux/settingsReducer'
 
 import './App.css'
 
@@ -92,6 +100,11 @@ function App(props) {
   const settingsState = useSelector((state) => state.settings)
 
   const dispatch = useDispatch()
+
+  // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
+  // dispatch(setTheme(localTheme ? localTheme : defaultTheme))
+  const theme = settingsState.theme
+
   // const { contact, contacts } = props.contactsState
 
   // const {
@@ -135,8 +148,8 @@ function App(props) {
   const [appIsLoaded, setAppIsLoaded] = useState(false)
 
   // Check for local state copy of theme, otherwise use default hard coded here in App.js
-  const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
-  const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
+  // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
+  // const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
   const [schemas, setSchemas] = useState({})
   const [siteTitle, setSiteTitle] = useState('')
 
@@ -154,8 +167,8 @@ function App(props) {
   // const [user, setUser] = useState({})
   const [errorMessage, setErrorMessage] = useState(null)
   const [successMessage, setSuccessMessage] = useState(null)
-  const [organizationName, setOrganizationName] = useState(null)
-  const [smtp, setSmtp] = useState(null)
+  // const [organizationName, setOrganizationName] = useState(null)
+  // const [smtp, setSmtp] = useState(null)
 
   // Session states
   const [session, setSession] = useState('')
@@ -701,42 +714,39 @@ function App(props) {
           switch (type) {
             case 'CREDENTIALS':
               // setCredentials((prevCred) => {
-                let oldCredentials = credentials
-                let newCredentials = data.credential_records
-                let updatedCredentials = []
-                // (mikekebert) Loop through the new credentials and check them against the existing array
-                newCredentials.forEach((newCredential) => {
-                  oldCredentials.forEach((oldCredential, index) => {
-                    if (
-                      oldCredential !== null &&
-                      newCredential !== null &&
-                      oldCredential.credential_exchange_id ===
-                        newCredential.credential_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldCredentials.splice(index, 1)
-                    }
-                  })
-                  updatedCredentials.push(newCredential)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                  if (newCredential.connection_id === focusedConnectionID) {
-                    setFocusedConnectionID('')
+              let oldCredentials = credentials
+              let newCredentials = data.credential_records
+              let updatedCredentials = []
+              // (mikekebert) Loop through the new credentials and check them against the existing array
+              newCredentials.forEach((newCredential) => {
+                oldCredentials.forEach((oldCredential, index) => {
+                  if (
+                    oldCredential !== null &&
+                    newCredential !== null &&
+                    oldCredential.credential_exchange_id ===
+                      newCredential.credential_exchange_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldCredentials.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
-                if (oldCredentials.length > 0)
-                  updatedCredentials = [
-                    ...updatedCredentials,
-                    ...oldCredentials,
-                  ]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedCredentials.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
+                updatedCredentials.push(newCredential)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (newCredential.connection_id === focusedConnectionID) {
+                  setFocusedConnectionID('')
+                }
+              })
+              // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
+              if (oldCredentials.length > 0)
+                updatedCredentials = [...updatedCredentials, ...oldCredentials]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedCredentials.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
 
-                dispatch(setCredential(data.credential_records[0]))
-                dispatch(setCredentials(updatedCredentials))
-                // return updatedCredentials
+              dispatch(setCredential(data.credential_records[0]))
+              dispatch(setCredentials(updatedCredentials))
+              // return updatedCredentials
               // })
               removeLoadingProcess('CREDENTIALS')
 
@@ -768,43 +778,43 @@ function App(props) {
 
               console.log(presentations)
 
-                let oldPresentations = presentations
-                let newPresentations = data.presentation_reports
-                let updatedPresentations = []
+              let oldPresentations = presentations
+              let newPresentations = data.presentation_reports
+              let updatedPresentations = []
 
-                // (mikekebert) Loop through the new presentation and check them against the existing array
-                newPresentations.forEach((newPresentation) => {
-                  oldPresentations.forEach((oldPresentation, index) => {
-                    if (
-                      oldPresentation !== null &&
-                      newPresentation !== null &&
-                      oldPresentation.presentation_exchange_id ===
-                        newPresentation.presentation_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      console.log('splice', oldPresentation)
-                      oldPresentations.splice(index, 1)
-                    }
-                  })
-                  updatedPresentations.push(newPresentation)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                  if (newPresentation.connection_id === focusedConnectionID) {
-                    setFocusedConnectionID('')
+              // (mikekebert) Loop through the new presentation and check them against the existing array
+              newPresentations.forEach((newPresentation) => {
+                oldPresentations.forEach((oldPresentation, index) => {
+                  if (
+                    oldPresentation !== null &&
+                    newPresentation !== null &&
+                    oldPresentation.presentation_exchange_id ===
+                      newPresentation.presentation_exchange_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    console.log('splice', oldPresentation)
+                    oldPresentations.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
-                if (oldPresentations.length > 0)
-                  updatedPresentations = [
-                    ...updatedPresentations,
-                    ...oldPresentations,
-                  ]
-                // (mikekebert) Sort the array by date created, newest on top
-                updatedPresentations.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
+                updatedPresentations.push(newPresentation)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (newPresentation.connection_id === focusedConnectionID) {
+                  setFocusedConnectionID('')
+                }
+              })
+              // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
+              if (oldPresentations.length > 0)
+                updatedPresentations = [
+                  ...updatedPresentations,
+                  ...oldPresentations,
+                ]
+              // (mikekebert) Sort the array by date created, newest on top
+              updatedPresentations.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
 
-                dispatch(setPresentationReports(updatedPresentations))
-                // return updatedPresentations
+              dispatch(setPresentationReports(updatedPresentations))
+              // return updatedPresentations
               // })
               removeLoadingProcess('PRESENTATIONS')
 
@@ -840,7 +850,7 @@ function App(props) {
               // Writing the recent theme to a local storage
               const stringMessageTheme = JSON.stringify(data.value)
               window.localStorage.setItem('recentTheme', stringMessageTheme)
-              setTheme(data.value)
+              dispatch(setTheme(data.value))
               removeLoadingProcess('THEME')
               break
 
@@ -855,13 +865,13 @@ function App(props) {
               break
 
             case 'SETTINGS_ORGANIZATION':
-              setOrganizationName(data.organizationName)
+              dispatch(setOrganizationName(data.organizationName))
               setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
               break
 
             case 'SETTINGS_SMTP':
-              setSmtp(data.value)
+              dispatch(setSmtp(data.value))
               removeLoadingProcess('SMTP')
               break
 
@@ -1010,8 +1020,14 @@ function App(props) {
   }
 
   // Update theme state locally
+  // const updateTheme = (update) => {
+  //   return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
+  // }
+
   const updateTheme = (update) => {
-    return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
+    console.log('333 The log of theme:', theme)
+
+    return dispatch(setTheme({ ...theme, ...update }))
   }
 
   // Update theme in the database
@@ -1042,7 +1058,8 @@ function App(props) {
       for (let key in defaultTheme)
         if ((key = undoKey)) {
           const undo = { [`${key}`]: defaultTheme[key] }
-          return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
+          return dispatch(setTheme({ ...theme, ...undo }))
+          // return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
         }
     }
   }
@@ -1203,7 +1220,7 @@ function App(props) {
                         <AppHeader
                           // loggedInUserState={loggedInUserState}
                           // logo={image}
-                          organizationName={organizationName}
+                          // organizationName={organizationName}
                           // loggedInUsername={loggedInUsername}
                           match={match}
                           history={history}
@@ -1235,10 +1252,7 @@ function App(props) {
                   path="/invitations"
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'invitations:read'
-                      )
+                      check(loginState.loggedInUserState, 'invitations:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1246,7 +1260,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1268,19 +1282,14 @@ function App(props) {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        loginState.loggedInUserState,
-                        'contacts:read'
-                      )
-                    ) {
+                    if (check(loginState.loggedInUserState, 'contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1307,19 +1316,14 @@ function App(props) {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        loginState.loggedInUserState,
-                        'contacts:read'
-                      )
-                    ) {
+                    if (check(loginState.loggedInUserState, 'contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1354,10 +1358,7 @@ function App(props) {
                   exact
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'credentials:read'
-                      )
+                      check(loginState.loggedInUserState, 'credentials:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1365,7 +1366,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1390,10 +1391,7 @@ function App(props) {
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'credentials:read'
-                      )
+                      check(loginState.loggedInUserState, 'credentials:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1401,7 +1399,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1433,7 +1431,7 @@ function App(props) {
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
                           // logo={image}
-                          organizationName={organizationName}
+                          // organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1457,7 +1455,7 @@ function App(props) {
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
                           // logo={image}
-                          organizationName={organizationName}
+                          // organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1477,10 +1475,7 @@ function App(props) {
                   exact
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'presentations:read'
-                      )
+                      check(loginState.loggedInUserState, 'presentations:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1488,7 +1483,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1514,10 +1509,7 @@ function App(props) {
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'presentations:read'
-                      )
+                      check(loginState.loggedInUserState, 'presentations:read')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1525,7 +1517,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1552,16 +1544,14 @@ function App(props) {
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (
-                      check(loginState.loggedInUserState, 'users:read')
-                    ) {
+                    if (check(loginState.loggedInUserState, 'users:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1597,7 +1587,7 @@ function App(props) {
                           // loggedInUserState={loggedInUserState}
                           // loggedInUsername={loggedInUsername}
                           // logo={image}
-                          organizationName={organizationName}
+                          // organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1605,7 +1595,7 @@ function App(props) {
                         <Main>
                           <User
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             history={history}
                           />
                         </Main>
@@ -1620,10 +1610,7 @@ function App(props) {
                   path="/settings"
                   render={({ match, history }) => {
                     if (
-                      check(
-                        loginState.loggedInUserState,
-                        'settings:update'
-                      )
+                      check(loginState.loggedInUserState, 'settings:update')
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1631,7 +1618,7 @@ function App(props) {
                             // loggedInUserState={loggedInUserState}
                             // loggedInUsername={loggedInUsername}
                             // logo={image}
-                            organizationName={organizationName}
+                            // organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1649,8 +1636,8 @@ function App(props) {
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
-                              smtp={smtp}
-                              organizationName={organizationName}
+                              // smtp={smtp}
+                              // organizationName={organizationName}
                               siteTitle={siteTitle}
                               governanceOptions={governanceOptions}
                               selectedGovernance={selectedGovernance}

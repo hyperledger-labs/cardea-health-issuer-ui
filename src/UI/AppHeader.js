@@ -62,7 +62,7 @@ function AppHeader(props) {
   const dispatch = useDispatch()
   // const [src, setSrc] = useState(null)
   // const logo = props.logo
-  const organizationName = props.organizationName
+  const organizationName = settingsState.organizationName
   const loginState = useSelector((state) => state.login)
 
   useEffect(() => {

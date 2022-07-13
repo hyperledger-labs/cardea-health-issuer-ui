@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 
 import styled, { useTheme } from 'styled-components'
 
@@ -132,12 +133,17 @@ const Form = styled.form`
 `
 
 function Settings(props) {
+  const settingsState = useSelector((state) => state.settings)
+  console.log('111 props from Settings', props)
+
   // Accessing notification context
   const setNotification = useNotification()
 
   const error = props.errorMessage
   const success = props.successMessage
-  let smtpConf = props.smtp
+  // let smtpConf = props.smtp
+  let smtpConf = settingsState.smtp
+
   // const messageEventCounter = props.messageEventCounter
 
   const [selectedGovernance, setSelectedGovernance] = useState(
@@ -550,7 +556,12 @@ function Settings(props) {
           <H3>Organization Name</H3>
           <BlockInput
             name="organizationName"
-            defaultValue={props.organizationName ? props.organizationName : ''}
+            defaultValue={
+              settingsState.organizationName
+                ? settingsState.organizationName
+                : ''
+            }
+            // defaultValue={props.organizationName ? props.organizationName : ''}
             ref={organizationName}
           />
           <H3>Website Title</H3>
