@@ -109,6 +109,7 @@ export function NotificationProvider(props) {
         background = 'error'
     }
     // Returning notification component
+    console.log('111 notification.message', notification.message)
     return [
       <NotificationWrapper key={index} background={background}>
         <NotificationCloseBtn

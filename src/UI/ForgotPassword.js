@@ -18,7 +18,7 @@ import {
 } from './CommonStylesForms'
 
 function ForgotPassword(props) {
-  const [user, setUser] = useState({})
+  // const [user, setUser] = useState({})
 
   // const [logo, setLogo] = useState(null)
   const settingsState = useSelector((state) => state.settings)
@@ -69,7 +69,7 @@ function ForgotPassword(props) {
           setNotification(res.data.error, 'error')
         }
       } else {
-        setUser(res.data)
+        // setUser(res.data)
         setNotification(
           `If this user exists, a password reset email has been sent`,
           'notice'

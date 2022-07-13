@@ -52,17 +52,29 @@ import {
 } from './redux/loginReducer'
 import { setContact, setContacts } from './redux/contactsReducer'
 import { setCredential, setCredentials } from './redux/credentialsReducer'
-import {
-  setPresentationReport,
-  setPresentationReports,
-} from './redux/presentationsReducer'
-import { setUsers, setUser } from './redux/usersReducer'
+
 import {
   setLogo,
   setOrganizationName,
   setSmtp,
   setTheme,
+  setSchemas,
 } from './redux/settingsReducer'
+import {
+  setPresentationReport,
+  setPresentationReports,
+} from './redux/presentationsReducer'
+import {
+  setErrorMessage,
+  setSuccessMessage,
+  setWarningMessage,
+  clearNotificationState,
+} from './redux/notificationsReducer'
+import { setUsers, setUser } from './redux/usersReducer'
+import { setSelectedGovernance } from './redux/governanceReducer'
+
+// const settingsState = useSelector((state) => state.settings)
+// const settingsState = useSelector((state) => state.settings)
 
 import './App.css'
 
@@ -80,7 +92,18 @@ const Main = styled.main`
   padding: 30px;
 `
 
-function App(props) {
+function App() {
+  let currentState
+  const loginState = useSelector((state) => state.login)
+  const settingsState = useSelector((state) => state.settings)
+  const theme = settingsState.theme
+
+  const dispatch = useDispatch()
+
+  const updateState = () => {
+    currentState = store.getState()
+  }
+
   const defaultTheme = {
     primary_color: '#0065B3',
     secondary_color: '#00AEEF',
@@ -96,14 +119,12 @@ function App(props) {
     background_secondary: '#f5f5f5',
   }
 
-  const loginState = useSelector((state) => state.login)
-  const settingsState = useSelector((state) => state.settings)
+  // const loginState = useSelector((state) => state.login)
 
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
   // dispatch(setTheme(localTheme ? localTheme : defaultTheme))
-  const theme = settingsState.theme
 
   // const { contact, contacts } = props.contactsState
 
@@ -150,7 +171,7 @@ function App(props) {
   // Check for local state copy of theme, otherwise use default hard coded here in App.js
   // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
   // const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
-  const [schemas, setSchemas] = useState({})
+  // const [schemas, setSchemas] = useState({})
   const [siteTitle, setSiteTitle] = useState('')
 
   // Styles to change array
@@ -165,8 +186,8 @@ function App(props) {
   const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
   // const [user, setUser] = useState({})
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
+  // const [errorMessage, setErrorMessage] = useState(null)
+  // const [successMessage, setSuccessMessage] = useState(null)
   // const [organizationName, setOrganizationName] = useState(null)
   // const [smtp, setSmtp] = useState(null)
 
@@ -185,7 +206,7 @@ function App(props) {
   // Governance state
   const [privileges, setPrivileges] = useState([])
   const [governanceOptions, setGovernanceOptions] = useState([])
-  const [selectedGovernance, setSelectedGovernance] = useState('')
+  // const [selectedGovernance, setSelectedGovernance] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
@@ -266,9 +287,11 @@ function App(props) {
       loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      loginState.loggedInUserState &&
+      // loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
+      console.log('we are here')
+
       sendMessage('SETTINGS', 'GET_THEME', {})
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
@@ -282,30 +305,24 @@ function App(props) {
       sendMessage('SETTINGS', 'GET_SELECTED_GOVERNANCE', {})
       addLoadingProcess('SELECTED_GOVERNANCE')
 
-      if (
-        check(
-          loginState.loggedInUserState,
-          'contacts:read',
-          'demographics:read'
-        )
-      ) {
+      if (check('contacts:read', 'demographics:read')) {
         sendMessage('CONTACTS', 'GET_ALL', {
           additional_tables: ['Demographic'],
         })
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(loginState.loggedInUserState, 'credentials:read')) {
+      if (check('credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(loginState.loggedInUserState, 'roles:read')) {
+      if (check('roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
 
-      if (check(loginState.loggedInUserState, 'presentations:read')) {
+      if (check('presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
@@ -313,7 +330,7 @@ function App(props) {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(loginState.loggedInUserState, 'settings:update')) {
+      if (check('settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -321,18 +338,12 @@ function App(props) {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(loginState.loggedInUserState, 'users:read')) {
+      if (check('users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
     }
-  }, [
-    session,
-    loginState.loggedIn,
-    websocket,
-    readyForMessages,
-    loginState.loggedInUserState,
-  ])
+  }, [session, loginState.loggedIn, websocket, readyForMessages])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -348,11 +359,16 @@ function App(props) {
 
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
-    const currentState = store.getState()
+    //Update to current state
+    updateState()
+
+    // const currentState = store.getState()
+    // (eldersonar) TODO: remove declaration and use direcrly where needed
     const users = currentState.users.users
     const contacts = currentState.contacts.contacts
     const credentials = currentState.credentials.credentials
     const presentations = currentState.presentations.presentationReports
+    // const notifications = currentState.notifications.notifications
 
     try {
       console.log(
@@ -371,7 +387,8 @@ function App(props) {
 
             case 'WEBSOCKET_ERROR':
               clearLoadingProcess()
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -404,7 +421,8 @@ function App(props) {
             case 'INVITATIONS_ERROR':
               // console.log(data.error)
               // console.log('Invitations Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -457,7 +475,8 @@ function App(props) {
             case 'CONTACTS_ERROR':
               // console.log(data.error)
               // console.log('Contacts Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -475,57 +494,16 @@ function App(props) {
             case 'DEMOGRAPHICS_ERROR':
               // console.log(data.error)
               // console.log('Demographics Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
             case 'CONTACTS_ERROR':
               // console.log(data.error)
               // console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            case 'CONTACTS_ERROR':
-              console.log(data.error)
-              console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -548,7 +526,8 @@ function App(props) {
             case 'INVITATIONS_ERROR':
               console.log(data.error)
               console.log('Invitations Error')
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -693,11 +672,13 @@ function App(props) {
               break
 
             case 'USER_ERROR':
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'USER_SUCCESS':
-              setSuccessMessage(data)
+              // setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
 
               break
 
@@ -855,12 +836,12 @@ function App(props) {
               break
 
             case 'SETTINGS_SCHEMAS':
-              setSchemas(data)
+              dispatch(setSchemas(data))
               removeLoadingProcess('SCHEMAS')
               break
 
             case 'LOGO':
-              dispatch(setLogo(data.image.data))
+              dispatch(setLogo(data))
               removeLoadingProcess('LOGO')
               break
 
@@ -877,11 +858,13 @@ function App(props) {
 
             case 'SETTINGS_ERROR':
               // console.log('Settings Error:', data.error)
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'SETTINGS_SUCCESS':
-              setSuccessMessage(data)
+              // setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -898,7 +881,8 @@ function App(props) {
             case 'PRIVILEGES_ERROR':
               console.log(data)
               console.log('Privileges Error', data.error)
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               removeLoadingProcess('GOVERNANCE')
               break
 
@@ -910,13 +894,12 @@ function App(props) {
               removeLoadingProcess('GOVERNANCE')
               break
             case 'ACTION_ERROR':
-              setErrorMessage(data.error)
+              // setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
             case 'ACTION_SUCCESS':
-              setSuccessMessage(data.notice)
-              break
-            case 'PRIVILEGES_SUCCESS':
-              setPrivileges(data.success)
+              // setSuccessMessage(data.notice)
+              dispatch(setSuccessMessage(data.notice))
               break
 
             case 'GOVERNANCE_OPTIONS':
@@ -957,14 +940,14 @@ function App(props) {
               console.log('SELECTED_GOVERNANCE')
               console.log(data)
 
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
               removeLoadingProcess('SELECTED_GOVERNANCE')
               break
 
             case 'UPDATED_SELECTED_GOVERNANCE':
               console.log('UPDATED_SELECTED_GOVERNANCE')
               console.log(data)
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
 
               break
 
@@ -1066,8 +1049,9 @@ function App(props) {
 
   // Resetting state of error and success messages
   const clearResponseState = () => {
-    setErrorMessage(null)
-    setSuccessMessage(null)
+    // setErrorMessage(null)
+    // setSuccessMessage(null)
+    dispatch(clearNotificationState())
   }
 
   // Logout and redirect
@@ -1232,8 +1216,8 @@ function App(props) {
                             history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
+                            // successMessage={successMessage}
+                            // errorMessage={errorMessage}
                             clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                             // outOfBandQRCodeURL={outOfBandQRCodeURL}
@@ -1242,7 +1226,7 @@ function App(props) {
                           />
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                        // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1252,7 +1236,10 @@ function App(props) {
                   path="/invitations"
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'invitations:read')
+                      check(
+                        // loginState.loggedInUserState,
+                        'invitations:read'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1269,7 +1256,7 @@ function App(props) {
                             <p>Invitations</p>
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1282,7 +1269,12 @@ function App(props) {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (check(loginState.loggedInUserState, 'contacts:read')) {
+                    if (
+                      check(
+                        // loginState.loggedInUserState,
+                        'contacts:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1304,7 +1296,7 @@ function App(props) {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1316,7 +1308,12 @@ function App(props) {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (check(loginState.loggedInUserState, 'contacts:read')) {
+                    if (
+                      check(
+                        // loginState.loggedInUserState,
+                        'contacts:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1333,18 +1330,18 @@ function App(props) {
                               // loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
                               clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
                               // contacts={contacts}
-                              schemas={schemas}
+                              // schemas={schemas}
                               // credentials={credentials}
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1358,7 +1355,10 @@ function App(props) {
                   exact
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'credentials:read')
+                      check(
+                        // loginState.loggedInUserState,
+                        'credentials:read'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1378,7 +1378,7 @@ function App(props) {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1391,7 +1391,10 @@ function App(props) {
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'credentials:read')
+                      check(
+                        // loginState.loggedInUserState,
+                        'credentials:read'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1412,7 +1415,7 @@ function App(props) {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1440,7 +1443,7 @@ function App(props) {
                           <p>Verification</p>
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                        // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1464,7 +1467,7 @@ function App(props) {
                           <p>Messages</p>
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                        // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1475,7 +1478,10 @@ function App(props) {
                   exact
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'presentations:read')
+                      check(
+                        // loginState.loggedInUserState,
+                        'presentations:read'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1496,7 +1502,7 @@ function App(props) {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1509,7 +1515,10 @@ function App(props) {
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'presentations:read')
+                      check(
+                        // loginState.loggedInUserState,
+                        'presentations:read'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1531,7 +1540,7 @@ function App(props) {
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1544,7 +1553,12 @@ function App(props) {
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (check(loginState.loggedInUserState, 'users:read')) {
+                    if (
+                      check(
+                        // loginState.loggedInUserState,
+                        'users:read'
+                      )
+                    ) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1562,14 +1576,14 @@ function App(props) {
                               roles={roles}
                               // users={users}
                               // user={user}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
+                              // successMessage={successMessage}
+                              // errorMessage={errorMessage}
                               clearResponseState={clearResponseState}
                               sendRequest={sendMessage}
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )
@@ -1600,7 +1614,7 @@ function App(props) {
                           />
                         </Main>
                         <AppFooter
-                          selectedGovernance={selectedGovernance}
+                        // selectedGovernance={selectedGovernance}
                         ></AppFooter>
                       </Frame>
                     )
@@ -1610,7 +1624,10 @@ function App(props) {
                   path="/settings"
                   render={({ match, history }) => {
                     if (
-                      check(loginState.loggedInUserState, 'settings:update')
+                      check(
+                        // loginState.loggedInUserState,
+                        'settings:update'
+                      )
                     ) {
                       return (
                         <Frame id="app-frame">
@@ -1628,8 +1645,8 @@ function App(props) {
                               updateTheme={updateTheme}
                               saveTheme={saveTheme}
                               undoStyle={undoStyle}
-                              errorMessage={errorMessage}
-                              successMessage={successMessage}
+                              // errorMessage={errorMessage}
+                              // successMessage={successMessage}
                               clearResponseState={clearResponseState}
                               // imageResponse={image}
                               stylesArray={stylesArray}
@@ -1640,11 +1657,11 @@ function App(props) {
                               // organizationName={organizationName}
                               siteTitle={siteTitle}
                               governanceOptions={governanceOptions}
-                              selectedGovernance={selectedGovernance}
+                              // selectedGovernance={selectedGovernance}
                             />
                           </Main>
                           <AppFooter
-                            selectedGovernance={selectedGovernance}
+                          // selectedGovernance={selectedGovernance}
                           ></AppFooter>
                         </Frame>
                       )

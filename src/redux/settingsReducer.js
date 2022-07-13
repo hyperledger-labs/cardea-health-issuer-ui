@@ -17,13 +17,14 @@ const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
 const initialState = {
   logo: null,
   theme: localTheme ? localTheme : defaultTheme,
-  schemas: [],
+  schemas: {},
   organizationName: [],
   smtp: [],
 }
 
 const SET_LOGO = 'SET_LOGO'
 const SET_THEME = 'SET_THEME'
+const SET_SCHEMAS = 'SET_SCHEMAS'
 const SET_ORGANIZATION_NAME = 'SET_ORGANIZATION_NAME'
 const SET_SMTP = 'SET_SMTP'
 
@@ -38,6 +39,13 @@ export function setTheme(theme) {
   return {
     type: SET_THEME,
     payload: theme,
+  }
+}
+
+export function setSchemas(schemas) {
+  return {
+    type: SET_SCHEMAS,
+    payload: schemas,
   }
 }
 
@@ -62,6 +70,9 @@ export default function (state = initialState, action) {
 
     case SET_THEME:
       return { ...state, theme: action.payload }
+
+    case SET_SCHEMAS:
+      return { ...state, schemas: action.payload }
 
     case SET_ORGANIZATION_NAME:
       return { ...state, organizationName: action.payload }

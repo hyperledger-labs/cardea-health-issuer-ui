@@ -66,9 +66,9 @@ function AppHeader(props) {
   const loginState = useSelector((state) => state.login)
 
   useEffect(() => {
-    // if (logo && logo.image) {
-    if (logo) {
-      dispatch(setLogo(handleImageSrc(logo)))
+    if (logo && logo.image) {
+      // if (logo) {
+      dispatch(setLogo(handleImageSrc(logo.image.data)))
     }
   }, [logo])
 
@@ -94,7 +94,7 @@ function AppHeader(props) {
       </LogoutWrapper>
       <AppMenu
         match={props.match}
-        loggedInUserState={loginState.loggedInUserState}
+        // loggedInUserState={loginState.loggedInUserState}
       />
     </Header>
   )

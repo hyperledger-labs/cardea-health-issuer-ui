@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { setSelectedGovernance } from '../redux/governanceReducer'
 
 import styled, { useTheme } from 'styled-components'
 
@@ -139,16 +140,22 @@ function Settings(props) {
   // Accessing notification context
   const setNotification = useNotification()
 
-  const error = props.errorMessage
-  const success = props.successMessage
-  // let smtpConf = props.smtp
-  let smtpConf = settingsState.smtp
+  const dispatch = useDispatch()
+  const notificationsState = useSelector((state) => state.notifications)
+  const governanceState = useSelector((state) => state.governance)
 
+  const selectedGovernance = governanceState.selectedGovernance
+
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+  const smtpConf = settingsState.smtp
+  // let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
-  const [selectedGovernance, setSelectedGovernance] = useState(
-    props.selectedGovernance
-  )
+  // const [selectedGovernance, setSelectedGovernance] = useState(
+  // props.selectedGovernance
+  // )
   const [governanceOptions, setGovernanceOptions] = useState(
     props.governanceOptions
   )
@@ -160,8 +167,8 @@ function Settings(props) {
   useEffect(() => {
     let options = []
     // (eldersonar) Handle selected governance state
-    if (props.selectedGovernance) {
-      setSelectedGovernance(props.selectedGovernance)
+    if (selectedGovernance) {
+      dispatch(setSelectedGovernance(selectedGovernance))
     }
     // (eldersonar) Handle governance options state
     if (props.governanceOptions) {
@@ -174,7 +181,7 @@ function Settings(props) {
       }
       setGovernanceOptions(options)
     }
-  }, [props.selectedGovernance, props.governanceOptions])
+  }, [selectedGovernance, props.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -186,7 +193,7 @@ function Settings(props) {
       setNotification(error, 'error')
       props.clearResponseState()
     }
-  }, [error, success, props, setNotification])
+  }, [error, success])
 
   // File state
   const [selectedFavicon, setSelectedFile] = useState('')
@@ -499,7 +506,7 @@ function Settings(props) {
   }
 
   function selectGovernance(governancePath) {
-    setSelectedGovernance(governancePath)
+    dispatch(setSelectedGovernance(governancePath))
     props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
   }
 

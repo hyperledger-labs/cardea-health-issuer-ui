@@ -41,11 +41,12 @@ function Home(props) {
   const loginState = useSelector((state) => state.login)
   const localUser = loginState.loggedInUserState
   const contactsState = useSelector((state) => state.contacts)
+  const notificationsState = useSelector((state) => state.notifications)
   const contact = contactsState.contact
 
-  const error = props.errorMessage
-  const success = props.successMessage
-  const warning = props.warningMessage
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
   // const localUser = props.loggedInUserState
   const history = props.history
   // const contact = props.contact
@@ -83,11 +84,11 @@ function Home(props) {
     } else if (error) {
       setNotification(error, 'error')
       props.clearResponseState()
-      setIndex(index + 1)
+      // setIndex(index + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       props.clearResponseState()
-      setIndex(index + 1)
+      // setIndex(index + 1)
     } else return
   }, [error, success, warning])
 
@@ -120,7 +121,7 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -129,7 +130,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -138,7 +139,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -147,7 +148,7 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>

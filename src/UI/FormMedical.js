@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import {
   StyledPopup,
@@ -18,6 +19,10 @@ import {
 
 function FormMedical(props) {
   const credentialForm = useRef(null)
+  const settingsState = useSelector((state) => state.settings)
+  const schemas = settingsState.schemas
+  const contactsState = useSelector((state) => state.contacts)
+  const contactSelected = contactsState.contactSelected
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -118,12 +123,15 @@ function FormMedical(props) {
       },
     ]
 
+    let schema = schemas.SCHEMA_MEDICAL_RELEASE
+    let schemaParts = schema.split(':')
+
     let newCredential = {
-      connectionID: props.contactSelected.Connections[0].connection_id,
-      schemaID: 'RuuJwd3JMffNwZ43DcJKN1:2:Medical_Release:1.1',
-      schemaVersion: '1.1',
-      schemaName: 'Medical_Release',
-      schemaIssuerDID: 'RuuJwd3JMffNwZ43DcJKN1',
+      connectionID: contactSelected.Connections[0].connection_id,
+      schemaID: schema,
+      schemaVersion: schemaParts[3],
+      schemaName: schemaParts[2],
+      schemaIssuerDID: schemaParts[0],
       comment: 'Medical Release',
       attributes: attributes,
     }

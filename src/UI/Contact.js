@@ -49,14 +49,15 @@ function Contact(props) {
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
   const credentialsState = useSelector((state) => state.credentials)
+  const notificationsState = useSelector((state) => state.notifications)
 
-  const localUser = loginState.loggedInUserState
+  // const localUser = loginState.loggedInUserState
 
   const contacts = contactsState.contacts
   const credentials = credentialsState.credentials
-  // const contactSelected = contactsState.contacts
+  const contactSelected = contactsState.contactSelected
 
-  // const dispatch = useDispatch()
+  const dispatch = useDispatch()
 
   // const { loggedInUserState } = props.login
   // const { contacts, contact } = props.contactsState
@@ -70,32 +71,33 @@ function Contact(props) {
   const history = props.history
   const contactId = props.contactId
 
-  const error = props.errorMessage
-  const success = props.successMessage
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  // const warning = notificationsState.warningMessage
   const privileges = props.privileges
 
   let contactToSelect = ''
 
   const [index, setIndex] = useState(false)
 
-  const [contactSelected, setContactSelected] = useState(contactToSelect)
+  // const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
 
   // Modal state
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
-  const [exemptionModalIsOpen, setExemptionModalIsOpen] = useState(false)
-  const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
+  // const [exemptionModalIsOpen, setExemptionModalIsOpen] = useState(false)
+  // const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
   const [labResultModalIsOpen, setLabResultModalIsOpen] = useState(false)
-  const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
+  // const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
   const [medicalModalIsOpen, setMedicalModalIsOpen] = useState(false)
 
   const closeContactModal = () => setContactModalIsOpen(false)
-  const closeExemptionModal = () => setExemptionModalIsOpen(false)
-  const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
+  // const closeExemptionModal = () => setExemptionModalIsOpen(false)
+  // const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
   const closeLabResultModal = () => setLabResultModalIsOpen(false)
-  const closeVaccineModal = () => setVaccineModalIsOpen(false)
+  // const closeVaccineModal = () => setVaccineModalIsOpen(false)
   const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
   if (contacts) {
@@ -119,7 +121,7 @@ function Contact(props) {
   }, [error, success])
 
   useEffect(() => {
-    setContactSelected(contactToSelect)
+    dispatch(setContactSelected(contactToSelect))
     // dispatch(setContactSelected(contactToSelect))
   }, [contactToSelect])
 
@@ -133,8 +135,8 @@ function Contact(props) {
 
     setNotification('Contact was updated!', 'notice')
 
-    setContactSelected({ ...contactSelected, ...Demographic })
-    // dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
+    // setContactSelected({ ...contactSelected, ...Demographic })
+    dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
   }
 
   function openCredential(history, id) {
@@ -222,7 +224,7 @@ function Contact(props) {
         />
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="contacts:update"
             yes={() => (
               <EditContact onClick={() => setContactModalIsOpen((o) => !o)}>
@@ -369,7 +371,7 @@ function Contact(props) {
         </PageSection>
         <PageSection>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -397,7 +399,7 @@ function Contact(props) {
             Request Demographics
           </IssueCredential>
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
@@ -410,7 +412,7 @@ function Contact(props) {
           </IssueCredential>
 
           {/* <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -428,7 +430,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -446,7 +448,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -464,7 +466,7 @@ function Contact(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
@@ -485,7 +487,7 @@ function Contact(props) {
         </PageSection>
 
         <FormContacts
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
           submitDemographics={updateDemographics}
@@ -495,52 +497,37 @@ function Contact(props) {
           contactSelected={contactSelected}
           credentialModalIsOpen={labOrderModalIsOpen}
           closeCredentialModal={closeLabOrderModal}
-          submitCredential={submitNewCredential}
-          schemas={props.schemas}
+          submitCredential={submitNewCredential}          
         /> */}
         <FormLabResult
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           credentialModalIsOpen={labResultModalIsOpen}
           closeCredentialModal={closeLabResultModal}
           submitCredential={submitNewCredential}
-          schemas={props.schemas}
+          // schemas={props.schemas}
         />
         {/* <FormVaccine
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           credentialModalIsOpen={vaccineModalIsOpen}
           closeCredentialModal={closeVaccineModal}
-          submitCredential={submitNewCredential}
-          schemas={props.schemas}
+          submitCredential={submitNewCredential}         
         />
         <FormExemption
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           credentialModalIsOpen={exemptionModalIsOpen}
           closeCredentialModal={closeExemptionModal}
-          submitCredential={submitNewCredential}
-          schemas={props.schemas}
+          submitCredential={submitNewCredential}          
         /> */}
         <FormMedical
-          contactSelected={contactSelected}
+          // contactSelected={contactSelected}
           credentialModalIsOpen={medicalModalIsOpen}
           closeCredentialModal={closeMedicalModal}
           submitCredential={submitNewCredential}
-          schemas={props.schemas}
+          // schemas={props.schemas}
         />
       </div>
     </>
   )
 }
-// const mapStateToProps = (state) => state
-
-// export default connect(mapStateToProps, {
-//   // setLogo,
-//   // setLoggedIn,
-//   // setLoggedInUserId,
-//   // setLoggedInUsername,
-//   // setLoggedInRoles,
-//   setLoggedInUserState,
-//   setContact,
-//   setContacts,
-// })(Contact)
 
 export default Contact

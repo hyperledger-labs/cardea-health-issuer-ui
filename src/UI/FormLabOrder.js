@@ -1,4 +1,5 @@
 import React, { useRef } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { DateTime } from 'luxon'
 
@@ -23,6 +24,8 @@ import {
 function FormLabOrder(props) {
   const credentialForm = useRef(null)
   const setNotification = useNotification()
+  const settingsState = useSelector((state) => state.settings)
+  const schemas = settingsState.schemas
 
   const surnames =
     props.contactSelected && props.contactSelected.Demographic
@@ -221,7 +224,7 @@ function FormLabOrder(props) {
       )
     }
 
-    let schema = props.schemas.SCHEMA_LAB_ORDER
+    let schema = schemas.SCHEMA_LAB_ORDER
     let schemaParts = schema.split(':')
 
     let newCredential = {

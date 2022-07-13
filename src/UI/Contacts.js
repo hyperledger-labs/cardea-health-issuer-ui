@@ -22,7 +22,7 @@ function Contacts(props) {
   const loggedInUserState = loginState.loggedInUserState
   const contacts = contactsState.contacts
 
-  const localUser = loggedInUserState
+  // const localUser = loggedInUserState
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -94,7 +94,7 @@ function Contacts(props) {
           </DataTable>
         </PageSection>
         <CanUser
-          user={localUser}
+          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <ActionButton title="Add a New Contact" onClick={scanInvite}>

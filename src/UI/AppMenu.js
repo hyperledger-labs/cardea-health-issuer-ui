@@ -85,7 +85,7 @@ function AppMenu(props) {
             </StyledLink>
           </Item>*/}
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="contacts:read"
             yes={() => (
               <Item
@@ -110,7 +110,7 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="credentials:read"
             yes={() => (
               <Item
@@ -121,7 +121,7 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="presentations:read"
             yes={() => (
               <Item
@@ -134,7 +134,7 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="users:read"
             yes={() => (
               <Item className={pathMatch === '/users' ? 'active' : undefined}>
@@ -156,7 +156,7 @@ function AppMenu(props) {
             )}
           /> */}
           <CanUser
-            user={localUser}
+            // user={localUser}
             perform="settings:read"
             yes={() => (
               <>
