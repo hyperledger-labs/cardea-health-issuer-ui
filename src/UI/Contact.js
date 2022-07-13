@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 // import { connect } from 'react-redux'
 // import { setLoggedInUserState } from '../redux/loginReducer'
-import { setContactSelected } from '../redux/contactsReducer'
+// import { setContactSelected } from '../redux/contactsReducer'
 
 import styled from 'styled-components'
 
@@ -49,6 +49,7 @@ function Contact(props) {
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
   const credentialsState = useSelector((state) => state.credentials)
+  const notificationsState = useSelector((state) => state.notifications)
 
   const localUser = loginState.loggedInUserState
 
@@ -70,8 +71,9 @@ function Contact(props) {
   const history = props.history
   const contactId = props.contactId
 
-  const error = props.errorMessage
-  const success = props.successMessage
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
   const privileges = props.privileges
 
   let contactToSelect = ''
@@ -85,17 +87,17 @@ function Contact(props) {
 
   // Modal state
   const [contactModalIsOpen, setContactModalIsOpen] = useState(false)
-  const [exemptionModalIsOpen, setExemptionModalIsOpen] = useState(false)
-  const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
+  // const [exemptionModalIsOpen, setExemptionModalIsOpen] = useState(false)
+  // const [labOrderModalIsOpen, setLabOrderModalIsOpen] = useState(false)
   const [labResultModalIsOpen, setLabResultModalIsOpen] = useState(false)
-  const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
+  // const [vaccineModalIsOpen, setVaccineModalIsOpen] = useState(false)
   const [medicalModalIsOpen, setMedicalModalIsOpen] = useState(false)
 
   const closeContactModal = () => setContactModalIsOpen(false)
-  const closeExemptionModal = () => setExemptionModalIsOpen(false)
-  const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
+  // const closeExemptionModal = () => setExemptionModalIsOpen(false)
+  // const closeLabOrderModal = () => setLabOrderModalIsOpen(false)
   const closeLabResultModal = () => setLabResultModalIsOpen(false)
-  const closeVaccineModal = () => setVaccineModalIsOpen(false)
+  // const closeVaccineModal = () => setVaccineModalIsOpen(false)
   const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
   if (contacts) {

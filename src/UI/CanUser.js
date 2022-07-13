@@ -4,8 +4,6 @@ import store from '../store'
 export const check = (actions) => {
   const currentState = store.getState()
   const user = currentState.login.loggedInUserState
-  
-  console.log(user)
 
   // Get user roles
   if (!user) return false
@@ -16,13 +14,6 @@ export const check = (actions) => {
   roles = roles instanceof Array ? roles : [roles]
 
   let permissions = []
-
-console.log(rules)
-console.log(roles)
-console.log(user)
-console.log(actions)
-console.log(permissions)
-
 
   // Combine roles, ignore duplicate roles
   for (let i = 0; i < Object.keys(roles).length; i++) {

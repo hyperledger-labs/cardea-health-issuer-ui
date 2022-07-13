@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react'
-
+import { useSelector } from 'react-redux'
 import styled, { useTheme } from 'styled-components'
 
 import { useNotification } from './NotificationProvider'
@@ -134,9 +134,12 @@ const Form = styled.form`
 function Settings(props) {
   // Accessing notification context
   const setNotification = useNotification()
+  const notificationsState = useSelector((state) => state.notifications)
 
-  const error = props.errorMessage
-  const success = props.successMessage
+
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
 
@@ -180,7 +183,7 @@ function Settings(props) {
       setNotification(error, 'error')
       props.clearResponseState()
     }
-  }, [error, success, props, setNotification])
+  }, [error, success])
 
   // File state
   const [selectedFavicon, setSelectedFile] = useState('')

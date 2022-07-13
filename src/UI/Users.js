@@ -28,8 +28,11 @@ import { ActionButton } from './CommonStylesForms'
 function Users(props) {
   const loginState = useSelector((state) => state.login)
   const usersState = useSelector((state) => state.users)
-  const error = props.errorMessage
-  const success = props.successMessage
+  const notificationsState = useSelector((state) => state.notifications)
+
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
 
   const [index, setIndex] = useState(false)
 
@@ -48,9 +51,9 @@ function Users(props) {
     } else if (error) {
       setNotification(error, 'error')
       props.clearResponseState()
-      setIndex(index + 1)
+      // setIndex(index + 1)
     }
-  }, [error, success, setNotification, props])
+  }, [error, success])
 
   const [userModalIsOpen, setUserModalIsOpen] = useState(false)
   const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
