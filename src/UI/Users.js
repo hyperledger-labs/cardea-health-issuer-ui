@@ -65,7 +65,7 @@ function Users(props) {
 
   // const loggedInUserState = props.loggedInUserState
 
-  const roles = props.roles
+  // const roles = props.roles
   // const user = usersState.user
   const users = usersState.users
 
@@ -237,14 +237,14 @@ function Users(props) {
         <FormUsers
           sendRequest={props.sendRequest}
           error={index}
-          roles={roles}
+          // roles={roles}
           userModalIsOpen={userModalIsOpen}
           closeUserModal={closeUserModal}
         />
         <FormUserEdit
           sendRequest={props.sendRequest}
           error={index}
-          roles={roles}
+          // roles={roles}
           userEmail={userEmail}
           // users={users}
           // loggedInUserState={loginState.loggedInUserState}

@@ -17,9 +17,12 @@ const Footer = styled.div`
 `
 
 function AppFooter(props) {
-  const notificationsState = useSelector((state) => state.governance)
-  const selectedGovernance = notificationsState.selectedGovernance
+  // const notificationsState = useSelector((state) => state.governance)
+  // const selectedGovernance = notificationsState.selectedGovernance
   // const selectedGovernance = props.selectedGovernance
+
+  const governanceState = useSelector((state) => state.governance)
+  const selectedGovernance = governanceState.selectedGovernance
 
   return (
     <Footer id="app-footer">

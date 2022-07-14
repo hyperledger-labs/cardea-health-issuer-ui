@@ -70,7 +70,7 @@ import {
   setWarningMessage,
   clearNotificationState,
 } from './redux/notificationsReducer'
-import { setUsers, setUser } from './redux/usersReducer'
+import { setUsers, setUser, setRoles } from './redux/usersReducer'
 import { setSelectedGovernance } from './redux/governanceReducer'
 
 // const settingsState = useSelector((state) => state.settings)
@@ -183,7 +183,7 @@ function App() {
   // const [credentials, setCredentials] = useState([])
   // const [presentationReports, setPresentationReports] = useState([])
   // const [image, setImage] = useState()
-  const [roles, setRoles] = useState([])
+  // const [roles, setRoles] = useState([])
   // const [users, setUsers] = useState([])
   // const [user, setUser] = useState({})
   // const [errorMessage, setErrorMessage] = useState(null)
@@ -365,6 +365,7 @@ function App() {
     // const currentState = store.getState()
     // (eldersonar) TODO: remove declaration and use direcrly where needed
     const users = currentState.users.users
+    const roles = currentState.users.roles
     const contacts = currentState.contacts.contacts
     const credentials = currentState.credentials.credentials
     const presentations = currentState.presentations.presentationReports
@@ -543,30 +544,32 @@ function App() {
         case 'ROLES':
           switch (type) {
             case 'ROLES':
-              setRoles((prevRoles) => {
-                let oldRoles = prevRoles
-                let newRoles = data.roles
-                let updatedRoles = []
-                // (mikekebert) Loop through the new roles and check them against the existing array
-                newRoles.forEach((newRole) => {
-                  oldRoles.forEach((oldRole, index) => {
-                    if (
-                      oldRole !== null &&
-                      newRole !== null &&
-                      oldRole.role_id === newRole.role_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldRoles.splice(index, 1)
-                    }
-                  })
-                  updatedRoles.push(newRole)
+              // setRoles((prevRoles) => {
+              // let oldRoles = prevRoles
+              let oldRoles = roles
+              let newRoles = data.roles
+              let updatedRoles = []
+              // (mikekebert) Loop through the new roles and check them against the existing array
+              newRoles.forEach((newRole) => {
+                oldRoles.forEach((oldRole, index) => {
+                  if (
+                    oldRole !== null &&
+                    newRole !== null &&
+                    oldRole.role_id === newRole.role_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldRoles.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
-                if (oldRoles.length > 0)
-                  updatedRoles = [...updatedRoles, ...oldRoles]
-
-                return updatedRoles
+                updatedRoles.push(newRole)
               })
+              // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
+              if (oldRoles.length > 0)
+                updatedRoles = [...updatedRoles, ...oldRoles]
+
+              dispatch(setRoles(updatedRoles))
+              // return updatedRoles
+              // })
               removeLoadingProcess('ROLES')
 
               break
@@ -1573,7 +1576,7 @@ function App() {
                           <Main>
                             <Users
                               // loggedInUserState={loggedInUserState}
-                              roles={roles}
+                              // roles={roles}
                               // users={users}
                               // user={user}
                               // successMessage={successMessage}
