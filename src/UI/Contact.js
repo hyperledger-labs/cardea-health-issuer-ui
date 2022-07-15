@@ -57,11 +57,10 @@ function Contact(props) {
 
   const history = props.history
   const contactId = props.contactId
-  
 
   // Accessing notification context
   const setNotification = useNotification()
-  
+
   let contactToSelect = ''
 
   // const [index, setIndex] = useState(false)

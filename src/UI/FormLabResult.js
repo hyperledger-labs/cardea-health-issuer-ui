@@ -22,7 +22,7 @@ import {
 
 function FormLabResult(props) {
   const setNotification = useNotification()
-  
+
   const settingsState = useSelector((state) => state.settings)
   const contactsState = useSelector((state) => state.contacts)
 

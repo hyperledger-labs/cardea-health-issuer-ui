@@ -21,7 +21,7 @@ function ForgotPassword(props) {
 
   // Accessing notification context
   const setNotification = useNotification()
-  
+
   const emailForm = useRef()
 
   const handleSubmit = async (e) => {

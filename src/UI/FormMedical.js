@@ -20,10 +20,10 @@ import {
 function FormMedical(props) {
   const settingsState = useSelector((state) => state.settings)
   const contactsState = useSelector((state) => state.contacts)
-  
+
   const schemas = settingsState.schemas
   const contactSelected = contactsState.contactSelected
-  
+
   const credentialForm = useRef(null)
 
   const handleSubmit = (e) => {

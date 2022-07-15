@@ -136,7 +136,7 @@ function Settings(props) {
   const settingsState = useSelector((state) => state.settings)
   const notificationsState = useSelector((state) => state.notifications)
   const governanceState = useSelector((state) => state.governance)
-  
+
   const selectedGovernance = governanceState.selectedGovernance
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
@@ -561,7 +561,9 @@ function Settings(props) {
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
-            defaultValue={settingsState.siteTitle ? settingsState.siteTitle : ''}
+            defaultValue={
+              settingsState.siteTitle ? settingsState.siteTitle : ''
+            }
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>

@@ -40,7 +40,7 @@ const DashboardButton = styled.div`
 function Home(props) {
   const contactsState = useSelector((state) => state.contacts)
   const notificationsState = useSelector((state) => state.notifications)
-  
+
   const contact = contactsState.contact
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
@@ -66,7 +66,6 @@ function Home(props) {
 
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
-
 
   // Accessing notification context
   const setNotification = useNotification()

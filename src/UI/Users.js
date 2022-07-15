@@ -60,7 +60,7 @@ function Users(props) {
     } else if (error) {
       setNotification(error, 'error')
       dispatch(clearNotificationState())
-      setIndex(i => i + 1)
+      setIndex((i) => i + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
@@ -135,7 +135,6 @@ function Users(props) {
           {loginState.loggedInUserState &&
           loginState.loggedInUserState.id !== userId ? (
             <CanUser
-
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -153,7 +152,6 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -197,7 +195,6 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-    
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -206,7 +203,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-    
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -215,7 +211,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-    
                   perform="users:create"
                   yes={() => (
                     <DataHeader>

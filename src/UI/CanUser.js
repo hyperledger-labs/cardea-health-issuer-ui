@@ -11,32 +11,32 @@ export const check = (actions) => {
   } else {
     let roles = user.roles
 
-  // Handle multiple roles by casting roles into array
-  roles = roles instanceof Array ? roles : [roles]
+    // Handle multiple roles by casting roles into array
+    roles = roles instanceof Array ? roles : [roles]
 
-  let permissions = []
-  
-  // Combine roles, ignore duplicate roles
-  for (let i = 0; i < Object.keys(roles).length; i++) {
-      permissions = [...new Set([...permissions,...rules[roles[i]]])]
-  }
+    let permissions = []
 
-  if (!permissions) {
-    return false
-  }
+    // Combine roles, ignore duplicate roles
+    for (let i = 0; i < Object.keys(roles).length; i++) {
+      permissions = [...new Set([...permissions, ...rules[roles[i]]])]
+    }
 
-  // Determine all the permissions required by the component
-  if (permissions) {
-    const actionsList = actions.split(', ')
+    if (!permissions) {
+      return false
+    }
 
-    // Check if the user has all required permissions
-    for (const action in actionsList) {
-      if (permissions.includes(actionsList[action])) {
-        return true
+    // Determine all the permissions required by the component
+    if (permissions) {
+      const actionsList = actions.split(', ')
+
+      // Check if the user has all required permissions
+      for (const action in actionsList) {
+        if (permissions.includes(actionsList[action])) {
+          return true
+        }
       }
     }
-  }
-  return false
+    return false
   }
 }
 

@@ -22,15 +22,14 @@ import {
   SubmitBtnModal,
 } from './CommonStylesForms'
 
-
 function FormUsers(props) {
   const usersState = useSelector((state) => state.users)
 
   const roles = usersState.roles
   const error = props.error
-  
+
   const [options, setOptions] = useState([])
-  
+
   const userForm = useRef()
   const submitBtn = useRef()
 

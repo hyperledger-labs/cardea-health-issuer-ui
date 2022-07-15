@@ -82,9 +82,7 @@ function AppHeader(props) {
         </UserName>
         <Logout onClick={handleLogout}>Log Out</Logout>
       </LogoutWrapper>
-      <AppMenu
-        match={props.match}
-      />
+      <AppMenu match={props.match} />
     </Header>
   )
 }
