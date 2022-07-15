@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled from 'styled-components'
 
@@ -38,12 +39,13 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
-  const loginState = useSelector((state) => state.login)
-  const localUser = loginState.loggedInUserState
+  const dispatch = useDispatch()
+  // const loginState = useSelector((state) => state.login)
+  // const localUser = loginState.loggedInUserState
   const contactsState = useSelector((state) => state.contacts)
   const notificationsState = useSelector((state) => state.notifications)
-  const contact = contactsState.contact
 
+  const contact = contactsState.contact
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
@@ -62,7 +64,7 @@ function Home(props) {
 
   // const [govGranted, setGovGranted] = useState(undefined)
 
-  const [index, setIndex] = useState(false)
+  // const [index, setIndex] = useState(false)
 
   const [oob, setOOB] = useState(false)
 
@@ -80,14 +82,14 @@ function Home(props) {
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
       // setIndex(index + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
       // setIndex(index + 1)
     } else return
   }, [error, success, warning])

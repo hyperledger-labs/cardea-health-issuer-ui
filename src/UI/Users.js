@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import { CanUser } from './CanUser'
 
@@ -26,6 +27,7 @@ import {
 import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {
+  const dispatch = useDispatch()
   const loginState = useSelector((state) => state.login)
   const usersState = useSelector((state) => state.users)
   const notificationsState = useSelector((state) => state.notifications)
@@ -34,6 +36,7 @@ function Users(props) {
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
 
+  // (eldersonar) Helps to handle different UI elements behaviour. Passed to child components with props
   const [index, setIndex] = useState(false)
 
   // Accessing notification context
@@ -42,7 +45,7 @@ function Users(props) {
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
 
       // (Simon): Temporary solution. Closing all/any modals on success
       closeUserModal()
@@ -50,9 +53,12 @@ function Users(props) {
       closeDeleteModal()
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
-      // setIndex(index + 1)
-    }
+      dispatch(clearNotificationState())
+      setIndex(index + 1)
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+    } else return
   }, [error, success])
 
   const [userModalIsOpen, setUserModalIsOpen] = useState(false)

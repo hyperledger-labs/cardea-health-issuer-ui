@@ -1670,7 +1670,7 @@ function App() {
                               undoStyle={undoStyle}
                               // errorMessage={errorMessage}
                               // successMessage={successMessage}
-                              clearResponseState={clearResponseState}
+                              // clearResponseState={clearResponseState}
                               // imageResponse={image}
                               stylesArray={stylesArray}
                               addStylesToArray={addStylesToArray}

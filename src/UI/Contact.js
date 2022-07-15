@@ -3,6 +3,7 @@ import { useSelector, useDispatch } from 'react-redux'
 // import { connect } from 'react-redux'
 // import { setLoggedInUserState } from '../redux/loginReducer'
 import { setContactSelected } from '../redux/contactsReducer'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled from 'styled-components'
 
@@ -46,6 +47,7 @@ const IssueCredential = styled.button`
 `
 
 function Contact(props) {
+  const dispatch = useDispatch()
   const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
   const credentialsState = useSelector((state) => state.credentials)
@@ -57,7 +59,6 @@ function Contact(props) {
   const credentials = credentialsState.credentials
   const contactSelected = contactsState.contactSelected
 
-  const dispatch = useDispatch()
 
   // const { loggedInUserState } = props.login
   // const { contacts, contact } = props.contactsState
@@ -73,12 +74,12 @@ function Contact(props) {
 
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
-  // const warning = notificationsState.warningMessage
-  const privileges = props.privileges
+  const warning = notificationsState.warningMessage
+  // const privileges = props.privileges
 
   let contactToSelect = ''
 
-  const [index, setIndex] = useState(false)
+  // const [index, setIndex] = useState(false)
 
   // const [contactSelected, setContactSelected] = useState(contactToSelect)
 
@@ -112,13 +113,17 @@ function Contact(props) {
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
-      setIndex(index + 1)
-    }
-  }, [error, success])
+      dispatch(clearNotificationState())
+      // setIndex(index + 1)
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+      // setIndex(index + 1)
+    } else return
+  }, [error, success, warning])
 
   useEffect(() => {
     dispatch(setContactSelected(contactToSelect))
