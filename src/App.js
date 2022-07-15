@@ -98,21 +98,6 @@ function App() {
     currentState = store.getState()
   }
 
-  const defaultTheme = {
-    primary_color: '#0065B3',
-    secondary_color: '#00AEEF',
-    neutral_color: '#091C40',
-    negative_color: '#ed003c',
-    warning_color: '#e49b13',
-    positive_color: '#008a00',
-    text_color: '#555',
-    text_light: '#fff',
-    border: '#e3e3e3',
-    drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
-    background_primary: '#fff',
-    background_secondary: '#f5f5f5',
-  }
-
   const cookies = new Cookies()
 
   // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
@@ -887,6 +872,7 @@ function App() {
 
   // Update theme state locally
   const updateTheme = (update) => {
+    updateState()
     return dispatch(setTheme({ ...theme, ...update }))
   }
 
@@ -914,10 +900,12 @@ function App() {
 
   // Undo theme change
   const undoStyle = (undoKey) => {
+    updateState()
+    const recentTheme = JSON.parse(localStorage.getItem('recentTheme'))
     if (undoKey !== undefined) {
-      for (let key in defaultTheme)
+      for (let key in recentTheme)
         if ((key = undoKey)) {
-          const undo = { [`${key}`]: defaultTheme[key] }
+          const undo = { [`${key}`]: recentTheme[key] }
           return dispatch(setTheme({ ...theme, ...undo }))
         }
     }
