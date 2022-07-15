@@ -6,7 +6,6 @@ const initialState = {
   loggedIn: false,
 }
 
-const SET_LOGO = 'SET_LOGO'
 const SET_LOGGED_IN = 'SET_LOGGED_IN'
 const SET_LOGGED_IN_USER_STATE = 'SET_LOGGED_IN_USER_STATE'
 const SET_LOGGED_IN_USER_ID = 'SET_LOGGED_IN_USER_ID'

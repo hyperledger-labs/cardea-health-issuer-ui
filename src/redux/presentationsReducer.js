@@ -29,7 +29,6 @@ const initialState = {
   }
   
   export default function (state = initialState, action) {
-    //Reducer contains a switch statement which takes in action.type, performs different functionality based on the action.type from the actions above.
     switch (action.type) {
       case SET_PRESENTATION:
         return { ...state, presentationReport: action.payload }

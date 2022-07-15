@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
@@ -39,19 +39,18 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
-  const dispatch = useDispatch()
-  // const loginState = useSelector((state) => state.login)
-  // const localUser = loginState.loggedInUserState
   const contactsState = useSelector((state) => state.contacts)
   const notificationsState = useSelector((state) => state.notifications)
-
+  
   const contact = contactsState.contact
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
-  // const localUser = props.loggedInUserState
+
   const history = props.history
-  // const contact = props.contact
+  // const privileges = props.privileges
+
+  const dispatch = useDispatch()
 
   // Redirect to contact when contact is created
   useEffect(() => {
@@ -60,11 +59,6 @@ function Home(props) {
       history.push('/contacts/' + contact.contact_id)
     }
   }, [contact])
-  // const privileges = props.privileges
-
-  // const [govGranted, setGovGranted] = useState(undefined)
-
-  // const [index, setIndex] = useState(false)
 
   const [oob, setOOB] = useState(false)
 
@@ -74,7 +68,6 @@ function Home(props) {
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  // const isMounted = useRef(null)
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -86,11 +79,9 @@ function Home(props) {
     } else if (error) {
       setNotification(error, 'error')
       dispatch(clearNotificationState())
-      // setIndex(index + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
-      // setIndex(index + 1)
     } else return
   }, [error, success, warning])
 
@@ -123,7 +114,6 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -132,7 +122,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -141,7 +130,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -150,7 +138,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          // user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>

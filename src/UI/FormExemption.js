@@ -1,8 +1,6 @@
 import React, { useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
+import { useSelector } from 'react-redux'
 import { DateTime } from 'luxon'
-
 import { useNotification } from './NotificationProvider'
 
 import {
@@ -22,12 +20,15 @@ import {
 } from './CommonStylesForms'
 
 function FormExemption(props) {
-  const credentialForm = useRef(null)
   const setNotification = useNotification()
+
   const settingsState = useSelector((state) => state.settings)
-  const schemas = settingsState.schemas
   const contactsState = useSelector((state) => state.contacts)
+
+  const schemas = settingsState.schemas
   const contactSelected = contactsState.contactSelected
+
+  const credentialForm = useRef(null)
 
   const surnames =
     contactSelected && contactSelected.Demographic

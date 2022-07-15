@@ -35,6 +35,15 @@ function Users(props) {
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
+  const users = usersState.users
+
+  const [userModalIsOpen, setUserModalIsOpen] = useState(false)
+  const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
+  const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false)
+  const [userEmail, setUserEmail] = useState('')
+  const [userId, setUserId] = useState('')
+
+  const [buttonDisabled, setButtonDisabled] = useState(false)
 
   // (eldersonar) Helps to handle different UI elements behaviour. Passed to child components with props
   const [index, setIndex] = useState(false)
@@ -54,26 +63,12 @@ function Users(props) {
     } else if (error) {
       setNotification(error, 'error')
       dispatch(clearNotificationState())
-      setIndex(index + 1)
+      setIndex(i => i + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
     } else return
   }, [error, success])
-
-  const [userModalIsOpen, setUserModalIsOpen] = useState(false)
-  const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
-  const [deleteUserModalIsOpen, setDeleteUserModalIsOpen] = useState(false)
-  const [userEmail, setUserEmail] = useState('')
-  const [userId, setUserId] = useState('')
-
-  const [buttonDisabled, setButtonDisabled] = useState(false)
-
-  // const loggedInUserState = props.loggedInUserState
-
-  // const roles = props.roles
-  // const user = usersState.user
-  const users = usersState.users
 
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
@@ -128,7 +123,6 @@ function Users(props) {
           <DataCell>{userRoles}</DataCell>
 
           <CanUser
-            // user={loginState.loggedInUserState}
             perform="users:update, users:updateRoles"
             yes={() => (
               <IconCell
@@ -144,7 +138,7 @@ function Users(props) {
           {loginState.loggedInUserState &&
           loginState.loggedInUserState.id !== userId ? (
             <CanUser
-              // user={loginState.loggedInUserState}
+
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -162,7 +156,7 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-              // user={loginState.loggedInUserState}
+
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -206,7 +200,7 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-                  // user={loginState.loggedInUserState}
+    
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -215,7 +209,7 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  // user={loginState.loggedInUserState}
+    
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -224,7 +218,7 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  // user={loginState.loggedInUserState}
+    
                   perform="users:create"
                   yes={() => (
                     <DataHeader>
@@ -243,17 +237,13 @@ function Users(props) {
         <FormUsers
           sendRequest={props.sendRequest}
           error={index}
-          // roles={roles}
           userModalIsOpen={userModalIsOpen}
           closeUserModal={closeUserModal}
         />
         <FormUserEdit
           sendRequest={props.sendRequest}
           error={index}
-          // roles={roles}
           userEmail={userEmail}
-          // users={users}
-          // loggedInUserState={loginState.loggedInUserState}
           userEditModalIsOpen={userEditModalIsOpen}
           closeUserEditModal={closeUserEditModal}
         />

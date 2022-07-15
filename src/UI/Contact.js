@@ -1,7 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-// import { connect } from 'react-redux'
-// import { setLoggedInUserState } from '../redux/loginReducer'
 import { setContactSelected } from '../redux/contactsReducer'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
@@ -48,40 +46,27 @@ const IssueCredential = styled.button`
 
 function Contact(props) {
   const dispatch = useDispatch()
-  const loginState = useSelector((state) => state.login)
   const contactsState = useSelector((state) => state.contacts)
   const credentialsState = useSelector((state) => state.credentials)
   const notificationsState = useSelector((state) => state.notifications)
 
-  // const localUser = loginState.loggedInUserState
-
   const contacts = contactsState.contacts
   const credentials = credentialsState.credentials
   const contactSelected = contactsState.contactSelected
-
-
-  // const { loggedInUserState } = props.login
-  // const { contacts, contact } = props.contactsState
-
-  const isMounted = useRef(null)
-  // const localUser = loggedInUserState
-
-  // Accessing notification context
-  const setNotification = useNotification()
-
-  const history = props.history
-  const contactId = props.contactId
-
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
-  // const privileges = props.privileges
 
+  const history = props.history
+  const contactId = props.contactId
+  
+
+  // Accessing notification context
+  const setNotification = useNotification()
+  
   let contactToSelect = ''
 
   // const [index, setIndex] = useState(false)
-
-  // const [contactSelected, setContactSelected] = useState(contactToSelect)
 
   // Contact form customization (no contact search dropdown)
   // const [contactSearch, setContactSearch] = useState(false)
@@ -117,17 +102,16 @@ function Contact(props) {
     } else if (error) {
       setNotification(error, 'error')
       dispatch(clearNotificationState())
-      // setIndex(index + 1)
+      // setIndex(i => i + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
-      // setIndex(index + 1)
+      // setIndex(i => i + 1)
     } else return
   }, [error, success, warning])
 
   useEffect(() => {
     dispatch(setContactSelected(contactToSelect))
-    // dispatch(setContactSelected(contactToSelect))
   }, [contactToSelect])
 
   function updateDemographics(updatedDemographic, e) {
@@ -140,7 +124,6 @@ function Contact(props) {
 
     setNotification('Contact was updated!', 'notice')
 
-    // setContactSelected({ ...contactSelected, ...Demographic })
     dispatch(setContactSelected({ ...contactSelected, ...Demographic }))
   }
 
@@ -229,7 +212,6 @@ function Contact(props) {
         />
         <PageSection>
           <CanUser
-            // user={localUser}
             perform="contacts:update"
             yes={() => (
               <EditContact onClick={() => setContactModalIsOpen((o) => !o)}>
@@ -376,7 +358,6 @@ function Contact(props) {
         </PageSection>
         <PageSection>
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -404,7 +385,6 @@ function Contact(props) {
             Request Demographics
           </IssueCredential>
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
@@ -417,7 +397,6 @@ function Contact(props) {
           </IssueCredential>
 
           {/* <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -435,7 +414,6 @@ function Contact(props) {
             )}
           />
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -453,7 +431,6 @@ function Contact(props) {
             )}
           />
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential
@@ -471,7 +448,6 @@ function Contact(props) {
             )}
           />
           <CanUser
-            // user={localUser}
             perform="credentials:issue"
             yes={() => (
               <IssueCredential onClick={() => setMedicalModalIsOpen((o) => !o)}>
@@ -492,43 +468,35 @@ function Contact(props) {
         </PageSection>
 
         <FormContacts
-          // contactSelected={contactSelected}
           contactModalIsOpen={contactModalIsOpen}
           closeContactModal={closeContactModal}
           submitDemographics={updateDemographics}
         />
 
         {/* <FormLabOrder
-          contactSelected={contactSelected}
           credentialModalIsOpen={labOrderModalIsOpen}
           closeCredentialModal={closeLabOrderModal}
           submitCredential={submitNewCredential}          
         /> */}
         <FormLabResult
-          // contactSelected={contactSelected}
           credentialModalIsOpen={labResultModalIsOpen}
           closeCredentialModal={closeLabResultModal}
           submitCredential={submitNewCredential}
-          // schemas={props.schemas}
         />
         {/* <FormVaccine
-          // contactSelected={contactSelected}
           credentialModalIsOpen={vaccineModalIsOpen}
           closeCredentialModal={closeVaccineModal}
           submitCredential={submitNewCredential}         
         />
         <FormExemption
-          // contactSelected={contactSelected}
           credentialModalIsOpen={exemptionModalIsOpen}
           closeCredentialModal={closeExemptionModal}
           submitCredential={submitNewCredential}          
         /> */}
         <FormMedical
-          // contactSelected={contactSelected}
           credentialModalIsOpen={medicalModalIsOpen}
           closeCredentialModal={closeMedicalModal}
           submitCredential={submitNewCredential}
-          // schemas={props.schemas}
         />
       </div>
     </>

@@ -46,6 +46,7 @@ const rules = {
     'invitations:read',
     'invitations:accept',
     'presentations:read',
+    'test:action'
   ],
 }
 

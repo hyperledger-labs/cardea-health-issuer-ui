@@ -9,16 +9,14 @@ import { AttributeTable, AttributeRow } from './CommonStylesTables'
 function Credential(props) {
   const credentialsState = useSelector((state) => state.credentials)
 
-  const history = props.history
   const credential = props.credentialId
-  // const credentials = props.credentials
   const credentials = credentialsState.credentials
 
   let credentialSelected = ''
   let attributesArray = ''
 
   for (let i = 0; i < credentials.length; i++) {
-    if (credentials[i].credential_exchange_id == credential) {
+    if (credentials[i].credential_exchange_id === credential) {
       credentialSelected = credentials[i]
       attributesArray =
         credentialSelected.credential_proposal_dict.credential_proposal
@@ -56,10 +54,18 @@ function Credential(props) {
         DateTime.DATETIME_MED
       ) || ''
     patient_given = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'patient_given_names') return attribute
+      if (attribute.name === 'patient_given_names') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_sur = attributesArray.find(function (attribute, index) {
-      if (attribute.name == 'patient_surnames') return attribute
+      if (attribute.name === 'patient_surnames') {
+        return attribute
+      } else {
+        return ''
+      }
     })
     patient_name = patient_given.value + ' ' + patient_sur.value
     // Values that depend on the credential being issued

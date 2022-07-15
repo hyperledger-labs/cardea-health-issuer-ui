@@ -16,10 +16,7 @@ const Footer = styled.div`
   z-index: 100;
 `
 
-function AppFooter(props) {
-  // const notificationsState = useSelector((state) => state.governance)
-  // const selectedGovernance = notificationsState.selectedGovernance
-  // const selectedGovernance = props.selectedGovernance
+function AppFooter() {
 
   const governanceState = useSelector((state) => state.governance)
   const selectedGovernance = governanceState.selectedGovernance

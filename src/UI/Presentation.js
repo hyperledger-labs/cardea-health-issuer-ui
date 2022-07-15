@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useSelector } from 'react-redux'
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'

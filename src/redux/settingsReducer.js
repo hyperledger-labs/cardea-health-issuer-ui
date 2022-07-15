@@ -1,5 +1,5 @@
-import Axios from 'axios'
-import { handleImageSrc } from '../UI/util'
+// import Axios from 'axios'
+// import { handleImageSrc } from '../UI/util'
 // import {
 //   useNotification,
 //   NotificationProvider,
@@ -20,6 +20,7 @@ const defaultTheme = {
   background_secondary: '#f5f5f5',
 }
 
+// Check for local state copy of theme, otherwise use default hard coded here in App.js
 const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
 const initialState = {
   logo: null,

@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import {
   StyledPopup,
@@ -14,15 +14,17 @@ import {
   SubmitBtnModal,
   ModalLabel,
   InputFieldModal,
-  TextItem,
+  // TextItem,
 } from './CommonStylesForms'
 
 function FormMedical(props) {
-  const credentialForm = useRef(null)
   const settingsState = useSelector((state) => state.settings)
-  const schemas = settingsState.schemas
   const contactsState = useSelector((state) => state.contacts)
+  
+  const schemas = settingsState.schemas
   const contactSelected = contactsState.contactSelected
+  
+  const credentialForm = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()

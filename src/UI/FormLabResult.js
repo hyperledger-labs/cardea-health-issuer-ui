@@ -1,9 +1,7 @@
 import React, { useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
-import { DateTime } from 'luxon'
-
+import { useSelector } from 'react-redux'
 import { useNotification } from './NotificationProvider'
+import { DateTime } from 'luxon'
 
 import {
   StyledPopup,
@@ -22,12 +20,15 @@ import {
 } from './CommonStylesForms'
 
 function FormLabResult(props) {
-  const credentialForm = useRef(null)
   const setNotification = useNotification()
+  
   const settingsState = useSelector((state) => state.settings)
-  const schemas = settingsState.schemas
   const contactsState = useSelector((state) => state.contacts)
+
+  const schemas = settingsState.schemas
   const contactSelected = contactsState.contactSelected
+
+  const credentialForm = useRef(null)
 
   const surnames =
     contactSelected && contactSelected.Demographic

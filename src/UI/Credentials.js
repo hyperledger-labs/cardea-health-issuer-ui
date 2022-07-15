@@ -18,8 +18,6 @@ function Credentials(props) {
   }
 
   const history = props.history
-
-  // const credentials = props.credentials
   const credentials = credentialsState.credentials
 
   const credentialRows = credentials.map((credential_record) => {

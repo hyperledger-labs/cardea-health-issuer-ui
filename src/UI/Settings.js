@@ -3,15 +3,12 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedGovernance } from '../redux/governanceReducer'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
-// import styled, { useTheme } from 'styled-components'
 import styled from 'styled-components'
 
 import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
-
 import ReactTooltip from 'react-tooltip'
-
 import { IconHelp } from './CommonStylesTables'
 
 import Select from 'react-select'
@@ -151,18 +148,9 @@ function Settings(props) {
   // Accessing notification context
   const setNotification = useNotification()
 
-  // let smtpConf = props.smtp
-  // const messageEventCounter = props.messageEventCounter
-
-  // const [selectedGovernance, setSelectedGovernance] = useState(
-  // props.selectedGovernance
-  // )
   const [governanceOptions, setGovernanceOptions] = useState(
     governanceState.governanceOptions
   )
-
-  // console.log(props.selectedGovernance)
-  // console.log(governanceState.governanceOptions)
 
   // (eldersonar) Setting up selected governance and governance options
   useEffect(() => {
@@ -186,19 +174,14 @@ function Settings(props) {
 
   useEffect(() => {
     if (success) {
-      // console.log('SUCCESS RAN')
       setNotification(success, 'notice')
-      // props.clearResponseState()
       dispatch(clearNotificationState())
     } else if (error) {
-      // console.log('ERROR RAN')
       setNotification(error, 'error')
-      // props.clearResponseState()
       dispatch(clearNotificationState())
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
-      // setIndex(index + 1)
     } else return
   }, [error, success, warning])
 
@@ -251,7 +234,6 @@ function Settings(props) {
 
   const governanceForm = useRef(null)
   const governancePath = useRef(null)
-  const governanceFileOption = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -575,7 +557,6 @@ function Settings(props) {
                 ? settingsState.organizationName
                 : ''
             }
-            // defaultValue={props.organizationName ? props.organizationName : ''}
             ref={organizationName}
           />
           <H3>Website Title</H3>

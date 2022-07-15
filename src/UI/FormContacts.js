@@ -1,5 +1,5 @@
 import React, { useRef } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector } from 'react-redux'
 
 import {
   StyledPopup,
@@ -19,14 +19,13 @@ import {
 
 function FormContacts(props) {
   const contactsState = useSelector((state) => state.contacts)
-  const contacts = contactsState.contacts
   const contactSelected = contactsState.contactSelected
 
   const contact_id = contactSelected
     ? JSON.parse(JSON.stringify(contactSelected.contact_id))
     : ''
   const surnames =
-    contactSelected && contactSelected.Demographics
+    contactSelected && contactSelected.Demographic
       ? JSON.parse(JSON.stringify(contactSelected.Demographic.surnames))
       : ''
   const given_names =
@@ -81,75 +80,6 @@ function FormContacts(props) {
           JSON.stringify(contactSelected.Demographic.medical_release_id)
         )
       : ''
-
-  // Assigning contact values from props
-  // const contact_id = props.contactSelected
-  //   ? JSON.parse(JSON.stringify(props.contactSelected.contact_id))
-  //   : ''
-  // const surnames =
-  //   props.contactSelected && props.contactSelected.Demographics
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.surnames))
-  //     : ''
-  // const given_names =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.given_names)
-  //       )
-  //     : ''
-  // const date_of_birth =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(
-  //           props.contactSelected.Demographic.date_of_birth.split('T')[0]
-  //         )
-  //       )
-  //     : ''
-  // const gender_legal =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.gender_legal)
-  //       )
-  //     : ''
-  // const street_address =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.street_address)
-  //       )
-  //     : ''
-  // const city =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.city))
-  //     : ''
-  // const state_province_region =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(
-  //           props.contactSelected.Demographic.state_province_region
-  //         )
-  //       )
-  //     : ''
-  // const postalcode =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.postalcode))
-  //     : ''
-  // const country =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.country))
-  //     : ''
-  // const phone =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.phone))
-  //     : ''
-  // const email =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(JSON.stringify(props.contactSelected.Demographic.email))
-  //     : ''
-  // const medical_release_id =
-  //   props.contactSelected && props.contactSelected.Demographic
-  //     ? JSON.parse(
-  //         JSON.stringify(props.contactSelected.Demographic.medical_release_id)
-  //       )
-  //     : ''
 
   const contactForm = useRef()
 

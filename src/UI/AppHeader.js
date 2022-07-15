@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { handleImageSrc } from './util'
 import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
@@ -57,17 +57,15 @@ const Logout = styled.button`
 `
 
 function AppHeader(props) {
-  const settingsState = useSelector((state) => state.settings)
-  const logo = settingsState.logo
   const dispatch = useDispatch()
-  // const [src, setSrc] = useState(null)
-  // const logo = props.logo
-  const organizationName = settingsState.organizationName
+  const settingsState = useSelector((state) => state.settings)
   const loginState = useSelector((state) => state.login)
+
+  const logo = settingsState.logo
+  const organizationName = settingsState.organizationName
 
   useEffect(() => {
     if (logo && logo.image) {
-      // if (logo) {
       dispatch(setLogo(handleImageSrc(logo.image.data)))
     }
   }, [logo])
@@ -94,7 +92,6 @@ function AppHeader(props) {
       </LogoutWrapper>
       <AppMenu
         match={props.match}
-        // loggedInUserState={loginState.loggedInUserState}
       />
     </Header>
   )

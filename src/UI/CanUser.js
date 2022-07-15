@@ -15,15 +15,11 @@ export const check = (actions) => {
   roles = roles instanceof Array ? roles : [roles]
 
   let permissions = []
-
+  
   // Combine roles, ignore duplicate roles
   for (let i = 0; i < Object.keys(roles).length; i++) {
-    permissions = permissions.concat(
-      rules[roles[i]].filter((item) => permissions.indexOf(item) < 0)
-    )
+      permissions = [...new Set([...permissions,...rules[roles[i]]])]
   }
-  // (megan olsen) the above function throws an error in the console, please check.
-  // (mikekebert) the above throws a warning for a paradigm that seems like it shouldn't matter. I don't know how to get around it yet.
 
   if (!permissions) {
     return false
