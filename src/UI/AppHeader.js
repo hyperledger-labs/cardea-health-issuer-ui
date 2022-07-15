@@ -1,9 +1,10 @@
 import React from 'react'
 import { useSelector } from 'react-redux'
-import styled from 'styled-components'
-import { Logo, LogoHolder } from './CommonStylesForms'
 
 import AppMenu from './AppMenu.js'
+import { Logo, LogoHolder } from './CommonStylesForms'
+
+import styled from 'styled-components'
 
 const Header = styled.header`
   flex: 3;

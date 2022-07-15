@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { clearNotificationState } from '../redux/notificationsReducer'
 
 import { CanUser } from './CanUser'
-
 import FormUsers from './FormUsers'
 import FormUsersDelete from './FormUserDelete'
 import FormUserEdit from './FormUserEdit'
 import { useNotification } from './NotificationProvider'
+import { clearNotificationState } from '../redux/notificationsReducer'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
 
 import { TextAlignCenter } from './CommonStyles'
-
 import {
   DataTable,
   DataRow,
@@ -23,7 +21,6 @@ import {
   IconEdit,
   IconEmail,
 } from './CommonStylesTables'
-
 import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {

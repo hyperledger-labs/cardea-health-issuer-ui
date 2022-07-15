@@ -1,11 +1,11 @@
+import { DateTime } from 'luxon'
 import React from 'react'
 import { useSelector } from 'react-redux'
+
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
 
 import { AttributeTable, AttributeRow } from './CommonStylesTables'
-
-import { DateTime } from 'luxon'
 
 function Presentation(props) {
   const contactsState = useSelector((state) => state.contacts)

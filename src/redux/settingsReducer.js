@@ -1,3 +1,4 @@
+// (eldersonar) commented out code is attempt to put the logic of getting the logo inside the Redux action. It failed. We most likely need to implement Redux middlewares to achieve this goal... Requires more time and research
 // import Axios from 'axios'
 // import { handleImageSrc } from '../UI/util'
 // import {

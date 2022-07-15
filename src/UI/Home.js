@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+
+import { CanUser } from './CanUser'
+import FormInvitationAccept from './FormInvitationAccept'
+import FormQR from './FormQR'
+import { useNotification } from './NotificationProvider'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled from 'styled-components'
-
-import FormQR from './FormQR'
-import FormInvitationAccept from './FormInvitationAccept'
-import { useNotification } from './NotificationProvider'
-
-import { CanUser } from './CanUser'
 
 const DashboardRow = styled.div`
   display: flex;

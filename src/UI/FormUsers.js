@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import ReactTooltip from 'react-tooltip'
 import { useTheme } from 'styled-components'
+
+import { IconHelp } from './CommonStylesTables'
 
 import {
   Actions,
@@ -19,8 +22,6 @@ import {
   SubmitBtnModal,
 } from './CommonStylesForms'
 
-import { IconHelp } from './CommonStylesTables'
-import ReactTooltip from 'react-tooltip'
 
 function FormUsers(props) {
   const usersState = useSelector((state) => state.users)

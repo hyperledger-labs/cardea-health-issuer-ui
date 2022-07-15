@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
+import { useNotification } from './NotificationProvider'
+
 import {
   Actions,
   CancelBtn,
@@ -17,8 +19,6 @@ import {
   StyledPopup,
   SubmitBtnModal,
 } from './CommonStylesForms'
-
-import { useNotification } from './NotificationProvider'
 
 function FormUserEdit(props) {
   const loginState = useSelector((state) => state.login)

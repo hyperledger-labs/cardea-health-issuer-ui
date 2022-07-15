@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { setContactSelected } from '../redux/contactsReducer'
-import { clearNotificationState } from '../redux/notificationsReducer'
-
 import styled from 'styled-components'
 
-import FormContacts from './FormContacts'
+import { CanUser } from './CanUser'
 // import FormExemption from './FormExemption'
+import FormContacts from './FormContacts'
 // import FormLabOrder from './FormLabOrder'
+import FormMedical from './FormMedical'
 import FormLabResult from './FormLabResult'
 // import FormVaccine from './FormVaccine'
-import FormMedical from './FormMedical'
 import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader.js'
 import PageSection from './PageSection.js'
-
-import { CanUser } from './CanUser'
+import { clearNotificationState } from '../redux/notificationsReducer'
+import { setContactSelected } from '../redux/contactsReducer'
 
 import {
   DataTable,

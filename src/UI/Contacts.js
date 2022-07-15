@@ -1,11 +1,12 @@
 import React, { useState } from 'react'
 import { useSelector } from 'react-redux'
+
 import { CanUser } from './CanUser'
-import FormQR from './FormQR'
 import FormInvitationAccept from './FormInvitationAccept'
+import FormQR from './FormQR'
+// import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
-// import { useNotification } from './NotificationProvider'
 
 import { DataTable, DataRow, DataHeader, DataCell } from './CommonStylesTables'
 import { ActionButton } from './CommonStylesForms'

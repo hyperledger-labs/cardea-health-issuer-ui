@@ -1,46 +1,16 @@
 import Axios from 'axios'
-
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 
-import AccountSetup from './UI/AccountSetup'
-import AppHeader from './UI/AppHeader'
-import AppFooter from './UI/AppFooter'
-
-import { check } from './UI/CanUser'
-
-import Contact from './UI/Contact'
-import Contacts from './UI/Contacts'
-import Credential from './UI/Credential'
-import Credentials from './UI/Credentials'
-import ForgotPassword from './UI/ForgotPassword'
-import FullPageSpinner from './UI/FullPageSpinner'
-import Home from './UI/Home'
-import Login from './UI/Login'
-import {
-  useNotification,
-  NotificationProvider,
-} from './UI/NotificationProvider'
-import PasswordReset from './UI/PasswordReset'
-import Presentations from './UI/Presentations'
-import Presentation from './UI/Presentation'
-import Settings from './UI/Settings'
-import User from './UI/User'
-import Users from './UI/Users'
-
-import SessionProvider from './UI/SessionProvider'
-
 // Redux reducers imports
-import store from './store'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   setLoggedIn,
   setLoggedInUserId,
@@ -73,7 +43,31 @@ import {
 } from './redux/notificationsReducer'
 import { setUsers, setUser, setRoles, clearUsersState } from './redux/usersReducer'
 import { setSelectedGovernance, setGovernanceOptions, clearGovernanceState } from './redux/governanceReducer'
+import store from './store'
 
+import AccountSetup from './UI/AccountSetup'
+import AppHeader from './UI/AppHeader'
+import AppFooter from './UI/AppFooter'
+import { check } from './UI/CanUser'
+import Contact from './UI/Contact'
+import Contacts from './UI/Contacts'
+import Credential from './UI/Credential'
+import Credentials from './UI/Credentials'
+import ForgotPassword from './UI/ForgotPassword'
+import FullPageSpinner from './UI/FullPageSpinner'
+import Home from './UI/Home'
+import Login from './UI/Login'
+import {
+  useNotification,
+  NotificationProvider,
+} from './UI/NotificationProvider'
+import PasswordReset from './UI/PasswordReset'
+import Presentations from './UI/Presentations'
+import Presentation from './UI/Presentation'
+import Settings from './UI/Settings'
+import User from './UI/User'
+import Users from './UI/Users'
+import SessionProvider from './UI/SessionProvider'
 import { handleImageSrc } from '../src/UI/util'
 
 import './App.css'

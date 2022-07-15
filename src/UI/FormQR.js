@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useState } from 'react'
-
 import styled from 'styled-components'
 import QRCode from 'qrcode.react'
 

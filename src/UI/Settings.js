@@ -1,17 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import Select from 'react-select'
+import ReactTooltip from 'react-tooltip'
+import styled from 'styled-components'
+
+import PageHeader from './PageHeader'
+import PageSection from './PageSection'
+import { useNotification } from './NotificationProvider'
 import { setSelectedGovernance } from '../redux/governanceReducer'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
-import styled from 'styled-components'
-
-import { useNotification } from './NotificationProvider'
-import PageHeader from './PageHeader'
-import PageSection from './PageSection'
-import ReactTooltip from 'react-tooltip'
 import { IconHelp } from './CommonStylesTables'
-
-import Select from 'react-select'
 
 const H3 = styled.h3`
   margin: 5px 0;
