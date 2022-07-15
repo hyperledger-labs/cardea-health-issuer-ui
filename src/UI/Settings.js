@@ -335,11 +335,11 @@ function Settings(props) {
   const handleOrganizationDetails = (e) => {
     e.preventDefault()
     const form = new FormData(organizationForm.current)
-    const name = {
+    const organizationInfo = {
       organizationName: form.get('organizationName'),
       title: form.get('siteTitle'),
     }
-    props.sendRequest('SETTINGS', 'SET_ORGANIZATION', name)
+    props.sendRequest('SETTINGS', 'SET_ORGANIZATION', organizationInfo)
     organizationForm.current.reset()
   }
 
@@ -579,7 +579,7 @@ function Settings(props) {
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
-            defaultValue={props.siteTitle ? props.siteTitle : ''}
+            defaultValue={settingsState.siteTitle ? settingsState.siteTitle : ''}
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>

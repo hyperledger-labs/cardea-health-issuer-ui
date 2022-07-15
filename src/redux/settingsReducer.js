@@ -25,8 +25,9 @@ const initialState = {
   logo: null,
   theme: localTheme ? localTheme : defaultTheme,
   schemas: {},
-  organizationName: [],
-  smtp: [],
+  organizationName: null,
+  siteTitle: null,
+  smtp: null,
 }
 
 const SET_LOGO = 'SET_LOGO'
@@ -34,6 +35,7 @@ const SET_LOGO = 'SET_LOGO'
 const SET_THEME = 'SET_THEME'
 const SET_SCHEMAS = 'SET_SCHEMAS'
 const SET_ORGANIZATION_NAME = 'SET_ORGANIZATION_NAME'
+const SET_SITE_TITLE = 'SET_SITE_TITLE'
 const SET_SMTP = 'SET_SMTP'
 const CLEAR_SETTINGS_STATE = 'CLEAR_SETTINGS_STATE'
 
@@ -82,6 +84,13 @@ export function setOrganizationName(organizationName) {
   }
 }
 
+export function setSiteTitle(siteTitle) {
+  return {
+    type: SET_SITE_TITLE,
+    payload: siteTitle,
+  }
+}
+
 export function setSmtp(smtp) {
   return {
     type: SET_SMTP,
@@ -112,6 +121,9 @@ export default function (state = initialState, action) {
 
     case SET_ORGANIZATION_NAME:
       return { ...state, organizationName: action.payload }
+
+    case SET_SITE_TITLE:
+      return { ...state, siteTitle: action.payload }
 
     case SET_SMTP:
       return { ...state, smtp: action.payload }

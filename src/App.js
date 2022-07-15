@@ -57,6 +57,7 @@ import {
   setLogo,
   getLogo,
   setOrganizationName,
+  setSiteTitle,
   setSmtp,
   setTheme,
   setSchemas,
@@ -177,7 +178,7 @@ function App() {
   // const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
   // const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
   // const [schemas, setSchemas] = useState({})
-  const [siteTitle, setSiteTitle] = useState('')
+  // const [siteTitle, setSiteTitle] = useState('')
 
   // Styles to change array
   const [stylesArray, setStylesArray] = useState([])
@@ -300,8 +301,8 @@ function App() {
 
   // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
   useEffect(() => {
-    document.title = siteTitle
-  }, [siteTitle])
+    document.title = settingsState.siteTitle
+  }, [settingsState.siteTitle])
 
   useEffect(() => {
     // Perform operation on websocket open
@@ -871,7 +872,8 @@ function App() {
 
             case 'SETTINGS_ORGANIZATION':
               dispatch(setOrganizationName(data.organizationName))
-              setSiteTitle(data.title)
+              dispatch(setSiteTitle(data.title))
+              // setSiteTitle(data.title)
               removeLoadingProcess('ORGANIZATION')
               break
 
@@ -1678,7 +1680,7 @@ function App() {
                               sendRequest={sendMessage}
                               // smtp={smtp}
                               // organizationName={organizationName}
-                              siteTitle={siteTitle}
+                              // siteTitle={siteTitle}
                               governanceOptions={governanceOptions}
                               // selectedGovernance={selectedGovernance}
                             />
