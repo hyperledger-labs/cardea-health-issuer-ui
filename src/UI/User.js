@@ -1,3 +1,4 @@
+// (eldersonar) This is an abandoned component that needs to be implemented
 import React from 'react'
 // import styled from 'styled-components'
 

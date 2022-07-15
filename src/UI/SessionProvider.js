@@ -1,7 +1,7 @@
 import Axios from 'axios'
-import { formatSeconds } from './util'
-
 import React, { useEffect, useState } from 'react'
+
+import { formatSeconds } from './util'
 
 import {
   Actions,

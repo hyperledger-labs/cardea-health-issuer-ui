@@ -1,17 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import Select from 'react-select'
+import ReactTooltip from 'react-tooltip'
+import styled from 'styled-components'
+
+import PageHeader from './PageHeader'
+import PageSection from './PageSection'
+import { useNotification } from './NotificationProvider'
 import { setSelectedGovernance } from '../redux/governanceReducer'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
-import styled from 'styled-components'
-
-import { useNotification } from './NotificationProvider'
-import PageHeader from './PageHeader'
-import PageSection from './PageSection'
-import ReactTooltip from 'react-tooltip'
 import { IconHelp } from './CommonStylesTables'
-
-import Select from 'react-select'
 
 const H3 = styled.h3`
   margin: 5px 0;
@@ -137,7 +136,7 @@ function Settings(props) {
   const settingsState = useSelector((state) => state.settings)
   const notificationsState = useSelector((state) => state.notifications)
   const governanceState = useSelector((state) => state.governance)
-  
+
   const selectedGovernance = governanceState.selectedGovernance
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
@@ -562,7 +561,9 @@ function Settings(props) {
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
-            defaultValue={settingsState.siteTitle ? settingsState.siteTitle : ''}
+            defaultValue={
+              settingsState.siteTitle ? settingsState.siteTitle : ''
+            }
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>

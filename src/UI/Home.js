@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+
+import { CanUser } from './CanUser'
+import FormInvitationAccept from './FormInvitationAccept'
+import FormQR from './FormQR'
+import { useNotification } from './NotificationProvider'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled from 'styled-components'
-
-import FormQR from './FormQR'
-import FormInvitationAccept from './FormInvitationAccept'
-import { useNotification } from './NotificationProvider'
-
-import { CanUser } from './CanUser'
 
 const DashboardRow = styled.div`
   display: flex;
@@ -41,7 +40,7 @@ const DashboardButton = styled.div`
 function Home(props) {
   const contactsState = useSelector((state) => state.contacts)
   const notificationsState = useSelector((state) => state.notifications)
-  
+
   const contact = contactsState.contact
   const error = notificationsState.errorMessage
   const success = notificationsState.successMessage
@@ -67,7 +66,6 @@ function Home(props) {
 
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
-
 
   // Accessing notification context
   const setNotification = useNotification()

@@ -17,7 +17,6 @@ const Footer = styled.div`
 `
 
 function AppFooter() {
-
   const governanceState = useSelector((state) => state.governance)
   const selectedGovernance = governanceState.selectedGovernance
 

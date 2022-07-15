@@ -1,8 +1,9 @@
 import styled from 'styled-components'
-import { ReactComponent as Remove } from '../assets/remove.svg'
+
 import { ReactComponent as Edit } from '../assets/edit.svg'
 import { ReactComponent as Email } from '../assets/email.svg'
 import { ReactComponent as Help } from '../assets/help.svg'
+import { ReactComponent as Remove } from '../assets/remove.svg'
 
 export const DataTable = styled.table`
   box-sizing: content-box;

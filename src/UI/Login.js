@@ -1,10 +1,10 @@
 import Axios from 'axios'
 import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import styled from 'styled-components'
+
 import { useNotification } from './NotificationProvider'
 import { setLoggedIn } from '../redux/loginReducer'
-
-import styled from 'styled-components'
 
 import {
   FormContainer,

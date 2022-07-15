@@ -1,46 +1,16 @@
 import Axios from 'axios'
-
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 
-import AccountSetup from './UI/AccountSetup'
-import AppHeader from './UI/AppHeader'
-import AppFooter from './UI/AppFooter'
-
-import { check } from './UI/CanUser'
-
-import Contact from './UI/Contact'
-import Contacts from './UI/Contacts'
-import Credential from './UI/Credential'
-import Credentials from './UI/Credentials'
-import ForgotPassword from './UI/ForgotPassword'
-import FullPageSpinner from './UI/FullPageSpinner'
-import Home from './UI/Home'
-import Login from './UI/Login'
-import {
-  useNotification,
-  NotificationProvider,
-} from './UI/NotificationProvider'
-import PasswordReset from './UI/PasswordReset'
-import Presentations from './UI/Presentations'
-import Presentation from './UI/Presentation'
-import Settings from './UI/Settings'
-import User from './UI/User'
-import Users from './UI/Users'
-
-import SessionProvider from './UI/SessionProvider'
-
 // Redux reducers imports
-import store from './store'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   setLoggedIn,
   setLoggedInUserId,
@@ -49,8 +19,16 @@ import {
   setLoggedInUserState,
   logoutUser,
 } from './redux/loginReducer'
-import { setContact, setContacts, clearContactstate } from './redux/contactsReducer'
-import { setCredential, setCredentials, clearCredentialsState } from './redux/credentialsReducer'
+import {
+  setContact,
+  setContacts,
+  clearContactstate,
+} from './redux/contactsReducer'
+import {
+  setCredential,
+  setCredentials,
+  clearCredentialsState,
+} from './redux/credentialsReducer'
 import {
   setLogo,
   // getLogo,
@@ -71,9 +49,42 @@ import {
   setSuccessMessage,
   // setWarningMessage,
 } from './redux/notificationsReducer'
-import { setUsers, setUser, setRoles, clearUsersState } from './redux/usersReducer'
-import { setSelectedGovernance, setGovernanceOptions, clearGovernanceState } from './redux/governanceReducer'
+import {
+  setUsers,
+  setUser,
+  setRoles,
+  clearUsersState,
+} from './redux/usersReducer'
+import {
+  setSelectedGovernance,
+  setGovernanceOptions,
+  clearGovernanceState,
+} from './redux/governanceReducer'
+import store from './store'
 
+import AccountSetup from './UI/AccountSetup'
+import AppHeader from './UI/AppHeader'
+import AppFooter from './UI/AppFooter'
+import { check } from './UI/CanUser'
+import Contact from './UI/Contact'
+import Contacts from './UI/Contacts'
+import Credential from './UI/Credential'
+import Credentials from './UI/Credentials'
+import ForgotPassword from './UI/ForgotPassword'
+import FullPageSpinner from './UI/FullPageSpinner'
+import Home from './UI/Home'
+import Login from './UI/Login'
+import {
+  useNotification,
+  NotificationProvider,
+} from './UI/NotificationProvider'
+import PasswordReset from './UI/PasswordReset'
+import Presentations from './UI/Presentations'
+import Presentation from './UI/Presentation'
+import Settings from './UI/Settings'
+import User from './UI/User'
+import Users from './UI/Users'
+import SessionProvider from './UI/SessionProvider'
 import { handleImageSrc } from '../src/UI/util'
 
 import './App.css'
@@ -104,21 +115,6 @@ function App() {
     currentState = store.getState()
   }
 
-  const defaultTheme = {
-    primary_color: '#0065B3',
-    secondary_color: '#00AEEF',
-    neutral_color: '#091C40',
-    negative_color: '#ed003c',
-    warning_color: '#e49b13',
-    positive_color: '#008a00',
-    text_color: '#555',
-    text_light: '#fff',
-    border: '#e3e3e3',
-    drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
-    background_primary: '#fff',
-    background_secondary: '#f5f5f5',
-  }
-
   const cookies = new Cookies()
 
   // (AmmonBurgi) Keeps track of loading processes. The useMemo is necessary to preserve list across re-renders.
@@ -146,7 +142,6 @@ function App() {
   const [QRCodeURL, setQRCodeURL] = useState('')
   const [focusedConnectionID, setFocusedConnectionID] = useState('')
 
-
   // Governance state
   // (eldersonar) Even though it's passed it is not used in this version of governance anymore
   // TODO: update when change privileges on MRG
@@ -165,7 +160,7 @@ function App() {
       if (res.data.error) {
         setNotification(res.data.error, 'error')
       } else {
-          dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+        dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
       }
     })
   }
@@ -188,7 +183,7 @@ function App() {
           dispatch(setLoggedInRoles(res.data.roles))
         } else {
           setAppIsLoaded(true)
-        } 
+        }
       })
       .catch((error) => {
         // Unauthorized
@@ -307,7 +302,13 @@ function App() {
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loginState.loggedIn, websocket, readyForMessages, loginState.loggedInUserState])
+  }, [
+    session,
+    loginState.loggedIn,
+    websocket,
+    readyForMessages,
+    loginState.loggedInUserState,
+  ])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -583,7 +584,9 @@ function App() {
               break
 
             case 'USER_DELETED':
-              const index = currentState.users.users.findIndex((v) => v.user_id === data)
+              const index = currentState.users.users.findIndex(
+                (v) => v.user_id === data
+              )
               let alteredUsers = [...currentState.users.users]
               alteredUsers.splice(index, 1)
               dispatch(setUsers(alteredUsers))
@@ -666,7 +669,8 @@ function App() {
               break
 
             case 'PRESENTATION_REPORTS':
-              let oldPresentations = currentState.presentations.presentationReports
+              let oldPresentations =
+                currentState.presentations.presentationReports
               let newPresentations = data.presentation_reports
               let updatedPresentations = []
 
@@ -808,7 +812,8 @@ function App() {
               break
 
             case 'GOVERNANCE_OPTION_ADDED':
-                currentState.governance.governanceOptions.forEach((governanceOption, index) => {
+              currentState.governance.governanceOptions.forEach(
+                (governanceOption, index) => {
                   console.log('forEach')
                   console.log(governanceOption.governance_path)
                   console.log(data.governance_path)
@@ -822,11 +827,15 @@ function App() {
                     console.log('splice', governanceOption)
                     currentState.governance.governanceOptions.splice(index, 1)
                   }
-                })
+                }
+              )
 
-                let updatedGovernanceOptions = [...currentState.governance.governanceOptions, data.governance_path]
+              let updatedGovernanceOptions = [
+                ...currentState.governance.governanceOptions,
+                data.governance_path,
+              ]
 
-                dispatch(setGovernanceOptions(updatedGovernanceOptions))
+              dispatch(setGovernanceOptions(updatedGovernanceOptions))
               break
 
             case 'SELECTED_GOVERNANCE':
@@ -893,6 +902,7 @@ function App() {
 
   // Update theme state locally
   const updateTheme = (update) => {
+    updateState()
     return dispatch(setTheme({ ...theme, ...update }))
   }
 
@@ -920,10 +930,12 @@ function App() {
 
   // Undo theme change
   const undoStyle = (undoKey) => {
+    updateState()
+    const recentTheme = JSON.parse(localStorage.getItem('recentTheme'))
     if (undoKey !== undefined) {
-      for (let key in defaultTheme)
+      for (let key in recentTheme)
         if ((key = undoKey)) {
-          const undo = { [`${key}`]: defaultTheme[key] }
+          const undo = { [`${key}`]: recentTheme[key] }
           return dispatch(setTheme({ ...theme, ...undo }))
         }
     }
@@ -1078,7 +1090,7 @@ function App() {
                             focusedConnectionID={focusedConnectionID}
                           />
                         </Main>
-                        <AppFooter/>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1086,11 +1098,7 @@ function App() {
                 <Route
                   path="/invitations"
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'invitations:read'
-                      )
-                    ) {
+                    if (check('invitations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1101,7 +1109,7 @@ function App() {
                           <Main>
                             <p>Invitations</p>
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1113,11 +1121,7 @@ function App() {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'contacts:read'
-                      )
-                    ) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1132,7 +1136,7 @@ function App() {
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1143,11 +1147,7 @@ function App() {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'contacts:read'
-                      )
-                    ) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1163,7 +1163,7 @@ function App() {
                               contactId={match.params.contactId}
                             />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1175,11 +1175,7 @@ function App() {
                   path="/credentials"
                   exact
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'credentials:read'
-                      )
-                    ) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1188,11 +1184,9 @@ function App() {
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Credentials
-                              history={history}
-                            />
+                            <Credentials history={history} />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1203,11 +1197,7 @@ function App() {
                 <Route
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'credentials:read'
-                      )
-                    ) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1221,14 +1211,13 @@ function App() {
                               credentialId={match.params.credentialId}
                             />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  
                 />
                 <Route
                   path="/verification"
@@ -1243,7 +1232,7 @@ function App() {
                         <Main>
                           <p>Verification</p>
                         </Main>
-                        <AppFooter/>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1261,7 +1250,7 @@ function App() {
                         <Main>
                           <p>Messages</p>
                         </Main>
-                        <AppFooter/>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1270,11 +1259,7 @@ function App() {
                   path="/presentations"
                   exact
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'presentations:read'
-                      )
-                    ) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1283,11 +1268,9 @@ function App() {
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Presentations
-                              history={history}
-                            />
+                            <Presentations history={history} />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1298,11 +1281,7 @@ function App() {
                 <Route
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'presentations:read'
-                      )
-                    ) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1316,23 +1295,18 @@ function App() {
                               presentation={match.params.presentationId}
                             />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  
                 />
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'users:read'
-                      )
-                    ) {
+                    if (check('users:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1341,11 +1315,9 @@ function App() {
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Users
-                              sendRequest={sendMessage}
-                            />
+                            <Users sendRequest={sendMessage} />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1364,11 +1336,9 @@ function App() {
                           handleLogout={handleLogout}
                         />
                         <Main>
-                          <User
-                            history={history}
-                          />
+                          <User history={history} />
                         </Main>
-                        <AppFooter/>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1376,11 +1346,7 @@ function App() {
                 <Route
                   path="/settings"
                   render={({ match, history }) => {
-                    if (
-                      check(
-                        'settings:update'
-                      )
-                    ) {
+                    if (check('settings:update')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
@@ -1399,7 +1365,7 @@ function App() {
                               sendRequest={sendMessage}
                             />
                           </Main>
-                          <AppFooter/>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {

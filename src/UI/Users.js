@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { clearNotificationState } from '../redux/notificationsReducer'
 
 import { CanUser } from './CanUser'
-
 import FormUsers from './FormUsers'
 import FormUsersDelete from './FormUserDelete'
 import FormUserEdit from './FormUserEdit'
 import { useNotification } from './NotificationProvider'
+import { clearNotificationState } from '../redux/notificationsReducer'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
 
 import { TextAlignCenter } from './CommonStyles'
-
 import {
   DataTable,
   DataRow,
@@ -23,7 +21,6 @@ import {
   IconEdit,
   IconEmail,
 } from './CommonStylesTables'
-
 import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {
@@ -63,7 +60,7 @@ function Users(props) {
     } else if (error) {
       setNotification(error, 'error')
       dispatch(clearNotificationState())
-      setIndex(i => i + 1)
+      setIndex((i) => i + 1)
     } else if (warning) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
@@ -138,7 +135,6 @@ function Users(props) {
           {loginState.loggedInUserState &&
           loginState.loggedInUserState.id !== userId ? (
             <CanUser
-
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -156,7 +152,6 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -200,7 +195,6 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-    
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -209,7 +203,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-    
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -218,7 +211,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-    
                   perform="users:create"
                   yes={() => (
                     <DataHeader>

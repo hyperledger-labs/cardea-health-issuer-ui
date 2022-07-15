@@ -1,7 +1,8 @@
+import { DateTime } from 'luxon'
 import React, { useRef } from 'react'
 import { useSelector } from 'react-redux'
+
 import { useNotification } from './NotificationProvider'
-import { DateTime } from 'luxon'
 
 import {
   StyledPopup,
@@ -21,7 +22,7 @@ import {
 
 function FormLabResult(props) {
   const setNotification = useNotification()
-  
+
   const settingsState = useSelector((state) => state.settings)
   const contactsState = useSelector((state) => state.contacts)
 
