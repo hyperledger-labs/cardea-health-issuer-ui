@@ -75,7 +75,7 @@ import {
   clearNotificationState,
 } from './redux/notificationsReducer'
 import { setUsers, setUser, setRoles, clearUsersState } from './redux/usersReducer'
-import { setSelectedGovernance, clearGovernancetate } from './redux/governanceReducer'
+import { setSelectedGovernance, setGovernanceOptions, clearGovernanceState } from './redux/governanceReducer'
 
 import { handleImageSrc } from '../src/UI/util'
 
@@ -211,7 +211,7 @@ function App() {
 
   // Governance state
   const [privileges, setPrivileges] = useState([])
-  const [governanceOptions, setGovernanceOptions] = useState([])
+  // const [governanceOptions, setGovernanceOptions] = useState([])
   // const [selectedGovernance, setSelectedGovernance] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
@@ -930,17 +930,17 @@ function App() {
 
             case 'GOVERNANCE_OPTIONS':
               console.log('GOVERNANCE_OPTIONS SUCCESS')
-              setGovernanceOptions(data.governance_paths)
+              dispatch(setGovernanceOptions(data.governance_paths))
               removeLoadingProcess('ALL_GOVERNANCE')
               break
 
             case 'GOVERNANCE_OPTION_ADDED':
               console.log('GOVERNANCE_OPTION_ADDED')
-              setGovernanceOptions((prev) => {
-                console.log(prev)
-                console.log(data.governance_path)
+              // setGovernanceOptions((prev) => {
+                // console.log(prev)
+                // console.log(data.governance_path)
 
-                prev.forEach((governanceOption, index) => {
+                currentState.governance.governanceOptions.forEach((governanceOption, index) => {
                   console.log('forEach')
                   console.log(governanceOption.governance_path)
                   console.log(data.governance_path)
@@ -952,13 +952,15 @@ function App() {
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', governanceOption)
-                    prev.splice(index, 1)
+                    currentState.governance.governanceOptions.splice(index, 1)
                   }
                 })
 
-                let updatedGovernanceOptions = [...prev, data.governance_path]
-                return updatedGovernanceOptions
-              })
+                let updatedGovernanceOptions = [...currentState.governance.governanceOptions, data.governance_path]
+
+                dispatch(setGovernanceOptions(updatedGovernanceOptions))
+              //   return updatedGovernanceOptions
+              // })
 
               break
 
@@ -1093,7 +1095,7 @@ function App() {
       dispatch(clearUsersState())
       dispatch(clearSettingsState())
       dispatch(clearPresentationsState())
-      dispatch(clearGovernancetate())
+      dispatch(clearGovernanceState())
       dispatch(clearCredentialsState())
       dispatch(clearContactstate())
       closeWSConnection(1000, 'Log out')
@@ -1243,7 +1245,7 @@ function App() {
                             privileges={privileges}
                             // successMessage={successMessage}
                             // errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
+                            // clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
                             // outOfBandQRCodeURL={outOfBandQRCodeURL}
                             focusedConnectionID={focusedConnectionID}
@@ -1357,7 +1359,7 @@ function App() {
                               sendRequest={sendMessage}
                               // successMessage={successMessage}
                               // errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
+                              // clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
                               // contacts={contacts}
@@ -1603,7 +1605,7 @@ function App() {
                               // user={user}
                               // successMessage={successMessage}
                               // errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
+                              // clearResponseState={clearResponseState}
                               sendRequest={sendMessage}
                             />
                           </Main>
@@ -1681,7 +1683,7 @@ function App() {
                               // smtp={smtp}
                               // organizationName={organizationName}
                               // siteTitle={siteTitle}
-                              governanceOptions={governanceOptions}
+                              // governanceOptions={governanceOptions}
                               // selectedGovernance={selectedGovernance}
                             />
                           </Main>

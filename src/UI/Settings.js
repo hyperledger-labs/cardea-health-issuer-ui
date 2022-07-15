@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedGovernance } from '../redux/governanceReducer'
 import { clearNotificationState } from '../redux/notificationsReducer'
 
-import styled, { useTheme } from 'styled-components'
+// import styled, { useTheme } from 'styled-components'
+import styled from 'styled-components'
 
 import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
@@ -145,6 +146,7 @@ function Settings(props) {
   const success = notificationsState.successMessage
   const warning = notificationsState.warningMessage
   const smtpConf = settingsState.smtp
+  const theme = settingsState.theme
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -156,11 +158,11 @@ function Settings(props) {
   // props.selectedGovernance
   // )
   const [governanceOptions, setGovernanceOptions] = useState(
-    props.governanceOptions
+    governanceState.governanceOptions
   )
 
   // console.log(props.selectedGovernance)
-  // console.log(props.governanceOptions)
+  // console.log(governanceState.governanceOptions)
 
   // (eldersonar) Setting up selected governance and governance options
   useEffect(() => {
@@ -170,17 +172,17 @@ function Settings(props) {
       dispatch(setSelectedGovernance(selectedGovernance))
     }
     // (eldersonar) Handle governance options state
-    if (props.governanceOptions) {
-      for (let i = 0; i < props.governanceOptions.length; i++) {
+    if (governanceState.governanceOptions) {
+      for (let i = 0; i < governanceState.governanceOptions.length; i++) {
         options.push({
-          id: props.governanceOptions[i].id,
-          label: props.governanceOptions[i].governance_path,
-          value: props.governanceOptions[i].governance_path,
+          id: governanceState.governanceOptions[i].id,
+          label: governanceState.governanceOptions[i].governance_path,
+          value: governanceState.governanceOptions[i].governance_path,
         })
       }
       setGovernanceOptions(options)
     }
-  }, [selectedGovernance, props.governanceOptions])
+  }, [selectedGovernance, governanceState.governanceOptions])
 
   useEffect(() => {
     if (success) {
@@ -544,7 +546,7 @@ function Settings(props) {
           id="organizationTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The SMTP configuration is used for sending
@@ -598,7 +600,7 @@ function Settings(props) {
           id="logoTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Organization logo is used in
@@ -631,7 +633,7 @@ function Settings(props) {
           id="logo192Tip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             logo192.png is the icon used to show on the tab
@@ -664,7 +666,7 @@ function Settings(props) {
           id="logo512Tip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             logo192.png is the icon used to show on the tab
@@ -697,7 +699,7 @@ function Settings(props) {
           id="faviconTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Organization favicon is used to
@@ -730,7 +732,7 @@ function Settings(props) {
           id="manifestTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The web app manifest provides information about
@@ -782,7 +784,7 @@ function Settings(props) {
           id="smtpTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The SMTP configuration is used for sending
@@ -892,7 +894,7 @@ function Settings(props) {
           id="governanceTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             You can add a new governance file that
@@ -931,7 +933,7 @@ function Settings(props) {
           id="themeTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Use these settings to
