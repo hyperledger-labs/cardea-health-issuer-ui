@@ -201,6 +201,8 @@ function Contact(props) {
           <DataCell>{dateCreated}</DataCell>
         </DataRow>
       )
+    } else {
+      return null
     }
   })
 

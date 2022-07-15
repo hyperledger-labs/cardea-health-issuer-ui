@@ -1,9 +1,7 @@
-import React, { useEffect } from 'react'
-import { handleImageSrc } from './util'
-import { useDispatch, useSelector } from 'react-redux'
+import React from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 import { Logo, LogoHolder } from './CommonStylesForms'
-import { setLogo } from '../redux/settingsReducer'
 
 import AppMenu from './AppMenu.js'
 
@@ -57,18 +55,11 @@ const Logout = styled.button`
 `
 
 function AppHeader(props) {
-  const dispatch = useDispatch()
   const settingsState = useSelector((state) => state.settings)
   const loginState = useSelector((state) => state.login)
 
   const logo = settingsState.logo
   const organizationName = settingsState.organizationName
-
-  useEffect(() => {
-    if (logo && logo.image) {
-      dispatch(setLogo(handleImageSrc(logo.image.data)))
-    }
-  }, [logo])
 
   const handleLogout = () => {
     props.handleLogout(props.history)

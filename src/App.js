@@ -746,7 +746,7 @@ function App() {
               break
 
             case 'LOGO':
-              dispatch(setLogo(data))
+              dispatch(setLogo(handleImageSrc(data.image.data)))
               removeLoadingProcess('LOGO')
               break
 
