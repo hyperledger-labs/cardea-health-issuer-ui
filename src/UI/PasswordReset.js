@@ -4,8 +4,8 @@ import React, { useRef, useLayoutEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { useNotification } from './NotificationProvider'
-import { handleImageSrc } from './util'
-import { setLogo } from '../redux/settingsReducer'
+// import { handleImageSrc } from './util'
+// import { setLogo } from '../redux/settingsReducer'
 
 import {
   FormContainer,
@@ -22,7 +22,7 @@ function PasswordReset(props) {
   const token = window.location.hash.substring(1)
   const settingsState = useSelector((state) => state.settings)
   const logo = settingsState.logo
-  const dispatch = useDispatch()
+  // const dispatch = useDispatch()
 
   const [id, setId] = useState(undefined)
 
@@ -64,25 +64,25 @@ function PasswordReset(props) {
 
   // const [logo, setLogo] = useState(null)
 
-  useLayoutEffect(() => {
-    let isMounted = true
-    // Fetching the logo
-    Axios({
-      method: 'GET',
-      url: '/api/logo',
-    }).then((res) => {
-      if (res.data.error) {
-        setNotification(res.data.error, 'error')
-      } else {
-        if (isMounted) {
-          dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
-        }
-      }
-    })
-    return () => {
-      isMounted = false
-    } // Cleanup
-  }, [])
+  // useLayoutEffect(() => {
+  //   let isMounted = true
+  //   // Fetching the logo
+  //   Axios({
+  //     method: 'GET',
+  //     url: '/api/logo',
+  //   }).then((res) => {
+  //     if (res.data.error) {
+  //       setNotification(res.data.error, 'error')
+  //     } else {
+  //       if (isMounted) {
+  //         dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+  //       }
+  //     }
+  //   })
+  //   return () => {
+  //     isMounted = false
+  //   } // Cleanup
+  // }, [])
 
   // Accessing notification context
   const setNotification = useNotification()

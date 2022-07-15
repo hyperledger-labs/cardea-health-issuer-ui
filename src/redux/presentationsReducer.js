@@ -1,12 +1,11 @@
 const initialState = {
     presentationReport: {},
     presentationReports: [],
-    // presentationSelected: '',
   }
   
   const SET_PRESENTATION = 'SET_PRESENTATION'
   const SET_PRESENTATIONS = 'SET_PRESENTATIONS'
-  // const SET_PRESENTATION_SELECTED = 'SET_PRESENTATION_SELECTED'
+  const CLEAR_PRESENTATIONS_STATE = 'CLEAR_PRESENTATIONS_STATE'
   
   export function setpresentationReport(presentationReport) {
     return {
@@ -22,12 +21,12 @@ const initialState = {
     }
   }
   
-  // export function setPresentationSelected(presentationSelected) {
-  //   return {
-  //     type: SET_PRESENTATION,
-  //     payload: presentationSelected,
-  //   }
-  // }
+  export function clearPresentationsState() {
+    return {
+      type: CLEAR_PRESENTATIONS_STATE,
+      payload: null,
+    }
+  }
   
   export default function (state = initialState, action) {
     //Reducer contains a switch statement which takes in action.type, performs different functionality based on the action.type from the actions above.
@@ -38,8 +37,8 @@ const initialState = {
       case SET_PRESENTATIONS:
         return { ...state, presentationReports: action.payload }
   
-      // case SET_PRESENTATION_SELECTED:
-      //   return { ...state, presentationSelected: action.payload }
+      case CLEAR_PRESENTATIONS_STATE:
+        return initialState
   
       default:
         return state

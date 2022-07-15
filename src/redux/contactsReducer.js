@@ -7,6 +7,7 @@ const initialState = {
 const SET_CONTACT = 'SET_CONTACT'
 const SET_CONTACTS = 'SET_CONTACTS'
 const SET_CONTACT_SELECTED = 'SET_CONTACT_SELECTED'
+const CLEAR_CONTACTS_STATE = 'CLEAR_CONTACTS_STATE'
 
 export function setContact(contact) {
   return {
@@ -29,6 +30,13 @@ export function setContactSelected(contactSelected) {
   }
 }
 
+export function clearContactstate() {
+  return {
+    type: CLEAR_CONTACTS_STATE,
+    payload: null,
+  }
+}
+
 export default function (state = initialState, action) {
   //Reducer contains a switch statement which takes in action.type, performs different functionality based on the action.type from the actions above.
   switch (action.type) {
@@ -40,6 +48,9 @@ export default function (state = initialState, action) {
 
     case SET_CONTACT_SELECTED:
       return { ...state, contactSelected: action.payload }
+
+    case CLEAR_CONTACTS_STATE:
+      return initialState
 
     default:
       return state

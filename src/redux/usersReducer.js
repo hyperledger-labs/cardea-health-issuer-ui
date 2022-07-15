@@ -7,6 +7,7 @@ const initialState = {
 const SET_USER = 'SET_USER'
 const SET_USERS = 'SET_USERS'
 const SET_ROLES = 'SET_ROLES'
+const CLEAR_USERS_STATE = 'CLEAR_USERS_STATE'
 
 export function setUser(user) {
   return {
@@ -29,6 +30,13 @@ export function setRoles(roles) {
   }
 }
 
+export function clearUsersState() {
+  return {
+    type: CLEAR_USERS_STATE,
+    payload: null,
+  }
+}
+
 export default function (state = initialState, action) {
   switch (action.type) {
     case SET_USER:
@@ -39,6 +47,9 @@ export default function (state = initialState, action) {
 
     case SET_ROLES:
       return { ...state, roles: action.payload }
+
+    case CLEAR_USERS_STATE:
+      return initialState
 
     default:
       return state

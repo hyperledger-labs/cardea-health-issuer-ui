@@ -31,6 +31,7 @@ const initialState = {
   }
 
   export function clearNotificationState() {
+    console.log("Hello")
     return {
       type: CLEAR_NOTIFICATIONS_STATE,
       payload: null,
@@ -50,6 +51,7 @@ const initialState = {
         return { ...state, warningMessage: action.payload }
   
       case CLEAR_NOTIFICATIONS_STATE:
+        console.log("Hello 2")
         return initialState
   
       default:

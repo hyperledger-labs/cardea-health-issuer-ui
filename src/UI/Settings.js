@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { setSelectedGovernance } from '../redux/governanceReducer'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import styled, { useTheme } from 'styled-components'
 
@@ -135,7 +136,6 @@ const Form = styled.form`
 
 function Settings(props) {
   const settingsState = useSelector((state) => state.settings)
-  console.log('111 props from Settings', props)
 
   // Accessing notification context
   const setNotification = useNotification()
@@ -187,11 +187,13 @@ function Settings(props) {
     if (success) {
       // console.log('SUCCESS RAN')
       setNotification(success, 'notice')
-      props.clearResponseState()
+      // props.clearResponseState()
+      clearNotificationState()
     } else if (error) {
-      // console.log('ERROR RAN')
+      console.log('ERROR RAN')
       setNotification(error, 'error')
-      props.clearResponseState()
+      // props.clearResponseState()
+      clearNotificationState()
     }
   }, [error, success])
 

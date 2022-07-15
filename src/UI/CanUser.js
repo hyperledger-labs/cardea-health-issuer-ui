@@ -6,9 +6,10 @@ export const check = (actions) => {
   const user = currentState.login.loggedInUserState
 
   // Get user roles
-  if (!user) return false
-
-  let roles = user.roles
+  if (!user) {
+    return false
+  } else {
+    let roles = user.roles
 
   // Handle multiple roles by casting roles into array
   roles = roles instanceof Array ? roles : [roles]
@@ -40,6 +41,7 @@ export const check = (actions) => {
     }
   }
   return false
+  }
 }
 
 export const CanUser = (props) =>

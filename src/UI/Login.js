@@ -4,10 +4,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import { setLoggedIn } from '../redux/loginReducer'
-import { setLogo } from '../redux/settingsReducer'
+// import { setLogo } from '../redux/settingsReducer'
 
 import { useNotification } from './NotificationProvider'
-import { handleImageSrc } from './util'
+// import { handleImageSrc } from './util'
 
 import {
   FormContainer,
@@ -40,20 +40,20 @@ function Login(props) {
   // Accessing notification context
   const setNotification = useNotification()
 
-  useEffect(() => {
-    // Fetching the logo
-    Axios({
-      method: 'GET',
-      url: '/api/logo',
-    }).then((res) => {
-      if (res.data.error) {
-        setNotification(res.data.error, 'error')
-      } else {
-        dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
-      }
-    })
-  }, [])
-  // }, [setNotification])
+  // useEffect(() => {
+  //   // Fetching the logo
+  //   Axios({
+  //     method: 'GET',
+  //     url: '/api/logo',
+  //   }).then((res) => {
+  //     if (res.data.error) {
+  //       setNotification(res.data.error, 'error')
+  //     } else {
+  //       dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+  //     }
+  //   })
+  // }, [])
+  // // }, [setNotification])
 
   const loginForm = useRef()
 

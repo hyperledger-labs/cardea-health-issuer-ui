@@ -1,12 +1,12 @@
 const initialState = {
     credential: {},
     credentials: [],
-    // contactSelected: '',
   }
   
   const SET_CREDENTIAL = 'SET_CREDENTIAL'
   const SET_CREDENTIALS = 'SET_CREDENTIALS'
-  // const SET_CREDENTIAL_SELECTED = 'SET_CREDENTIAL_SELECTED'
+  const CLEAR_CREDENTIALS_STATE = 'CLEAR_CREDENTIALS_STATE'
+
   
   export function setCredential(credential) {
     return {
@@ -21,13 +21,13 @@ const initialState = {
       payload: credentials,
     }
   }
-  
-  // export function setCredentialSelected(credentialSelected) {
-  //   return {
-  //     type: SET_CREDENTIAL,
-  //     payload: credentialSelected,
-  //   }
-  // }
+
+  export function clearCredentialsState() {
+    return {
+      type: CLEAR_CREDENTIALS_STATE,
+      payload: null,
+    }
+  }
   
   export default function (state = initialState, action) {
     //Reducer contains a switch statement which takes in action.type, performs different functionality based on the action.type from the actions above.
@@ -38,8 +38,8 @@ const initialState = {
       case SET_CREDENTIALS:
         return { ...state, credentials: action.payload }
   
-      // case SET_CREDENTIAL_SELECTED:
-      //   return { ...state, credentialSelected: action.payload }
+      case CLEAR_CREDENTIALS_STATE:
+        return initialState
   
       default:
         return state

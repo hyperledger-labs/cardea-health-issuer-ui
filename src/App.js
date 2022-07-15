@@ -50,19 +50,22 @@ import {
   setLoggedInUserState,
   logoutUser,
 } from './redux/loginReducer'
-import { setContact, setContacts } from './redux/contactsReducer'
-import { setCredential, setCredentials } from './redux/credentialsReducer'
+import { setContact, setContacts, clearContactstate } from './redux/contactsReducer'
+import { setCredential, setCredentials, clearCredentialsState } from './redux/credentialsReducer'
 
 import {
   setLogo,
+  getLogo,
   setOrganizationName,
   setSmtp,
   setTheme,
   setSchemas,
+  clearSettingsState,
 } from './redux/settingsReducer'
 import {
   setPresentationReport,
   setPresentationReports,
+  clearPresentationsState,
 } from './redux/presentationsReducer'
 import {
   setErrorMessage,
@@ -70,8 +73,10 @@ import {
   setWarningMessage,
   clearNotificationState,
 } from './redux/notificationsReducer'
-import { setUsers, setUser, setRoles } from './redux/usersReducer'
-import { setSelectedGovernance } from './redux/governanceReducer'
+import { setUsers, setUser, setRoles, clearUsersState } from './redux/usersReducer'
+import { setSelectedGovernance, clearGovernancetate } from './redux/governanceReducer'
+
+import { handleImageSrc } from '../src/UI/util'
 
 // const settingsState = useSelector((state) => state.settings)
 // const settingsState = useSelector((state) => state.settings)
@@ -212,6 +217,20 @@ function App() {
 
   // Perform First Time Setup. Connect to Controller Server via Websockets
 
+  // Fetch the logo for unauthorized routes
+  const requestLogo = () => {
+    Axios({
+      method: 'GET',
+      url: '/api/logo',
+    }).then((res) => {
+      if (res.data.error) {
+        setNotification(res.data.error, 'error')
+      } else {
+          dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+      }
+    })
+  }
+
   // TODO: Setting logged-in user and session states on app mount
   useEffect(() => {
     Axios({
@@ -228,10 +247,15 @@ function App() {
           dispatch(setLoggedInUserId(res.data.id))
           dispatch(setLoggedInUsername(res.data.username))
           dispatch(setLoggedInRoles(res.data.roles))
-        } else setAppIsLoaded(true)
+        } else {
+          setAppIsLoaded(true)
+        } 
       })
       .catch((error) => {
         // Unauthorized
+        // (eldersonar) This will trigger on code 401 (no valid session)
+        // dispatch(getLogo())
+        requestLogo()
         setAppIsLoaded(true)
       })
   }, [loginState.loggedIn])
@@ -287,7 +311,7 @@ function App() {
       loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      // loginState.loggedInUserState &&
+      loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
       console.log('we are here')
@@ -759,9 +783,6 @@ function App() {
 
             case 'PRESENTATION_REPORTS':
               // setPresentationReports((prevPresentations) => {
-
-              console.log(presentations)
-
               let oldPresentations = presentations
               let newPresentations = data.presentation_reports
               let updatedPresentations = []
@@ -995,7 +1016,7 @@ function App() {
     if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
-    console.log(loadingArray)
+    // console.log(loadingArray)
   }
 
   function setUpUser(id, username, roles) {
@@ -1064,16 +1085,15 @@ function App() {
       url: '/api/user/log-out',
       withCredentals: true,
     }).then((res) => {
-      // setLoggedIn(false)
       setSession('')
       setWebsocket(false)
       dispatch(logoutUser())
-      // setLoggedInUserState(null)
-      // setLoggedInUserId('')
-      // setLoggedInUsername('')
-      // setLoggedInRoles([])
-
-      // (eldersonar) Does this close the connection and remove the connection object?
+      dispatch(clearUsersState())
+      dispatch(clearSettingsState())
+      dispatch(clearPresentationsState())
+      dispatch(clearGovernancetate())
+      dispatch(clearCredentialsState())
+      dispatch(clearContactstate())
       closeWSConnection(1000, 'Log out')
       if (history !== undefined) {
         history.push('/login')
