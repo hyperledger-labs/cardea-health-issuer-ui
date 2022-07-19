@@ -192,7 +192,7 @@ function App() {
         requestLogo()
         setAppIsLoaded(true)
       })
-  }, [loginState.loggedIn])
+  }, [loginState.loggedIn, dispatch])
 
   // Setting up websocket and controllerSocket
   useEffect(() => {
@@ -328,10 +328,10 @@ function App() {
     updateState()
 
     try {
-      // console.log(
-      //   `New Message with context: '${context}' and type: '${type}' with data:`,
-      //   data
-      // )
+      console.log(
+        `New Message with context: '${context}' and type: '${type}' with data:`,
+        data
+      )
       switch (context) {
         case 'ERROR':
           switch (type) {
