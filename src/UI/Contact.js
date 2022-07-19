@@ -83,14 +83,25 @@ function Contact(props) {
   // const closeVaccineModal = () => setVaccineModalIsOpen(false)
   const closeMedicalModal = () => setMedicalModalIsOpen(false)
 
-  if (contacts) {
-    for (let i = 0; i < contacts.length; i++) {
-      if (contacts[i].contact_id === Number(contactId)) {
-        contactToSelect = contacts[i]
-        break
+  // if (contacts) {
+  //   for (let i = 0; i < contacts.length; i++) {
+  //     if (contacts[i].contact_id === Number(contactId)) {
+  //       // contactToSelect = contacts[i]
+  //       break
+  //     }
+  //   }
+  // }
+
+  useEffect(() => {
+    if (contactsState.contacts) {
+      for (let i = 0; i < contactsState.contacts.length; i++) {
+        if (contactsState.contacts[i].contact_id === parseInt(contactId)) {
+          dispatch(setContactSelected(contactsState.contacts[i]))
+          break
+        }
       }
     }
-  }
+  }, [contactsState.contacts, contactId, dispatch])
 
   useEffect(() => {
     if (success) {
@@ -107,9 +118,9 @@ function Contact(props) {
     } else return
   }, [error, success, warning])
 
-  useEffect(() => {
-    dispatch(setContactSelected(contactToSelect))
-  }, [contactToSelect])
+  // useEffect(() => {
+  //   dispatch(setContactSelected(contactToSelect))
+  // }, [contactToSelect])
 
   function updateDemographics(updatedDemographic, e) {
     e.preventDefault()
