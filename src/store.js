@@ -1,5 +1,5 @@
 import { createStore, combineReducers } from 'redux'
-import { composeWithDevTools } from 'redux-devtools-extension'
+// import { composeWithDevTools } from 'redux-devtools-extension'
 
 import contactsReducer from './redux/contactsReducer'
 import credentialsReducer from './redux/credentialsReducer'
@@ -21,4 +21,8 @@ const rootReducer = combineReducers({
   governance: governanceReducer,
 })
 
-export default createStore(rootReducer, composeWithDevTools())
+export default createStore(
+  rootReducer
+  // Comment out the following line when pushing to production
+  // composeWithDevTools()
+)

@@ -68,7 +68,6 @@ function FormUserEdit(props) {
 
   // Set the roles on modal initialization
   useEffect(() => {
-    console.log('render')
     setOptions(selectedRoles)
   }, [listUser])
 

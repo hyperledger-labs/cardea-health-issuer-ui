@@ -210,7 +210,7 @@ function App() {
         // (JamesKEbert) TODO: Converse on sessions, session timeout and associated UI
 
         setReadyForMessages(false)
-        setLoggedIn(false)
+        dispatch(setLoggedIn(true))
         setWebsocket(false)
       }
 
@@ -439,10 +439,6 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              dispatch(setErrorMessage(data.error))
-              break
-
-            case 'CONTACTS_ERROR':
               dispatch(setErrorMessage(data.error))
               break
 
