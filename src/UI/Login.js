@@ -1,9 +1,10 @@
 import Axios from 'axios'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 import { useNotification } from './NotificationProvider'
-import { handleImageSrc } from './util'
+import { setLoggedIn } from '../redux/loginReducer'
 
 import {
   FormContainer,
@@ -25,24 +26,13 @@ const ForgotPasswordLink = styled.a`
 `
 
 function Login(props) {
-  const [logo, setLogo] = useState(null)
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
+  const dispatch = useDispatch()
+  const { setUpUser } = props
 
   // Accessing notification context
   const setNotification = useNotification()
-
-  useEffect(() => {
-    // Fetching the logo
-    Axios({
-      method: 'GET',
-      url: '/api/logo',
-    }).then((res) => {
-      if (res.data.error) {
-        setNotification(res.data.error, 'error')
-      } else {
-        setLogo(handleImageSrc(res.data[0].image.data))
-      }
-    })
-  }, [setNotification])
 
   const loginForm = useRef()
 
@@ -60,9 +50,8 @@ function Login(props) {
     }).then((res) => {
       if (res.data.error) setNotification(res.data.error, 'error')
       else {
-        props.setLoggedIn(true)
-
-        props.setUpUser(res.data.id, res.data.username, res.data.roles)
+        dispatch(setLoggedIn(true))
+        setUpUser(res.data.id, res.data.username, res.data.roles)
       }
     })
   }
@@ -94,4 +83,5 @@ function Login(props) {
     </FormContainer>
   )
 }
+
 export default Login

@@ -1,16 +1,16 @@
 import React, { useRef, useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import Select from 'react-select'
+import ReactTooltip from 'react-tooltip'
+import styled from 'styled-components'
 
-import styled, { useTheme } from 'styled-components'
-
-import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
-
-import ReactTooltip from 'react-tooltip'
+import { useNotification } from './NotificationProvider'
+import { setSelectedGovernance } from '../redux/governanceReducer'
+import { clearNotificationState } from '../redux/notificationsReducer'
 
 import { IconHelp } from './CommonStylesTables'
-
-import Select from 'react-select'
 
 const H3 = styled.h3`
   margin: 5px 0;
@@ -132,55 +132,57 @@ const Form = styled.form`
 `
 
 function Settings(props) {
+  const dispatch = useDispatch()
+  const settingsState = useSelector((state) => state.settings)
+  const notificationsState = useSelector((state) => state.notifications)
+  const governanceState = useSelector((state) => state.governance)
+
+  const selectedGovernance = governanceState.selectedGovernance
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+  const smtpConf = settingsState.smtp
+  const theme = settingsState.theme
+
   // Accessing notification context
   const setNotification = useNotification()
 
-  const error = props.errorMessage
-  const success = props.successMessage
-  let smtpConf = props.smtp
-  // const messageEventCounter = props.messageEventCounter
-
-  const [selectedGovernance, setSelectedGovernance] = useState(
-    props.selectedGovernance
-  )
   const [governanceOptions, setGovernanceOptions] = useState(
-    props.governanceOptions
+    governanceState.governanceOptions
   )
-
-  // console.log(props.selectedGovernance)
-  // console.log(props.governanceOptions)
 
   // (eldersonar) Setting up selected governance and governance options
   useEffect(() => {
     let options = []
     // (eldersonar) Handle selected governance state
-    if (props.selectedGovernance) {
-      setSelectedGovernance(props.selectedGovernance)
+    if (selectedGovernance) {
+      dispatch(setSelectedGovernance(selectedGovernance))
     }
     // (eldersonar) Handle governance options state
-    if (props.governanceOptions) {
-      for (let i = 0; i < props.governanceOptions.length; i++) {
+    if (governanceState.governanceOptions) {
+      for (let i = 0; i < governanceState.governanceOptions.length; i++) {
         options.push({
-          id: props.governanceOptions[i].id,
-          label: props.governanceOptions[i].governance_path,
-          value: props.governanceOptions[i].governance_path,
+          id: governanceState.governanceOptions[i].id,
+          label: governanceState.governanceOptions[i].governance_path,
+          value: governanceState.governanceOptions[i].governance_path,
         })
       }
       setGovernanceOptions(options)
     }
-  }, [props.selectedGovernance, props.governanceOptions])
+  }, [selectedGovernance, governanceState.governanceOptions, dispatch])
 
   useEffect(() => {
     if (success) {
-      // console.log('SUCCESS RAN')
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
-      // console.log('ERROR RAN')
       setNotification(error, 'error')
-      props.clearResponseState()
-    }
-  }, [error, success, props, setNotification])
+      dispatch(clearNotificationState())
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+    } else return
+  }, [error, success, warning, dispatch])
 
   // File state
   const [selectedFavicon, setSelectedFile] = useState('')
@@ -231,7 +233,6 @@ function Settings(props) {
 
   const governanceForm = useRef(null)
   const governancePath = useRef(null)
-  const governanceFileOption = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -317,11 +318,11 @@ function Settings(props) {
   const handleOrganizationDetails = (e) => {
     e.preventDefault()
     const form = new FormData(organizationForm.current)
-    const name = {
+    const organizationInfo = {
       organizationName: form.get('organizationName'),
       title: form.get('siteTitle'),
     }
-    props.sendRequest('SETTINGS', 'SET_ORGANIZATION', name)
+    props.sendRequest('SETTINGS', 'SET_ORGANIZATION', organizationInfo)
     organizationForm.current.reset()
   }
 
@@ -493,7 +494,7 @@ function Settings(props) {
   }
 
   function selectGovernance(governancePath) {
-    setSelectedGovernance(governancePath)
+    dispatch(setSelectedGovernance(governancePath))
     props.sendRequest('SETTINGS', 'SET_SELECTED_GOVERNANCE', governancePath)
   }
 
@@ -526,7 +527,7 @@ function Settings(props) {
           id="organizationTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The SMTP configuration is used for sending
@@ -550,13 +551,19 @@ function Settings(props) {
           <H3>Organization Name</H3>
           <BlockInput
             name="organizationName"
-            defaultValue={props.organizationName ? props.organizationName : ''}
+            defaultValue={
+              settingsState.organizationName
+                ? settingsState.organizationName
+                : ''
+            }
             ref={organizationName}
           />
           <H3>Website Title</H3>
           <BlockInput
             name="siteTitle"
-            defaultValue={props.siteTitle ? props.siteTitle : ''}
+            defaultValue={
+              settingsState.siteTitle ? settingsState.siteTitle : ''
+            }
             ref={siteTitle}
           />
           <SaveBtn onClick={handleOrganizationDetails}>Save</SaveBtn>
@@ -575,7 +582,7 @@ function Settings(props) {
           id="logoTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Organization logo is used in
@@ -608,7 +615,7 @@ function Settings(props) {
           id="logo192Tip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             logo192.png is the icon used to show on the tab
@@ -641,7 +648,7 @@ function Settings(props) {
           id="logo512Tip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             logo192.png is the icon used to show on the tab
@@ -674,7 +681,7 @@ function Settings(props) {
           id="faviconTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Organization favicon is used to
@@ -707,7 +714,7 @@ function Settings(props) {
           id="manifestTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The web app manifest provides information about
@@ -759,7 +766,7 @@ function Settings(props) {
           id="smtpTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             The SMTP configuration is used for sending
@@ -789,7 +796,7 @@ function Settings(props) {
           <BlockInput
             name="mailUsername"
             ref={mailUsername}
-            ref={host}
+            // ref={host}
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
             }
@@ -869,7 +876,7 @@ function Settings(props) {
           id="governanceTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             You can add a new governance file that
@@ -908,7 +915,7 @@ function Settings(props) {
           id="themeTip"
           effect="solid"
           type="info"
-          backgroundColor={useTheme().primary_color}
+          backgroundColor={theme.primary_color}
         >
           <span>
             Use these settings to

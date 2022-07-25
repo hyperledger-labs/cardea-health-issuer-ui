@@ -1,6 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
+import { useSelector } from 'react-redux'
+import ReactTooltip from 'react-tooltip'
+// import { useTheme } from 'styled-components'
 
-import { useTheme } from 'styled-components'
+import { IconHelp } from './CommonStylesTables'
 
 import {
   Actions,
@@ -19,15 +22,15 @@ import {
   SubmitBtnModal,
 } from './CommonStylesForms'
 
-import { IconHelp } from './CommonStylesTables'
-
-import ReactTooltip from 'react-tooltip'
-
 function FormUsers(props) {
-  const [options, setOptions] = useState([])
+  const usersState = useSelector((state) => state.users)
+  const settingsState = useSelector((state) => state.settings)
 
-  const roles = props.roles
+  const theme = settingsState.theme
+  const roles = usersState.roles
   const error = props.error
+
+  const [options, setOptions] = useState([])
 
   const userForm = useRef()
   const submitBtn = useRef()
@@ -122,7 +125,7 @@ function FormUsers(props) {
                   id="rolesTip"
                   effect="solid"
                   type="info"
-                  backgroundColor={useTheme().primary_color}
+                  backgroundColor={theme.primary_color}
                 >
                   <span>
                     Select which roles the user

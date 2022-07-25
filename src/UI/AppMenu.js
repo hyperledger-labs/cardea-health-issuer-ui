@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import { NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 
@@ -47,21 +48,22 @@ const StyledLink = styled(NavLink)`
     background: ${(props) => props.theme.background_secondary};
   }
 `
-const StyledSubLink = styled(NavLink)`
-  display: block;
-  padding: 10px 0 10px 20px;
-  font-size: 14px;
-  text-decoration: none;
-  color: ${(props) => props.theme.text_color};
-  &:hover,
-  &.active {
-    text-decoration: underline;
-    color: ${(props) => props.theme.primary_color};
-    background: none;
-  }
-`
+// const StyledSubLink = styled(NavLink)`
+//   display: block;
+//   padding: 10px 0 10px 20px;
+//   font-size: 14px;
+//   text-decoration: none;
+//   color: ${(props) => props.theme.text_color};
+//   &:hover,
+//   &.active {
+//     text-decoration: underline;
+//     color: ${(props) => props.theme.primary_color};
+//     background: none;
+//   }
+// `
 function AppMenu(props) {
-  const localUser = props.loggedInUserState
+  const loginState = useSelector((state) => state.login)
+  const localUser = loginState.loggedInUserState
 
   let pathMatch = ''
   if (props.match.path !== undefined) {
@@ -82,7 +84,6 @@ function AppMenu(props) {
             </StyledLink>
           </Item>*/}
           <CanUser
-            user={localUser}
             perform="contacts:read"
             yes={() => (
               <Item
@@ -107,7 +108,6 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
             perform="credentials:read"
             yes={() => (
               <Item
@@ -118,7 +118,6 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
             perform="presentations:read"
             yes={() => (
               <Item
@@ -131,7 +130,6 @@ function AppMenu(props) {
             )}
           />
           <CanUser
-            user={localUser}
             perform="users:read"
             yes={() => (
               <Item className={pathMatch === '/users' ? 'active' : undefined}>
@@ -140,7 +138,6 @@ function AppMenu(props) {
             )}
           />
           {/* <CanUser
-            user={localUser}
             perform="basicMessages:read"
             yes={() => (
               <>
@@ -153,7 +150,6 @@ function AppMenu(props) {
             )}
           /> */}
           <CanUser
-            user={localUser}
             perform="settings:read"
             yes={() => (
               <>

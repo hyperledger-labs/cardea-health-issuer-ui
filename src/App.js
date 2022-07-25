@@ -1,23 +1,71 @@
 import Axios from 'axios'
-
 import Cookies from 'universal-cookie'
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   Redirect,
 } from 'react-router-dom'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
+
+// Redux reducers imports
+import { useSelector, useDispatch } from 'react-redux'
+import {
+  setLoggedIn,
+  setLoggedInUserId,
+  setLoggedInUsername,
+  setLoggedInRoles,
+  setLoggedInUserState,
+  logoutUser,
+} from './redux/loginReducer'
+import {
+  setContact,
+  setContacts,
+  clearContactstate,
+} from './redux/contactsReducer'
+import {
+  setCredential,
+  setCredentials,
+  clearCredentialsState,
+} from './redux/credentialsReducer'
+import {
+  setLogo,
+  // getLogo,
+  setOrganizationName,
+  setSiteTitle,
+  setSmtp,
+  setTheme,
+  setSchemas,
+  clearSettingsState,
+} from './redux/settingsReducer'
+import {
+  // setPresentationReport,
+  setPresentationReports,
+  clearPresentationsState,
+} from './redux/presentationsReducer'
+import {
+  setErrorMessage,
+  setSuccessMessage,
+  // setWarningMessage,
+} from './redux/notificationsReducer'
+import {
+  setUsers,
+  setUser,
+  setRoles,
+  clearUsersState,
+} from './redux/usersReducer'
+import {
+  setSelectedGovernance,
+  setGovernanceOptions,
+  clearGovernanceState,
+} from './redux/governanceReducer'
+import store from './store'
 
 import AccountSetup from './UI/AccountSetup'
 import AppHeader from './UI/AppHeader'
 import AppFooter from './UI/AppFooter'
-
-import { check, CanUser } from './UI/CanUser'
-import rules from './UI/rbac-rules'
-
+import { check } from './UI/CanUser'
 import Contact from './UI/Contact'
 import Contacts from './UI/Contacts'
 import Credential from './UI/Credential'
@@ -36,8 +84,8 @@ import Presentation from './UI/Presentation'
 import Settings from './UI/Settings'
 import User from './UI/User'
 import Users from './UI/Users'
-
 import SessionProvider from './UI/SessionProvider'
+import { handleImageSrc } from '../src/UI/util'
 
 import './App.css'
 
@@ -56,19 +104,15 @@ const Main = styled.main`
 `
 
 function App() {
-  const defaultTheme = {
-    primary_color: '#0065B3',
-    secondary_color: '#00AEEF',
-    neutral_color: '#091C40',
-    negative_color: '#ed003c',
-    warning_color: '#e49b13',
-    positive_color: '#008a00',
-    text_color: '#555',
-    text_light: '#fff',
-    border: '#e3e3e3',
-    drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
-    background_primary: '#fff',
-    background_secondary: '#f5f5f5',
+  let currentState
+  const loginState = useSelector((state) => state.login)
+  const settingsState = useSelector((state) => state.settings)
+  const theme = settingsState.theme
+
+  const dispatch = useDispatch()
+
+  const updateState = () => {
+    currentState = store.getState()
   }
 
   const cookies = new Cookies()
@@ -85,55 +129,41 @@ function App() {
   const [websocket, setWebsocket] = useState(false)
   const [readyForMessages, setReadyForMessages] = useState(false)
 
-  // Keep track of loading processes
-  const [loadingArray, setLoadingArray] = useState([])
-
-  // State governs whether the app should be loaded. Depends on the loadingArray
+  // State governs whether the app should be loaded. Depends on the loadingList when logged in
   const [appIsLoaded, setAppIsLoaded] = useState(false)
-
-  // Check for local state copy of theme, otherwise use default hard coded here in App.js
-  const localTheme = JSON.parse(localStorage.getItem('recentTheme'))
-  const [theme, setTheme] = useState(localTheme ? localTheme : defaultTheme)
-  const [schemas, setSchemas] = useState({})
-  const [siteTitle, setSiteTitle] = useState('')
 
   // Styles to change array
   const [stylesArray, setStylesArray] = useState([])
 
-  // Message states
-  const [contacts, setContacts] = useState([])
-  const [contact, setContact] = useState({})
-  const [credentials, setCredentials] = useState([])
-  const [presentationReports, setPresentationReports] = useState([])
-  const [image, setImage] = useState()
-  const [roles, setRoles] = useState([])
-  const [users, setUsers] = useState([])
-  const [user, setUser] = useState({})
-  const [errorMessage, setErrorMessage] = useState(null)
-  const [successMessage, setSuccessMessage] = useState(null)
-  const [organizationName, setOrganizationName] = useState(null)
-  const [smtp, setSmtp] = useState(null)
-
   // Session states
   const [session, setSession] = useState('')
-  const [loggedInUserId, setLoggedInUserId] = useState('')
-  const [loggedInUserState, setLoggedInUserState] = useState(null)
-  const [loggedInUsername, setLoggedInUsername] = useState('')
-  const [loggedInRoles, setLoggedInRoles] = useState([])
-  const [loggedIn, setLoggedIn] = useState(false)
-  const [sessionTimer, setSessionTimer] = useState(60)
+  const [sessionTimer] = useState(60)
 
   const [QRCodeURL, setQRCodeURL] = useState('')
   const [focusedConnectionID, setFocusedConnectionID] = useState('')
 
   // Governance state
+  // (eldersonar) Even though it's passed it is not used in this version of governance anymore
+  // TODO: update when change privileges on MRG
   const [privileges, setPrivileges] = useState([])
-  const [governanceOptions, setGovernanceOptions] = useState([])
-  const [selectedGovernance, setSelectedGovernance] = useState('')
 
   // (JamesKEbert) Note: We may want to abstract the websockets out into a high-order component for better abstraction, especially potentially with authentication/authorization
 
   // Perform First Time Setup. Connect to Controller Server via Websockets
+
+  // Fetch the logo for unauthorized routes
+  const requestLogo = () => {
+    Axios({
+      method: 'GET',
+      url: '/api/logo',
+    }).then((res) => {
+      if (res.data.error) {
+        setNotification(res.data.error, 'error')
+      } else {
+        dispatch(setLogo(handleImageSrc(res.data[0].image.data)))
+      }
+    })
+  }
 
   // TODO: Setting logged-in user and session states on app mount
   useEffect(() => {
@@ -145,23 +175,28 @@ function App() {
         if (cookies.get('sessionId')) {
           // Update session expiration date
           setSession(cookies.get('sessionId'))
-          setLoggedIn(true)
+          dispatch(setLoggedIn(true))
 
-          setLoggedInUserState(res.data)
-          setLoggedInUserId(res.data.id)
-          setLoggedInUsername(res.data.username)
-          setLoggedInRoles(res.data.roles)
-        } else setAppIsLoaded(true)
+          dispatch(setLoggedInUserState(res.data))
+          dispatch(setLoggedInUserId(res.data.id))
+          dispatch(setLoggedInUsername(res.data.username))
+          dispatch(setLoggedInRoles(res.data.roles))
+        } else {
+          setAppIsLoaded(true)
+        }
       })
       .catch((error) => {
         // Unauthorized
+        // (eldersonar) This will trigger on code 401 (no valid session)
+        // dispatch(getLogo())
+        requestLogo()
         setAppIsLoaded(true)
       })
-  }, [loggedIn])
+  }, [loginState.loggedIn, dispatch])
 
   // Setting up websocket and controllerSocket
   useEffect(() => {
-    if (session && loggedIn) {
+    if (session && loginState.loggedIn) {
       let url = new URL('/api/ws', window.location.href)
       url.protocol = url.protocol.replace('http', 'ws')
       controllerSocket.current = new WebSocket(url.href)
@@ -175,7 +210,7 @@ function App() {
         // (JamesKEbert) TODO: Converse on sessions, session timeout and associated UI
 
         setReadyForMessages(false)
-        setLoggedIn(false)
+        dispatch(setLoggedIn(true))
         setWebsocket(false)
       }
 
@@ -195,28 +230,31 @@ function App() {
         )
       }
     }
-  }, [loggedIn, session])
+  }, [loginState.loggedIn, session])
 
   // (eldersonar) Set-up site title. What about SEO? Will robots be able to read it?
   useEffect(() => {
-    document.title = siteTitle
-  }, [siteTitle])
+    document.title = settingsState.siteTitle
+  }, [settingsState.siteTitle])
 
   useEffect(() => {
     // Perform operation on websocket open
     // Run web sockets only if authenticated
+
     if (
       session &&
-      loggedIn &&
+      loginState.loggedIn &&
       websocket &&
       readyForMessages &&
-      loggedInUserState &&
+      loginState.loggedInUserState &&
       loadingList.length === 0
     ) {
       sendMessage('SETTINGS', 'GET_THEME', {})
       addLoadingProcess('THEME')
       sendMessage('SETTINGS', 'GET_SCHEMAS', {})
       addLoadingProcess('SCHEMAS')
+
+      // (eldersonar) Even though it's passed it is not used in this version of governance anymore
       // sendMessage('GOVERNANCE', 'GET_PRIVILEGES', {})
       // addLoadingProcess('GOVERNANCE')
 
@@ -226,26 +264,24 @@ function App() {
       sendMessage('SETTINGS', 'GET_SELECTED_GOVERNANCE', {})
       addLoadingProcess('SELECTED_GOVERNANCE')
 
-      if (
-        check(rules, loggedInUserState, 'contacts:read', 'demographics:read')
-      ) {
+      if (check('contacts:read', 'demographics:read')) {
         sendMessage('CONTACTS', 'GET_ALL', {
           additional_tables: ['Demographic'],
         })
         addLoadingProcess('CONTACTS')
       }
 
-      if (check(rules, loggedInUserState, 'credentials:read')) {
+      if (check('credentials:read')) {
         sendMessage('CREDENTIALS', 'GET_ALL', {})
         addLoadingProcess('CREDENTIALS')
       }
 
-      if (check(rules, loggedInUserState, 'roles:read')) {
+      if (check('roles:read')) {
         sendMessage('ROLES', 'GET_ALL', {})
         addLoadingProcess('ROLES')
       }
 
-      if (check(rules, loggedInUserState, 'presentations:read')) {
+      if (check('presentations:read')) {
         sendMessage('PRESENTATIONS', 'GET_ALL', {})
         addLoadingProcess('PRESENTATIONS')
       }
@@ -253,7 +289,7 @@ function App() {
       sendMessage('SETTINGS', 'GET_ORGANIZATION', {})
       addLoadingProcess('ORGANIZATION')
 
-      if (check(rules, loggedInUserState, 'settings:update')) {
+      if (check('settings:update')) {
         sendMessage('SETTINGS', 'GET_SMTP', {})
         addLoadingProcess('SMTP')
       }
@@ -261,12 +297,18 @@ function App() {
       sendMessage('IMAGES', 'GET_ALL', {})
       addLoadingProcess('LOGO')
 
-      if (check(rules, loggedInUserState, 'users:read')) {
+      if (check('users:read')) {
         sendMessage('USERS', 'GET_ALL', {})
         addLoadingProcess('USERS')
       }
     }
-  }, [session, loggedIn, websocket, readyForMessages, loggedInUserState])
+  }, [
+    session,
+    loginState.loggedIn,
+    websocket,
+    readyForMessages,
+    loginState.loggedInUserState,
+  ])
 
   // (eldersonar) Shut down the websocket
   function closeWSConnection(code, reason) {
@@ -282,6 +324,9 @@ function App() {
 
   // Handle inbound messages
   const messageHandler = async (context, type, data = {}) => {
+    //Update to current state
+    updateState()
+
     try {
       console.log(
         `New Message with context: '${context}' and type: '${type}' with data:`,
@@ -299,7 +344,7 @@ function App() {
 
             case 'WEBSOCKET_ERROR':
               clearLoadingProcess()
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -330,10 +375,7 @@ function App() {
               break
 
             case 'INVITATIONS_ERROR':
-              // console.log(data.error)
-              // console.log('Invitations Error')
-              setErrorMessage(data.error)
-
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -348,45 +390,41 @@ function App() {
         case 'CONTACTS':
           switch (type) {
             case 'CONTACTS':
-              setContacts((prevContacts) => {
-                let newContacts = data.contacts
-                let oldContacts = prevContacts
-                let updContacts = []
+              let newContacts = data.contacts
+              let oldContacts = currentState.contacts.contacts
+              let updContacts = []
 
-                // (mikekebert) Loop through the new contacts and check them against the existing array
-                newContacts.forEach((newContact) => {
-                  oldContacts.forEach((oldContact, index) => {
-                    if (
-                      oldContact !== null &&
-                      newContact !== null &&
-                      oldContact.contact_id === newContact.contact_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldContacts.splice(index, 1)
-                    }
-                  })
-                  updContacts.push(newContact)
+              // (mikekebert) Loop through the new contacts and check them against the existing array
+              newContacts.forEach((newContact) => {
+                oldContacts.forEach((oldContact, index) => {
+                  if (
+                    oldContact !== null &&
+                    newContact !== null &&
+                    oldContact.contact_id === newContact.contact_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldContacts.splice(index, 1)
+                  }
                 })
-
-                if (oldContacts.length > 0) {
-                  // (mikekebert) Sort the array by data created, newest on top
-                  updContacts.sort((a, b) =>
-                    a.created_at < b.created_at ? 1 : -1
-                  )
-                  updContacts = [...updContacts, ...oldContacts]
-                }
-
-                setContact(data.contacts[0])
-                return updContacts
+                updContacts.push(newContact)
               })
+
+              if (oldContacts.length > 0) {
+                // (mikekebert) Sort the array by data created, newest on top
+                updContacts.sort((a, b) =>
+                  a.created_at < b.created_at ? 1 : -1
+                )
+                updContacts = [...updContacts, ...oldContacts]
+              }
+
+              dispatch(setContact(data.contacts[0]))
+              dispatch(setContacts(updContacts))
+
               removeLoadingProcess('CONTACTS')
               break
 
             case 'CONTACTS_ERROR':
-              // console.log(data.error)
-              // console.log('Contacts Error')
-              setErrorMessage(data.error)
-
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -401,60 +439,7 @@ function App() {
         case 'DEMOGRAPHICS':
           switch (type) {
             case 'DEMOGRAPHICS_ERROR':
-              // console.log(data.error)
-              // console.log('Demographics Error')
-              setErrorMessage(data.error)
-
-              break
-
-            case 'CONTACTS_ERROR':
-              // console.log(data.error)
-              // console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            case 'CONTACTS_ERROR':
-              console.log(data.error)
-              console.log('CONTACTS ERROR')
-              setErrorMessage(data.error)
-
-              break
-
-            default:
-              setNotification(
-                `Error - Unrecognized Websocket Message Type: ${type}`,
-                'error'
-              )
-              break
-          }
-          break
-
-        case 'DEMOGRAPHICS':
-          switch (type) {
-            case 'DEMOGRAPHICS_ERROR':
-              console.log(data.error)
-              console.log('DEMOGRAPHICS ERROR')
-              setErrorMessage(data.error)
-
+              dispatch(setErrorMessage(data.error))
               break
 
             default:
@@ -476,7 +461,7 @@ function App() {
             case 'INVITATIONS_ERROR':
               console.log(data.error)
               console.log('Invitations Error')
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
 
               break
 
@@ -492,32 +477,30 @@ function App() {
         case 'ROLES':
           switch (type) {
             case 'ROLES':
-              setRoles((prevRoles) => {
-                let oldRoles = prevRoles
-                let newRoles = data.roles
-                let updatedRoles = []
-                // (mikekebert) Loop through the new roles and check them against the existing array
-                newRoles.forEach((newRole) => {
-                  oldRoles.forEach((oldRole, index) => {
-                    if (
-                      oldRole !== null &&
-                      newRole !== null &&
-                      oldRole.role_id === newRole.role_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldRoles.splice(index, 1)
-                    }
-                  })
-                  updatedRoles.push(newRole)
+              let oldRoles = currentState.users.roles
+              let newRoles = data.roles
+              let updatedRoles = []
+              // (mikekebert) Loop through the new roles and check them against the existing array
+              newRoles.forEach((newRole) => {
+                oldRoles.forEach((oldRole, index) => {
+                  if (
+                    oldRole !== null &&
+                    newRole !== null &&
+                    oldRole.role_id === newRole.role_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldRoles.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
-                if (oldRoles.length > 0)
-                  updatedRoles = [...updatedRoles, ...oldRoles]
-
-                return updatedRoles
+                updatedRoles.push(newRole)
               })
-              removeLoadingProcess('ROLES')
+              // (mikekebert) When you reach the end of the list of new roles, simply add any remaining old roles to the new array
+              if (oldRoles.length > 0)
+                updatedRoles = [...updatedRoles, ...oldRoles]
 
+              dispatch(setRoles(updatedRoles))
+
+              removeLoadingProcess('ROLES')
               break
 
             default:
@@ -532,95 +515,85 @@ function App() {
         case 'USERS':
           switch (type) {
             case 'USERS':
-              setUsers((prevUsers) => {
-                let oldUsers = prevUsers
-                let newUsers = data.users
-                let updatedUsers = []
-                // (mikekebert) Loop through the new users and check them against the existing array
-                newUsers.forEach((newUser) => {
-                  oldUsers.forEach((oldUser, index) => {
-                    if (
-                      oldUser !== null &&
-                      newUser !== null &&
-                      oldUser.user_id === newUser.user_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldUsers.splice(index, 1)
-                    }
-                  })
-                  updatedUsers.push(newUser)
+              let oldUsers = currentState.users.users
+              let newUsers = data.users
+              let updatedUsers = []
+              // (mikekebert) Loop through the new users and check them against the existing array
+              newUsers.forEach((newUser) => {
+                oldUsers.forEach((oldUser, index) => {
+                  if (
+                    oldUser !== null &&
+                    newUser !== null &&
+                    oldUser.user_id === newUser.user_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldUsers.splice(index, 1)
+                  }
                 })
-                // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
-                if (oldUsers.length > 0)
-                  updatedUsers = [...updatedUsers, ...oldUsers]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedUsers
+                updatedUsers.push(newUser)
               })
-              removeLoadingProcess('USERS')
+              // (mikekebert) When you reach the end of the list of new users, simply add any remaining old users to the new array
+              if (oldUsers.length > 0)
+                updatedUsers = [...updatedUsers, ...oldUsers]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedUsers.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
 
+              dispatch(setUsers(updatedUsers))
+
+              removeLoadingProcess('USERS')
               break
 
             case 'USER':
               let user = data.user[0]
-              setUser(user)
+              dispatch(setUser(user))
               break
 
             case 'USER_UPDATED':
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUser.user_id ? data.updatedUser : x
-                )
-              })
-              setUser(data.updatedUser)
+              const usersAfterUpdate = currentState.users.users.map((x) =>
+                x.user_id === data.updatedUser.user_id ? data.updatedUser : x
+              )
+              dispatch(setUsers(usersAfterUpdate))
+              dispatch(setUser(data.updatedUser))
 
               break
 
             case 'PASSWORD_UPDATED':
               // (eldersonar) Replace the user with the updated user based on password)
-              setUsers((prevUsers) => {
-                return prevUsers.map((x) =>
-                  x.user_id === data.updatedUserPassword.user_id
-                    ? data.updatedUserPassword
-                    : x
-                )
-              })
+              const passwordUpdateUser = currentState.users.users.map((x) =>
+                x.user_id === data.updatedUserPassword.user_id
+                  ? data.updatedUserPassword
+                  : x
+              )
 
+              dispatch(setUsers(passwordUpdateUser))
               break
 
             case 'USER_CREATED':
-              setUsers((prevUsers) => {
-                let updatedUsers = [...prevUsers, data.user[0]]
-                return updatedUsers.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-              })
-              setUser(data.user[0])
-
+              let usersCreated = [...currentState.users.users, data.user[0]]
+              usersCreated.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
+              dispatch(setUsers(usersCreated))
+              dispatch(setUser(data.user[0]))
               break
 
             case 'USER_DELETED':
-              setUsers((prevUsers) => {
-                const index = prevUsers.findIndex((v) => v.user_id === data)
-                let alteredUsers = [...prevUsers]
-                alteredUsers.splice(index, 1)
-                return alteredUsers
-              })
-
+              const index = currentState.users.users.findIndex(
+                (v) => v.user_id === data
+              )
+              let alteredUsers = [...currentState.users.users]
+              alteredUsers.splice(index, 1)
+              dispatch(setUsers(alteredUsers))
               break
 
             case 'USER_ERROR':
-              // console.log('User Error', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'USER_SUCCESS':
-              // console.log('USER SUCCESS')
-              setSuccessMessage(data)
-
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -635,48 +608,43 @@ function App() {
         case 'CREDENTIALS':
           switch (type) {
             case 'CREDENTIALS':
-              setCredentials((prevCred) => {
-                let oldCredentials = prevCred
-                let newCredentials = data.credential_records
-                let updatedCredentials = []
-                // (mikekebert) Loop through the new credentials and check them against the existing array
-                newCredentials.forEach((newCredential) => {
-                  oldCredentials.forEach((oldCredential, index) => {
-                    if (
-                      oldCredential !== null &&
-                      newCredential !== null &&
-                      oldCredential.credential_exchange_id ===
-                        newCredential.credential_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      oldCredentials.splice(index, 1)
-                    }
-                  })
-                  updatedCredentials.push(newCredential)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                  if (newCredential.connection_id === focusedConnectionID) {
-                    setFocusedConnectionID('')
+              let oldCredentials = currentState.credentials.credentials
+              let newCredentials = data.credential_records
+              let updatedCredentials = []
+              // (mikekebert) Loop through the new credentials and check them against the existing array
+              newCredentials.forEach((newCredential) => {
+                oldCredentials.forEach((oldCredential, index) => {
+                  if (
+                    oldCredential !== null &&
+                    newCredential !== null &&
+                    oldCredential.credential_exchange_id ===
+                      newCredential.credential_exchange_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    oldCredentials.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
-                if (oldCredentials.length > 0)
-                  updatedCredentials = [
-                    ...updatedCredentials,
-                    ...oldCredentials,
-                  ]
-                // (mikekebert) Sort the array by data created, newest on top
-                updatedCredentials.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedCredentials
+                updatedCredentials.push(newCredential)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (newCredential.connection_id === focusedConnectionID) {
+                  setFocusedConnectionID('')
+                }
               })
-              removeLoadingProcess('CREDENTIALS')
+              // (mikekebert) When you reach the end of the list of new credentials, simply add any remaining old credentials to the new array
+              if (oldCredentials.length > 0)
+                updatedCredentials = [...updatedCredentials, ...oldCredentials]
+              // (mikekebert) Sort the array by data created, newest on top
+              updatedCredentials.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
 
+              dispatch(setCredential(data.credential_records[0]))
+              dispatch(setCredentials(updatedCredentials))
+
+              removeLoadingProcess('CREDENTIALS')
               break
 
             case 'CREDENTIALS_ERROR':
-              // console.log('Credentials Error:', data.error)
               setErrorMessage(data.error)
               break
 
@@ -697,46 +665,45 @@ function App() {
               break
 
             case 'PRESENTATION_REPORTS':
-              setPresentationReports((prevPresentations) => {
-                let oldPresentations = prevPresentations
-                let newPresentations = data.presentation_reports
-                let updatedPresentations = []
+              let oldPresentations =
+                currentState.presentations.presentationReports
+              let newPresentations = data.presentation_reports
+              let updatedPresentations = []
 
-                // (mikekebert) Loop through the new presentation and check them against the existing array
-                newPresentations.forEach((newPresentation) => {
-                  oldPresentations.forEach((oldPresentation, index) => {
-                    if (
-                      oldPresentation !== null &&
-                      newPresentation !== null &&
-                      oldPresentation.presentation_exchange_id ===
-                        newPresentation.presentation_exchange_id
-                    ) {
-                      // (mikekebert) If you find a match, delete the old copy from the old array
-                      console.log('splice', oldPresentation)
-                      oldPresentations.splice(index, 1)
-                    }
-                  })
-                  updatedPresentations.push(newPresentation)
-                  // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
-                  if (newPresentation.connection_id === focusedConnectionID) {
-                    setFocusedConnectionID('')
+              // (mikekebert) Loop through the new presentation and check them against the existing array
+              newPresentations.forEach((newPresentation) => {
+                oldPresentations.forEach((oldPresentation, index) => {
+                  if (
+                    oldPresentation !== null &&
+                    newPresentation !== null &&
+                    oldPresentation.presentation_exchange_id ===
+                      newPresentation.presentation_exchange_id
+                  ) {
+                    // (mikekebert) If you find a match, delete the old copy from the old array
+                    console.log('splice', oldPresentation)
+                    oldPresentations.splice(index, 1)
                   }
                 })
-                // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
-                if (oldPresentations.length > 0)
-                  updatedPresentations = [
-                    ...updatedPresentations,
-                    ...oldPresentations,
-                  ]
-                // (mikekebert) Sort the array by date created, newest on top
-                updatedPresentations.sort((a, b) =>
-                  a.created_at < b.created_at ? 1 : -1
-                )
-
-                return updatedPresentations
+                updatedPresentations.push(newPresentation)
+                // (mikekebert) We also want to make sure to reset any pending connection IDs so the modal windows don't pop up automatically
+                if (newPresentation.connection_id === focusedConnectionID) {
+                  setFocusedConnectionID('')
+                }
               })
-              removeLoadingProcess('PRESENTATIONS')
+              // (mikekebert) When you reach the end of the list of new presentations, simply add any remaining old presentations to the new array
+              if (oldPresentations.length > 0)
+                updatedPresentations = [
+                  ...updatedPresentations,
+                  ...oldPresentations,
+                ]
+              // (mikekebert) Sort the array by date created, newest on top
+              updatedPresentations.sort((a, b) =>
+                a.created_at < b.created_at ? 1 : -1
+              )
 
+              dispatch(setPresentationReports(updatedPresentations))
+
+              removeLoadingProcess('PRESENTATIONS')
               break
 
             default:
@@ -769,38 +736,37 @@ function App() {
               // Writing the recent theme to a local storage
               const stringMessageTheme = JSON.stringify(data.value)
               window.localStorage.setItem('recentTheme', stringMessageTheme)
-              setTheme(data.value)
+              dispatch(setTheme(data.value))
               removeLoadingProcess('THEME')
               break
 
             case 'SETTINGS_SCHEMAS':
-              setSchemas(data)
+              dispatch(setSchemas(data))
               removeLoadingProcess('SCHEMAS')
               break
 
             case 'LOGO':
-              setImage(data)
+              dispatch(setLogo(handleImageSrc(data.image.data)))
               removeLoadingProcess('LOGO')
               break
 
             case 'SETTINGS_ORGANIZATION':
-              setOrganizationName(data.organizationName)
-              setSiteTitle(data.title)
+              dispatch(setOrganizationName(data.organizationName))
+              dispatch(setSiteTitle(data.title))
               removeLoadingProcess('ORGANIZATION')
               break
 
             case 'SETTINGS_SMTP':
-              setSmtp(data.value)
+              dispatch(setSmtp(data.value))
               removeLoadingProcess('SMTP')
               break
 
             case 'SETTINGS_ERROR':
-              // console.log('Settings Error:', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
 
             case 'SETTINGS_SUCCESS':
-              setSuccessMessage(data)
+              dispatch(setSuccessMessage(data))
               break
 
             default:
@@ -815,9 +781,7 @@ function App() {
         case 'GOVERNANCE':
           switch (type) {
             case 'PRIVILEGES_ERROR':
-              console.log(data)
-              console.log('Privileges Error', data.error)
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               removeLoadingProcess('GOVERNANCE')
               break
 
@@ -826,31 +790,26 @@ function App() {
               console.log('these are the privileges:')
               console.log(data.privileges)
               setPrivileges(data.privileges)
+
               removeLoadingProcess('GOVERNANCE')
               break
+
             case 'ACTION_ERROR':
-              setErrorMessage(data.error)
+              dispatch(setErrorMessage(data.error))
               break
+
             case 'ACTION_SUCCESS':
-              setSuccessMessage(data.notice)
-              break
-            case 'PRIVILEGES_SUCCESS':
-              setPrivileges(data.success)
+              dispatch(setSuccessMessage(data.notice))
               break
 
             case 'GOVERNANCE_OPTIONS':
-              console.log('GOVERNANCE_OPTIONS SUCCESS')
-              setGovernanceOptions(data.governance_paths)
+              dispatch(setGovernanceOptions(data.governance_paths))
               removeLoadingProcess('ALL_GOVERNANCE')
               break
 
             case 'GOVERNANCE_OPTION_ADDED':
-              console.log('GOVERNANCE_OPTION_ADDED')
-              setGovernanceOptions((prev) => {
-                console.log(prev)
-                console.log(data.governance_path)
-
-                prev.forEach((governanceOption, index) => {
+              currentState.governance.governanceOptions.forEach(
+                (governanceOption, index) => {
                   console.log('forEach')
                   console.log(governanceOption.governance_path)
                   console.log(data.governance_path)
@@ -862,28 +821,28 @@ function App() {
                   ) {
                     // (mikekebert) If you find a match, delete the old copy from the old array
                     console.log('splice', governanceOption)
-                    prev.splice(index, 1)
+                    currentState.governance.governanceOptions.splice(index, 1)
                   }
-                })
+                }
+              )
 
-                let updatedGovernanceOptions = [...prev, data.governance_path]
-                return updatedGovernanceOptions
-              })
+              let updatedGovernanceOptions = [
+                ...currentState.governance.governanceOptions,
+                data.governance_path,
+              ]
 
+              dispatch(setGovernanceOptions(updatedGovernanceOptions))
               break
 
             case 'SELECTED_GOVERNANCE':
-              console.log('SELECTED_GOVERNANCE')
               console.log(data)
-
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
               removeLoadingProcess('SELECTED_GOVERNANCE')
               break
 
             case 'UPDATED_SELECTED_GOVERNANCE':
-              console.log('UPDATED_SELECTED_GOVERNANCE')
               console.log(data)
-              setSelectedGovernance(data.selected_governance)
+              dispatch(setSelectedGovernance(data.selected_governance))
 
               break
 
@@ -915,7 +874,7 @@ function App() {
   }
 
   function clearLoadingProcess() {
-    loadingList = []
+    loadingList.length = 0
     setAppIsLoaded(true)
   }
 
@@ -928,19 +887,19 @@ function App() {
     if (loadingList.length === 0) {
       setAppIsLoaded(true)
     }
-    console.log(loadingArray)
   }
 
   function setUpUser(id, username, roles) {
     setSession(cookies.get('sessionId'))
-    setLoggedInUserId(id)
-    setLoggedInUsername(username)
-    setLoggedInRoles(roles)
+    dispatch(setLoggedInUserId(id))
+    dispatch(setLoggedInUsername(username))
+    dispatch(setLoggedInRoles(roles))
   }
 
   // Update theme state locally
   const updateTheme = (update) => {
-    return setTheme((prevTheme) => ({ ...prevTheme, ...update }))
+    updateState()
+    return dispatch(setTheme({ ...theme, ...update }))
   }
 
   // Update theme in the database
@@ -967,19 +926,15 @@ function App() {
 
   // Undo theme change
   const undoStyle = (undoKey) => {
+    updateState()
+    const recentTheme = JSON.parse(localStorage.getItem('recentTheme'))
     if (undoKey !== undefined) {
-      for (let key in defaultTheme)
+      for (let key in recentTheme)
         if ((key = undoKey)) {
-          const undo = { [`${key}`]: defaultTheme[key] }
-          return setTheme((prevTheme) => ({ ...prevTheme, ...undo }))
+          const undo = { [`${key}`]: recentTheme[key] }
+          return dispatch(setTheme({ ...theme, ...undo }))
         }
     }
-  }
-
-  // Resetting state of error and success messages
-  const clearResponseState = () => {
-    setErrorMessage(null)
-    setSuccessMessage(null)
   }
 
   // Logout and redirect
@@ -989,15 +944,15 @@ function App() {
       url: '/api/user/log-out',
       withCredentals: true,
     }).then((res) => {
-      setLoggedIn(false)
       setSession('')
       setWebsocket(false)
-      setLoggedInUserState(null)
-      setLoggedInUserId('')
-      setLoggedInUsername('')
-      setLoggedInRoles([])
-
-      // (eldersonar) Does this close the connection and remove the connection object?
+      dispatch(logoutUser())
+      dispatch(clearUsersState())
+      dispatch(clearSettingsState())
+      dispatch(clearPresentationsState())
+      dispatch(clearGovernanceState())
+      dispatch(clearCredentialsState())
+      dispatch(clearContactstate())
       closeWSConnection(1000, 'Log out')
       if (history !== undefined) {
         history.push('/login')
@@ -1005,14 +960,17 @@ function App() {
     })
   }
 
-  if ((loggedIn && !appIsLoaded) || (!loggedIn && !appIsLoaded)) {
+  if (
+    (loginState.loggedIn && !appIsLoaded) ||
+    (!loginState.loggedIn && !appIsLoaded)
+  ) {
     // Show the spinner while the app is loading
     return (
       <ThemeProvider theme={theme}>
         <FullPageSpinner />
       </ThemeProvider>
     )
-  } else if (!loggedIn && appIsLoaded) {
+  } else if (!loginState.loggedIn && appIsLoaded) {
     return (
       <ThemeProvider theme={theme}>
         <NotificationProvider>
@@ -1025,11 +983,8 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <ForgotPassword
-                          logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
-                          users={users}
                         />
                       </Main>
                     </Frame>
@@ -1043,11 +998,8 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <PasswordReset
-                          logo={image}
                           history={history}
                           sendRequest={sendMessage}
-                          user={user}
-                          users={users}
                         />
                       </Main>
                     </Frame>
@@ -1061,12 +1013,9 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <AccountSetup
-                          logo={image}
                           history={history}
                           sendRequest={sendMessage}
                           messageHandler={messageHandler}
-                          user={user}
-                          users={users}
                         />
                       </Main>
                     </Frame>
@@ -1080,11 +1029,9 @@ function App() {
                     <Frame id="app-frame">
                       <Main>
                         <Login
-                          logo={image}
                           history={history}
                           setUpUser={setUpUser}
                           sendRequest={sendMessage}
-                          setLoggedIn={setLoggedIn}
                         />
                       </Main>
                     </Frame>
@@ -1126,32 +1073,20 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          logo={image}
-                          organizationName={organizationName}
-                          loggedInUsername={loggedInUsername}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
                         />
                         <Main>
                           <Home
-                            loggedInUserState={loggedInUserState}
                             history={history}
                             sendRequest={sendMessage}
                             privileges={privileges}
-                            successMessage={successMessage}
-                            errorMessage={errorMessage}
-                            clearResponseState={clearResponseState}
                             QRCodeURL={QRCodeURL}
-                            // outOfBandQRCodeURL={outOfBandQRCodeURL}
                             focusedConnectionID={focusedConnectionID}
-                            contact={contact}
                           />
                         </Main>
-                        <AppFooter
-                          selectedGovernance={selectedGovernance}
-                        ></AppFooter>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1159,14 +1094,10 @@ function App() {
                 <Route
                   path="/invitations"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'invitations:read')) {
+                    if (check('invitations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1174,9 +1105,7 @@ function App() {
                           <Main>
                             <p>Invitations</p>
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1188,30 +1117,22 @@ function App() {
                   path="/contacts"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
                             <Contacts
-                              loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              contacts={contacts}
                               QRCodeURL={QRCodeURL}
                             />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1222,36 +1143,23 @@ function App() {
                 <Route
                   path={`/contacts/:contactId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'contacts:read')) {
+                    if (check('contacts:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
                             <Contact
-                              loggedInUserState={loggedInUserState}
                               history={history}
                               sendRequest={sendMessage}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
                               privileges={privileges}
                               contactId={match.params.contactId}
-                              contacts={contacts}
-                              schemas={schemas}
-                              credentials={credentials}
                             />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1263,27 +1171,18 @@ function App() {
                   path="/credentials"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Credentials
-                              history={history}
-                              credentials={credentials}
-                            />
+                            <Credentials history={history} />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1294,14 +1193,10 @@ function App() {
                 <Route
                   path={`/credentials/:credentialId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'credentials:read')) {
+                    if (check('credentials:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1309,20 +1204,16 @@ function App() {
                           <Main>
                             <Credential
                               history={history}
-                              credential={match.params.credentialId}
-                              credentials={credentials}
+                              credentialId={match.params.credentialId}
                             />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  credentials={credentials}
                 />
                 <Route
                   path="/verification"
@@ -1330,10 +1221,6 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1341,9 +1228,7 @@ function App() {
                         <Main>
                           <p>Verification</p>
                         </Main>
-                        <AppFooter
-                          selectedGovernance={selectedGovernance}
-                        ></AppFooter>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1354,10 +1239,6 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
@@ -1365,9 +1246,7 @@ function App() {
                         <Main>
                           <p>Messages</p>
                         </Main>
-                        <AppFooter
-                          selectedGovernance={selectedGovernance}
-                        ></AppFooter>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1376,28 +1255,18 @@ function App() {
                   path="/presentations"
                   exact
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Presentations
-                              history={history}
-                              presentationReports={presentationReports}
-                              contacts={contacts}
-                            />
+                            <Presentations history={history} />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1408,14 +1277,10 @@ function App() {
                 <Route
                   path={`/presentations/:presentationId`}
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'presentations:read')) {
+                    if (check('presentations:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1424,51 +1289,31 @@ function App() {
                             <Presentation
                               history={history}
                               presentation={match.params.presentationId}
-                              presentationReports={presentationReports}
-                              contacts={contacts}
                             />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
                       return <Route render={() => <Redirect to="/" />} />
                     }
                   }}
-                  presentationReports={presentationReports}
                 />
                 <Route
                   path="/users"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'users:read')) {
+                    if (check('users:read')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
                           />
                           <Main>
-                            <Users
-                              loggedInUserState={loggedInUserState}
-                              roles={roles}
-                              users={users}
-                              user={user}
-                              successMessage={successMessage}
-                              errorMessage={errorMessage}
-                              clearResponseState={clearResponseState}
-                              sendRequest={sendMessage}
-                            />
+                            <Users sendRequest={sendMessage} />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {
@@ -1482,24 +1327,14 @@ function App() {
                     return (
                       <Frame id="app-frame">
                         <AppHeader
-                          loggedInUserState={loggedInUserState}
-                          loggedInUsername={loggedInUsername}
-                          logo={image}
-                          organizationName={organizationName}
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
                         />
                         <Main>
-                          <User
-                            logo={image}
-                            organizationName={organizationName}
-                            history={history}
-                          />
+                          <User history={history} />
                         </Main>
-                        <AppFooter
-                          selectedGovernance={selectedGovernance}
-                        ></AppFooter>
+                        <AppFooter />
                       </Frame>
                     )
                   }}
@@ -1507,14 +1342,10 @@ function App() {
                 <Route
                   path="/settings"
                   render={({ match, history }) => {
-                    if (check(rules, loggedInUserState, 'settings:update')) {
+                    if (check('settings:update')) {
                       return (
                         <Frame id="app-frame">
                           <AppHeader
-                            loggedInUserState={loggedInUserState}
-                            loggedInUsername={loggedInUsername}
-                            logo={image}
-                            organizationName={organizationName}
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
@@ -1524,24 +1355,13 @@ function App() {
                               updateTheme={updateTheme}
                               saveTheme={saveTheme}
                               undoStyle={undoStyle}
-                              errorMessage={errorMessage}
-                              successMessage={successMessage}
-                              clearResponseState={clearResponseState}
-                              imageResponse={image}
                               stylesArray={stylesArray}
                               addStylesToArray={addStylesToArray}
                               removeStylesFromArray={removeStylesFromArray}
                               sendRequest={sendMessage}
-                              smtp={smtp}
-                              organizationName={organizationName}
-                              siteTitle={siteTitle}
-                              governanceOptions={governanceOptions}
-                              selectedGovernance={selectedGovernance}
                             />
                           </Main>
-                          <AppFooter
-                            selectedGovernance={selectedGovernance}
-                          ></AppFooter>
+                          <AppFooter />
                         </Frame>
                       )
                     } else {

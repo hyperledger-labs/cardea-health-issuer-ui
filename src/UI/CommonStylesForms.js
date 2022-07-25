@@ -1,5 +1,5 @@
-import styled from 'styled-components'
 import Popup from 'reactjs-popup'
+import styled from 'styled-components'
 
 // Form styles
 export const StyledPopup = styled(Popup)`

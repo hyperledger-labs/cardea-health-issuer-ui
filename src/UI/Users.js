@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { CanUser } from './CanUser'
-
 import FormUsers from './FormUsers'
 import FormUsersDelete from './FormUserDelete'
 import FormUserEdit from './FormUserEdit'
 import { useNotification } from './NotificationProvider'
+import { clearNotificationState } from '../redux/notificationsReducer'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
 
 import { TextAlignCenter } from './CommonStyles'
-
 import {
   DataTable,
   DataRow,
@@ -21,33 +21,18 @@ import {
   IconEdit,
   IconEmail,
 } from './CommonStylesTables'
-
 import { ActionButton } from './CommonStylesForms'
 
 function Users(props) {
-  const error = props.errorMessage
-  const success = props.successMessage
+  const dispatch = useDispatch()
+  const loginState = useSelector((state) => state.login)
+  const usersState = useSelector((state) => state.users)
+  const notificationsState = useSelector((state) => state.notifications)
 
-  const [index, setIndex] = useState(false)
-
-  // Accessing notification context
-  const setNotification = useNotification()
-
-  useEffect(() => {
-    if (success) {
-      setNotification(success, 'notice')
-      props.clearResponseState()
-
-      // (Simon): Temporary solution. Closing all/any modals on success
-      closeUserModal()
-      closeUserEditModal()
-      closeDeleteModal()
-    } else if (error) {
-      setNotification(error, 'error')
-      props.clearResponseState()
-      setIndex(index + 1)
-    }
-  }, [error, success, setNotification, props])
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+  const users = usersState.users
 
   const [userModalIsOpen, setUserModalIsOpen] = useState(false)
   const [userEditModalIsOpen, setUserEditModalIsOpen] = useState(false)
@@ -57,10 +42,30 @@ function Users(props) {
 
   const [buttonDisabled, setButtonDisabled] = useState(false)
 
-  const loggedInUserState = props.loggedInUserState
+  // (eldersonar) Helps to handle different UI elements behaviour. Passed to child components with props
+  const [index, setIndex] = useState(false)
 
-  const roles = props.roles
-  const users = props.users
+  // Accessing notification context
+  const setNotification = useNotification()
+
+  useEffect(() => {
+    if (success) {
+      setNotification(success, 'notice')
+      dispatch(clearNotificationState())
+
+      // (Simon): Temporary solution. Closing all/any modals on success
+      closeUserModal()
+      closeUserEditModal()
+      closeDeleteModal()
+    } else if (error) {
+      setNotification(error, 'error')
+      dispatch(clearNotificationState())
+      setIndex((i) => i + 1)
+    } else if (warning) {
+      setNotification(warning, 'warning')
+      dispatch(clearNotificationState())
+    } else return
+  }, [error, success, warning, dispatch])
 
   const closeUserModal = () => setUserModalIsOpen(false)
   const closeUserEditModal = () => setUserEditModalIsOpen(false)
@@ -115,7 +120,6 @@ function Users(props) {
           <DataCell>{userRoles}</DataCell>
 
           <CanUser
-            user={loggedInUserState}
             perform="users:update, users:updateRoles"
             yes={() => (
               <IconCell
@@ -128,9 +132,9 @@ function Users(props) {
               </IconCell>
             )}
           />
-          {loggedInUserState && loggedInUserState.id !== userId ? (
+          {loginState.loggedInUserState &&
+          loginState.loggedInUserState.id !== userId ? (
             <CanUser
-              user={loggedInUserState}
               perform="users:delete"
               yes={() => (
                 <IconCell
@@ -148,7 +152,6 @@ function Users(props) {
           )}
           {!userName ? (
             <CanUser
-              user={loggedInUserState}
               perform="users:create"
               yes={() =>
                 !buttonDisabled ? (
@@ -192,7 +195,6 @@ function Users(props) {
                 <DataHeader>Email</DataHeader>
                 <DataHeader>Roles</DataHeader>
                 <CanUser
-                  user={loggedInUserState}
                   perform="users:update"
                   yes={() => (
                     <DataHeader>
@@ -201,7 +203,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  user={loggedInUserState}
                   perform="users:delete"
                   yes={() => (
                     <DataHeader>
@@ -210,7 +211,6 @@ function Users(props) {
                   )}
                 />
                 <CanUser
-                  user={loggedInUserState}
                   perform="users:create"
                   yes={() => (
                     <DataHeader>
@@ -229,17 +229,13 @@ function Users(props) {
         <FormUsers
           sendRequest={props.sendRequest}
           error={index}
-          roles={roles}
           userModalIsOpen={userModalIsOpen}
           closeUserModal={closeUserModal}
         />
         <FormUserEdit
           sendRequest={props.sendRequest}
           error={index}
-          roles={roles}
           userEmail={userEmail}
-          users={users}
-          loggedInUserState={loggedInUserState}
           userEditModalIsOpen={userEditModalIsOpen}
           closeUserEditModal={closeUserEditModal}
         />

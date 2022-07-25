@@ -1,12 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
-
-import styled from 'styled-components'
-
-import FormQR from './FormQR'
-import FormInvitationAccept from './FormInvitationAccept'
-import { useNotification } from './NotificationProvider'
+import React, { useEffect, useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { CanUser } from './CanUser'
+import FormInvitationAccept from './FormInvitationAccept'
+import FormQR from './FormQR'
+import { useNotification } from './NotificationProvider'
+import { clearNotificationState } from '../redux/notificationsReducer'
+
+import styled from 'styled-components'
 
 const DashboardRow = styled.div`
   display: flex;
@@ -37,12 +38,18 @@ const DashboardButton = styled.div`
 `
 
 function Home(props) {
-  const error = props.errorMessage
-  const success = props.successMessage
-  const warning = props.warningMessage
-  const localUser = props.loggedInUserState
+  const contactsState = useSelector((state) => state.contacts)
+  const notificationsState = useSelector((state) => state.notifications)
+
+  const contact = contactsState.contact
+  const error = notificationsState.errorMessage
+  const success = notificationsState.successMessage
+  const warning = notificationsState.warningMessage
+
   const history = props.history
-  const contact = props.contact
+  // const privileges = props.privileges
+
+  const dispatch = useDispatch()
 
   // Redirect to contact when contact is created
   useEffect(() => {
@@ -50,12 +57,7 @@ function Home(props) {
       closeScanModal()
       history.push('/contacts/' + contact.contact_id)
     }
-  }, [props.contact])
-  // const privileges = props.privileges
-
-  // const [govGranted, setGovGranted] = useState(undefined)
-
-  const [index, setIndex] = useState(false)
+  }, [contact])
 
   const [oob, setOOB] = useState(false)
 
@@ -65,25 +67,21 @@ function Home(props) {
   const closeScanModal = () => setScanModalIsOpen(false)
   const closeDisplayModal = () => setDisplayModalIsOpen(false)
 
-  // const isMounted = useRef(null)
-
   // Accessing notification context
   const setNotification = useNotification()
 
   useEffect(() => {
     if (success) {
       setNotification(success, 'notice')
-      props.clearResponseState()
+      dispatch(clearNotificationState())
     } else if (error) {
       setNotification(error, 'error')
-      props.clearResponseState()
-      setIndex(index + 1)
+      dispatch(clearNotificationState())
     } else if (warning) {
       setNotification(warning, 'warning')
-      props.clearResponseState()
-      setIndex(index + 1)
+      dispatch(clearNotificationState())
     } else return
-  }, [error, success, warning])
+  }, [error, success, warning, dispatch])
 
   const scanInvite = (type) => {
     type === 'oob' ? setOOB(true) : setOOB(false)
@@ -114,7 +112,6 @@ function Home(props) {
     <>
       <DashboardRow>
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('connection')}>
@@ -123,7 +120,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentInvitation}>
@@ -132,7 +128,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={() => scanInvite('oob')}>
@@ -141,7 +136,6 @@ function Home(props) {
           )}
         />
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <DashboardButton onClick={presentOutOfBand}>

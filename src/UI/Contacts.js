@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
+import { useSelector } from 'react-redux'
 
 import { CanUser } from './CanUser'
-import FormQR from './FormQR'
 import FormInvitationAccept from './FormInvitationAccept'
+import FormQR from './FormQR'
+// import { useNotification } from './NotificationProvider'
 import PageHeader from './PageHeader'
 import PageSection from './PageSection'
-import { useNotification } from './NotificationProvider'
 
 import { DataTable, DataRow, DataHeader, DataCell } from './CommonStylesTables'
 import { ActionButton } from './CommonStylesForms'
 
 function Contacts(props) {
-  const localUser = props.loggedInUserState
+  const contactsState = useSelector((state) => state.contacts)
+  const contacts = contactsState.contacts
 
   // Accessing notification context
-  const setNotification = useNotification()
+  // const setNotification = useNotification()
 
   const [scanModalIsOpen, setScanModalIsOpen] = useState(false)
   const [displayModalIsOpen, setDisplayModalIsOpen] = useState(false)
@@ -26,14 +28,12 @@ function Contacts(props) {
     setScanModalIsOpen((o) => !o)
   }
 
-  const presentInvite = () => {
-    setDisplayModalIsOpen((o) => !o)
-    props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
-  }
+  // const presentInvite = () => {
+  //   setDisplayModalIsOpen((o) => !o)
+  //   props.sendRequest('INVITATIONS', 'CREATE_SINGLE_USE', {})
+  // }
 
   const history = props.history
-
-  const contacts = props.contacts
 
   function openContact(history, id) {
     if (history !== undefined) {
@@ -83,7 +83,6 @@ function Contacts(props) {
           </DataTable>
         </PageSection>
         <CanUser
-          user={localUser}
           perform="contacts:create"
           yes={() => (
             <ActionButton title="Add a New Contact" onClick={scanInvite}>

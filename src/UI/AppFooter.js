@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSelector } from 'react-redux'
 import styled from 'styled-components'
 
 const Footer = styled.div`
@@ -15,8 +16,9 @@ const Footer = styled.div`
   z-index: 100;
 `
 
-function AppFooter(props) {
-  const selectedGovernance = props.selectedGovernance
+function AppFooter() {
+  const governanceState = useSelector((state) => state.governance)
+  const selectedGovernance = governanceState.selectedGovernance
 
   return (
     <Footer id="app-footer">

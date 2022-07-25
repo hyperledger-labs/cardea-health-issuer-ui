@@ -14,8 +14,6 @@ import {
 
 function FormUserDelete(props) {
   const userID = props.userId
-  const success = props.successMessage
-
   const error = props.error
 
   const submitBtn = useRef()

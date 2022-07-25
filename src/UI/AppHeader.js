@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { handleImageSrc } from './util'
-
-import styled from 'styled-components'
-import { Logo, LogoHolder } from './CommonStylesForms'
+import React from 'react'
+import { useSelector } from 'react-redux'
 
 import AppMenu from './AppMenu.js'
+import { Logo, LogoHolder } from './CommonStylesForms'
+
+import styled from 'styled-components'
 
 const Header = styled.header`
   flex: 3;
@@ -56,15 +56,11 @@ const Logout = styled.button`
 `
 
 function AppHeader(props) {
-  const [src, setSrc] = useState(null)
-  const logo = props.logo
-  const organizationName = props.organizationName
+  const settingsState = useSelector((state) => state.settings)
+  const loginState = useSelector((state) => state.login)
 
-  useEffect(() => {
-    if (logo && logo.image) {
-      setSrc(handleImageSrc(logo.image.data))
-    }
-  }, [logo])
+  const logo = settingsState.logo
+  const organizationName = settingsState.organizationName
 
   const handleLogout = () => {
     props.handleLogout(props.history)
@@ -77,19 +73,16 @@ function AppHeader(props) {
   return (
     <Header id="app-header">
       <LogoHolder>
-        <Logo src={src} alt="Logo" />
+        <Logo src={logo} alt="Logo" />
       </LogoHolder>
       <OrganizationName>{organizationName}</OrganizationName>
       <LogoutWrapper>
         <UserName onClick={handleUserProfile}>
-          {props.loggedInUsername}
+          {loginState.loggedInUsername}
         </UserName>
         <Logout onClick={handleLogout}>Log Out</Logout>
       </LogoutWrapper>
-      <AppMenu
-        match={props.match}
-        loggedInUserState={props.loggedInUserState}
-      />
+      <AppMenu match={props.match} />
     </Header>
   )
 }

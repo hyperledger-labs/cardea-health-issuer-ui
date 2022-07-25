@@ -1,8 +1,8 @@
 import Axios from 'axios'
-import React, { useRef, useState, useEffect } from 'react'
+import React, { useRef } from 'react'
+import { useSelector } from 'react-redux'
 
 import { useNotification } from './NotificationProvider'
-import { handleImageSrc } from './util'
 
 import {
   FormContainer,
@@ -16,26 +16,11 @@ import {
 } from './CommonStylesForms'
 
 function ForgotPassword(props) {
-  const [user, setUser] = useState({})
-
-  const [logo, setLogo] = useState(null)
+  const settingsState = useSelector((state) => state.settings)
+  const logo = settingsState.logo
 
   // Accessing notification context
   const setNotification = useNotification()
-
-  useEffect(() => {
-    // Fetching the logo
-    Axios({
-      method: 'GET',
-      url: '/api/logo',
-    }).then((res) => {
-      if (res.data.error) {
-        setNotification(res.data.error, 'error')
-      } else {
-        setLogo(handleImageSrc(res.data[0].image.data))
-      }
-    })
-  }, [setNotification])
 
   const emailForm = useRef()
 
@@ -64,7 +49,7 @@ function ForgotPassword(props) {
           setNotification(res.data.error, 'error')
         }
       } else {
-        setUser(res.data)
+        // setUser(res.data)
         setNotification(
           `If this user exists, a password reset email has been sent`,
           'notice'
