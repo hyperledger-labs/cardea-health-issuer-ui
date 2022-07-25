@@ -48,7 +48,6 @@ function Contact(props) {
   const credentialsState = useSelector((state) => state.credentials)
   const notificationsState = useSelector((state) => state.notifications)
 
-  const contacts = contactsState.contacts
   const credentials = credentialsState.credentials
   const contactSelected = contactsState.contactSelected
   const error = notificationsState.errorMessage
@@ -60,8 +59,6 @@ function Contact(props) {
 
   // Accessing notification context
   const setNotification = useNotification()
-
-  let contactToSelect = ''
 
   // const [index, setIndex] = useState(false)
 
@@ -116,7 +113,7 @@ function Contact(props) {
       dispatch(clearNotificationState())
       // setIndex(i => i + 1)
     } else return
-  }, [error, success, warning])
+  }, [error, success, warning, dispatch])
 
   // useEffect(() => {
   //   dispatch(setContactSelected(contactToSelect))

@@ -169,7 +169,7 @@ function Settings(props) {
       }
       setGovernanceOptions(options)
     }
-  }, [selectedGovernance, governanceState.governanceOptions])
+  }, [selectedGovernance, governanceState.governanceOptions, dispatch])
 
   useEffect(() => {
     if (success) {
@@ -182,7 +182,7 @@ function Settings(props) {
       setNotification(warning, 'warning')
       dispatch(clearNotificationState())
     } else return
-  }, [error, success, warning])
+  }, [error, success, warning, dispatch])
 
   // File state
   const [selectedFavicon, setSelectedFile] = useState('')
