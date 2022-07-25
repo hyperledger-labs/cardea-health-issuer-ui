@@ -131,7 +131,7 @@ export default function (state = initialState, action) {
       return { ...state, smtp: action.payload }
 
     case CLEAR_SETTINGS_STATE:
-      return { ...state, organizationName: null }
+      return { ...state, organizationName: null, smtp: null }
 
     default:
       return state
