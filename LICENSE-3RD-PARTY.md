@@ -18,10 +18,10 @@ See also: https://mit-license.org/
 - [react-select](https://github.com/JedWatson/react-select/tree/master/packages/react-select)
 - [react-tooltip](https://github.com/wwayne/react-tooltip)
 - [Reactjs-popup](https://github.com/yjose/reactjs-popup)
-- [Styled Components](https://github.com/styled-components/styled-components)
-- [redux](https://github.com/reduxjs/redux)
 - [react-redux](https://github.com/reduxjs/react-redux)
+- [redux](https://github.com/reduxjs/redux)
 - [redux-devtools-extension](https://github.com/zalmoxisus/redux-devtools-extension)
+- [Styled Components](https://github.com/styled-components/styled-components)
 - [universal-cookie](https://github.com/reactivestack/cookies)
 
 ### SIL Open Font License

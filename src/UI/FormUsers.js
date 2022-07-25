@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import ReactTooltip from 'react-tooltip'
-import { useTheme } from 'styled-components'
+// import { useTheme } from 'styled-components'
 
 import { IconHelp } from './CommonStylesTables'
 
@@ -24,7 +24,9 @@ import {
 
 function FormUsers(props) {
   const usersState = useSelector((state) => state.users)
+  const settingsState = useSelector((state) => state.settings)
 
+  const theme = settingsState.theme
   const roles = usersState.roles
   const error = props.error
 
@@ -123,7 +125,7 @@ function FormUsers(props) {
                   id="rolesTip"
                   effect="solid"
                   type="info"
-                  backgroundColor={useTheme().primary_color}
+                  backgroundColor={theme.primary_color}
                 >
                   <span>
                     Select which roles the user
