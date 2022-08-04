@@ -266,11 +266,7 @@ function Settings(props) {
 
     const form = new FormData(smtpForm.current)
 
-    if (
-      !form.get('host') ||
-      !form.get('mailUsername') ||
-      !form.get('email')
-    ) {
+    if (!form.get('host') || !form.get('mailUsername') || !form.get('email')) {
       setNotification(
         'Host, Mail Username, User Email and Password are required fields. See the tooltip for more info',
         'error'
@@ -529,21 +525,16 @@ function Settings(props) {
           backgroundColor={useTheme().primary_color}
         >
           <span>
-            The SMTP configuration is used for sending
+            Organization name is used in
             <br />
-            new user and password reset emails.
-            <br />
-            <br />
-            Default gmail SMTP configuration only uses
-            <br />
-            host, mail username, user email and user password.
-            <br />
-            Please, put user email into the mail username box.
+            the UI and email messages.
             <br />
             <br />
-            For another provider, please refer to
+            A website title identifies what
             <br />
-            its official documentation.
+            the web page is about for both
+            <br />
+            web users and search engines.
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={organizationForm}>
@@ -747,7 +738,7 @@ function Settings(props) {
       </PageSection>
 
       <PageSection>
-      <SettingsHeader>SMTP Configuration</SettingsHeader>
+        <SettingsHeader>SMTP Configuration</SettingsHeader>
         <IconHelp
           data-tip
           data-for="smtpTip"
