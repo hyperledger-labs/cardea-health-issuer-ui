@@ -369,12 +369,12 @@ function App() {
                 })
 
                 if (oldContacts.length > 0) {
-                  updContacts = [...oldContacts,...updContacts]
+                  updContacts = [...oldContacts, ...updContacts]
                   // (mikekebert) Sort the array by data created, newest on top
                 }
                 updContacts.sort((a, b) =>
-                    a.created_at < b.created_at ? 1 : -1
-                  )
+                  a.created_at < b.created_at ? 1 : -1
+                )
 
                 setContact(data.contacts[0])
                 return updContacts
