@@ -256,7 +256,7 @@ function Settings(props) {
   // Save style settings
   function saveStyle() {
     props.saveTheme()
-    props.clearStylesArray([])
+    props.clearStylesArray()
   }
 
   // Save SMTP settings
