@@ -920,7 +920,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change primary color</H3>
           <Input
-            defaultValue={theme.primary_color}
+            defaultValue={useTheme().primary_color}
             placeholder="Hex or string"
             ref={primaryColorInput}
           />
@@ -948,7 +948,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change secondary color</H3>
           <Input
-            defaultValue={theme.secondary_color}
+            defaultValue={useTheme().secondary_color}
             placeholder="Hex or string"
             ref={secondaryColorInput}
           />
@@ -976,7 +976,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change neutral color</H3>
           <Input
-            defaultValue={theme.neutral_color}
+            defaultValue={useTheme().neutral_color}
             placeholder="Hex or string"
             ref={neutralColorInput}
           />
@@ -1004,7 +1004,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change negative color</H3>
           <Input
-            defaultValue={theme.negative_color}
+            defaultValue={useTheme().negative_color}
             placeholder="Hex or string"
             ref={negativeColorInput}
           />
@@ -1032,7 +1032,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change warning color</H3>
           <Input
-            defaultValue={theme.warning_color}
+            defaultValue={useTheme().warning_color}
             placeholder="Hex or string"
             ref={warningColorInput}
           />
@@ -1060,7 +1060,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change positive color</H3>
           <Input
-            defaultValue={theme.positive_color}
+            defaultValue={useTheme().positive_color}
             placeholder="Hex or string"
             ref={positiveColorInput}
           />
@@ -1088,7 +1088,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change text color</H3>
           <Input
-            defaultValue={theme.text_color}
+            defaultValue={useTheme().text_color}
             placeholder="Hex or string"
             ref={textColorInput}
           />
@@ -1111,7 +1111,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change text light</H3>
           <Input
-            defaultValue={theme.text_light}
+            defaultValue={useTheme().text_light}
             placeholder="Hex or string"
             ref={textLightInput}
           />
@@ -1134,7 +1134,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change border</H3>
           <Input
-            defaultValue={theme.border}
+            defaultValue={useTheme().border}
             placeholder="5px solid #ff0000 or string"
             ref={borderInput}
           />
@@ -1157,7 +1157,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change drop shadow</H3>
           <Input
-            defaultValue={theme.drop_shadow}
+            defaultValue={useTheme().drop_shadow}
             placeholder="3px 3px 3px rgba(0, 0, 0, 0.3)"
             ref={dropShadowInput}
           />
@@ -1182,7 +1182,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change primary background</H3>
           <Input
-            defaultValue={theme.background_primary}
+            defaultValue={useTheme().background_primary}
             placeholder="Hex or string"
             ref={primaryBackgroundInput}
           />
@@ -1210,7 +1210,7 @@ function Settings(props) {
         <Form onSubmit={handleSubmit}>
           <H3>Change secondary background</H3>
           <Input
-            defaultValue={theme.background_secondary}
+            defaultValue={useTheme().background_secondary}
             placeholder="Hex or string"
             ref={secondaryBackgroundInput}
           />
