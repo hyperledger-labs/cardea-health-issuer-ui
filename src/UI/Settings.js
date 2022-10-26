@@ -139,7 +139,6 @@ function Settings(props) {
   const success = props.successMessage
   let smtpConf = props.smtp
   // const messageEventCounter = props.messageEventCounter
-  const theme = props.theme
 
   const [selectedGovernance, setSelectedGovernance] = useState(
     props.selectedGovernance
