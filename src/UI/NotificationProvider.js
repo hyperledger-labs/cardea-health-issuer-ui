@@ -49,7 +49,7 @@ export function NotificationProvider(props) {
   // Perform on every notificationList render
   useEffect(() => {
     //  Check if list of notifications is not empty
-    if (notificationList != 0) {
+    if (notificationList.length !== 0) {
       // Copy the notification list array
       const array = [...notificationList]
       // Setting up the timer to remove the last notification from the array every 6 seconds
