@@ -20,6 +20,8 @@ function ForgotPassword(props) {
 
   const [logo, setLogo] = useState(null)
 
+  const submitBtn = useRef()
+
   // Accessing notification context
   const setNotification = useNotification()
 
@@ -37,10 +39,17 @@ function ForgotPassword(props) {
     })
   }, [setNotification])
 
+  const onBtnClick = (e) => {
+    if (submitBtn.current) {
+      submitBtn.current.setAttribute('disabled', 'disabled')
+    }
+  }
+
   const emailForm = useRef()
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    onBtnClick()
     const form = new FormData(emailForm.current)
     const email = form.get('email')
 
@@ -84,7 +93,9 @@ function ForgotPassword(props) {
           <Label htmlFor="email">Email</Label>
           <InputField type="email" name="email" id="email" required />
         </InputBox>
-        <SubmitBtn type="submit">Reset</SubmitBtn>
+        <SubmitBtn type="submit" ref={submitBtn}>
+          Reset
+        </SubmitBtn>
       </Form>
     </FormContainer>
   )
