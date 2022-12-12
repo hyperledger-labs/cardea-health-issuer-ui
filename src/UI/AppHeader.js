@@ -55,7 +55,7 @@ const Logout = styled.button`
   }
 `
 
-function AppHeader(props) { 
+function AppHeader(props) {
   const [src, setSrc] = useState(null)
   const logo = props.logo
   const organizationName = props.organizationName
@@ -88,7 +88,7 @@ function AppHeader(props) {
       </LogoutWrapper>
       <AppMenu
         match={props.match}
-        theme = {props.theme}
+        theme={props.theme}
         loggedInUserState={props.loggedInUserState}
       />
     </Header>

@@ -60,7 +60,7 @@ const StyledSubLink = styled(NavLink)`
     background: none;
   }
 `
-function AppMenu(props) {  
+function AppMenu(props) {
   const localUser = props.loggedInUserState
 
   let pathMatch = ''

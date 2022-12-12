@@ -1138,7 +1138,7 @@ function App() {
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
-                          theme = {theme}
+                          theme={theme}
                         />
                         <Main>
                           <Home
@@ -1176,7 +1176,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <p>Invitations</p>
@@ -1206,7 +1206,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Contacts
@@ -1241,7 +1241,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Contact
@@ -1283,7 +1283,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Credentials
@@ -1315,7 +1315,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Credential
@@ -1348,7 +1348,7 @@ function App() {
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
-                          theme = {theme}
+                          theme={theme}
                         />
                         <Main>
                           <p>Verification</p>
@@ -1373,7 +1373,7 @@ function App() {
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
-                          theme = {theme}
+                          theme={theme}
                         />
                         <Main>
                           <p>Messages</p>
@@ -1400,7 +1400,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Presentations
@@ -1433,7 +1433,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Presentation
@@ -1468,7 +1468,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Users
@@ -1505,7 +1505,7 @@ function App() {
                           match={match}
                           history={history}
                           handleLogout={handleLogout}
-                          theme = {theme}
+                          theme={theme}
                         />
                         <Main>
                           <User
@@ -1535,7 +1535,7 @@ function App() {
                             match={match}
                             history={history}
                             handleLogout={handleLogout}
-                            theme = {theme}
+                            theme={theme}
                           />
                           <Main>
                             <Settings
