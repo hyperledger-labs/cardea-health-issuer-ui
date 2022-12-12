@@ -15,16 +15,16 @@ const List = styled.ul`
   }
 `
 const Item = styled.li`
-  border-bottom: 1px solid ${(props) => props.theme.border};
+  border-bottom: ${(props) => props.theme.border};
   &:first-child {
-    border-top: 1px solid ${(props) => props.theme.border};
+    border-top: ${(props) => props.theme.border};
   }
   & li,
   & li:first-child {
     border: none;
   }
   & a.active {
-    border-right: 3px solid ${(props) => props.theme.primary_color};
+    border-right: ${(props) => props.theme.primary_color};
     background: ${(props) => props.theme.background_secondary};
   }
   &.active ul {
@@ -60,7 +60,7 @@ const StyledSubLink = styled(NavLink)`
     background: none;
   }
 `
-function AppMenu(props) {
+function AppMenu(props) {  
   const localUser = props.loggedInUserState
 
   let pathMatch = ''
