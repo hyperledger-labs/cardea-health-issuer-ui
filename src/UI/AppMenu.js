@@ -15,9 +15,9 @@ const List = styled.ul`
   }
 `
 const Item = styled.li`
-  border-bottom: 1px solid ${(props) => props.theme.border};
+  border-bottom: ${(props) => props.theme.border};
   &:first-child {
-    border-top: 1px solid ${(props) => props.theme.border};
+    border-top: ${(props) => props.theme.border};
   }
   & li,
   & li:first-child {
