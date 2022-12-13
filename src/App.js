@@ -65,7 +65,7 @@ function App() {
     positive_color: '#008a00',
     text_color: '#555',
     text_light: '#fff',
-    border: '3px solid #e3e3e3',
+    border: '1px solid #e3e3e3',
     drop_shadow: '3px 3px 3px rgba(0, 0, 0, 0.3)',
     background_primary: '#fff',
     background_secondary: '#f5f5f5',
