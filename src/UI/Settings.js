@@ -70,13 +70,15 @@ const TextLightTest = styled.input`
   width: 17px;
 `
 const BorderTest = styled.input`
-  background: ${(props) => props.theme.secondary_color};
-  border: ${(props) => props.theme.border};
+  box-sizing: border-box;
+  background: grey;
   margin-left: 50px;
+  height: 17px;
   width: 17px;
+  border: ${(props) => props.theme.border};
 `
 const DropShadowTest = styled.input`
-  background: ${(props) => props.theme.neutral_color};
+  background: grey;
   border: none;
   margin-left: 50px;
   width: 17px;
@@ -240,9 +242,20 @@ function Settings(props) {
 
   // Theme style attribute change
   const changeThemeStyles = (key, value) => {
-    if (value) {
+    let propertyName = ''
+    if (key === 'drop_shadow') {
+      propertyName = 'box-shadow'
+    } else if (key === 'border') {
+      propertyName = 'border'
+    } else {
+      propertyName = 'color'
+    }
+
+    if (CSS.supports(propertyName, value)) {
       props.updateTheme({ [`${key}`]: value })
       props.addStylesToArray(key)
+    } else {
+      setNotification('Invalid color!', 'error')
     }
   }
 
