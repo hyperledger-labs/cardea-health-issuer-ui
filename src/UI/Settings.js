@@ -15,12 +15,15 @@ import Select from 'react-select'
 const H3 = styled.h3`
   margin: 5px 0;
 `
-
+const SMTPHeader = styled.h3`
+  display: inline-block;
+  margin-right: 10px;
+  margin-bottom: 0;
+`
 const SettingsHeader = styled.h2`
   display: inline-block;
   margin-right: 10px;
 `
-
 const PrimaryColorTest = styled.input`
   background: ${(props) => props.theme.primary_color};
   border: none;
@@ -277,12 +280,7 @@ function Settings(props) {
 
     const form = new FormData(smtpForm.current)
 
-    if (
-      !form.get('host') ||
-      !form.get('mailUsername') ||
-      !form.get('email') ||
-      !form.get('password')
-    ) {
+    if (!form.get('host') || !form.get('mailUsername') || !form.get('email')) {
       setNotification(
         'Host, Mail Username, User Email and Password are required fields. See the tooltip for more info',
         'error'
@@ -291,8 +289,6 @@ function Settings(props) {
       const smtpConfigs = {
         host: form.get('host'),
         port: form.get('port'),
-        mailer: form.get('mailer'),
-        mailFromName: form.get('mailFromName'),
         encryption: form.get('encryption'),
         auth: {
           email: form.get('email'),
@@ -543,21 +539,16 @@ function Settings(props) {
           backgroundColor={useTheme().primary_color}
         >
           <span>
-            The SMTP configuration is used for sending
+            Organization name is used in
             <br />
-            new user and password reset emails.
-            <br />
-            <br />
-            Default gmail SMTP configuration only uses
-            <br />
-            host, mail username, user email and user password.
-            <br />
-            Please, put user email into the mail username box.
+            the UI and email messages.
             <br />
             <br />
-            For another provider, please refer to
+            A website title identifies what
             <br />
-            its official documentation.
+            the web page is about for both
+            <br />
+            web users and search engines.
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={organizationForm}>
@@ -779,96 +770,187 @@ function Settings(props) {
             The SMTP configuration is used for sending
             <br />
             new user and password reset emails.
-            <br />
-            <br />
-            Default gmail SMTP configuration uses only
-            <br />
-            host, user email and user password.
-            <br />
-            <br />
-            For another provider, please refer to
-            <br />
-            its official documentation.
           </span>
         </ReactTooltip>
         <Form onSubmit={handleSubmit} ref={smtpForm}>
-          <H3>Host</H3>
+          <SMTPHeader>Host</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpHostTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
+          />
+          <ReactTooltip
+            id="smtpHostTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              This is the hostname or IP address to connect to.
+              <br />
+              <br />
+              Required field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             name="host"
             ref={host}
             defaultValue={smtpConf ? (smtpConf.host ? smtpConf.host : '') : ''}
-            required
           />
-          <H3>Mail Username</H3>
+          <SMTPHeader>Mail Username</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpMailUsernameTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
+          />
+          <ReactTooltip
+            id="smtpMailUsernameTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              This is the username.
+              <br />
+              For Gmail accounts mail username must be the same as the user
+              email.
+              <br />
+              <br />
+              Required field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             name="mailUsername"
             ref={mailUsername}
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.mailUsername : '') : ''
             }
-            required
           />
-          <H3>User email</H3>
+          <SMTPHeader>User email</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpUserEmailTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
+          />
+          <ReactTooltip
+            id="smtpUserEmailTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              This is the user email address.
+              <br />
+              <br />
+              Required field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             name="email"
             ref={userEmail}
             defaultValue={
               smtpConf ? (smtpConf.auth ? smtpConf.auth.email : '') : ''
             }
-            required
           />
-          <H3>User password</H3>
+          <SMTPHeader>User password</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpPasswordTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
+          />
+          <ReactTooltip
+            id="smtpPasswordTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              This is the password for the user email.
+              <br />
+              For Gmail SMTP cofiguration use the APP Password.
+              <br />
+              <br />
+              Optional field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             type="password"
             name="password"
             ref={userPassword}
-            defaultValue={
-              smtpConf ? (smtpConf.auth ? smtpConf.auth.pass : '') : ''
-            }
-            required
+            defaultValue={smtpConf ? (smtpConf.auth ? '************' : '') : ''}
           />
-          <H3>Port</H3>
+          <SMTPHeader>Port</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpPortTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
+          />
+          <ReactTooltip
+            id="smtpPortTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              This is the port to connect to.
+              <br />
+              It defaults to 587 if "secure" is false or 465 if true.
+              <br />
+              <br />
+              Optional field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             name="port"
-            placeholder="587"
+            placeholder="587 or 465"
             ref={port}
             defaultValue={smtpConf ? (smtpConf.port ? smtpConf.port : '') : ''}
           />
-          <H3>Mailer</H3>
-          <BlockInput
-            name="mailer"
-            placeholder="smtp"
-            ref={mailer}
-            defaultValue={
-              smtpConf ? (smtpConf.mailer ? smtpConf.mailer : '') : ''
-            }
+          <SMTPHeader>Encryption</SMTPHeader>
+          <IconHelp
+            data-tip
+            data-for="smtpEncryptionTip"
+            data-delay-hide="250"
+            data-multiline="true"
+            alt="Help"
           />
-          <H3>Encryption Type</H3>
+          <ReactTooltip
+            id="smtpEncryptionTip"
+            effect="solid"
+            type="info"
+            backgroundColor={useTheme().primary_color}
+          >
+            <span>
+              If true the connection will use TLS when connecting to server.
+              <br />
+              If false (the default) then TLS is used if server supports the
+              STARTTLS extension.
+              <br />
+              <br />
+              Optional field.
+            </span>
+          </ReactTooltip>
           <BlockInput
             name="encryption"
-            placeholder="tls"
+            placeholder="true or false"
             ref={encryption}
             defaultValue={
               smtpConf ? (smtpConf.encryption ? smtpConf.encryption : '') : ''
             }
           />
-          <H3>From Name</H3>
-          <BlockInput
-            name="mailFromName"
-            placeholder="Client Name"
-            ref={mailFromName}
-            defaultValue={
-              smtpConf
-                ? smtpConf.mailFromName
-                  ? smtpConf.mailFromName
-                  : ''
-                : ''
-            }
-          />
           <SaveBtn onClick={handleSMTP}>Save</SaveBtn>
         </Form>
       </PageSection>
-
       <PageSection>
         <SettingsHeader>Governance Configuration</SettingsHeader>
         <IconHelp
